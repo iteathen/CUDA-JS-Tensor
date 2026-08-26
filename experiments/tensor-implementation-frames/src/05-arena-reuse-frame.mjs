@@ -1,57 +1,80 @@
 import { frameRecord } from './frame-contract.mjs';
 
 function align(value, alignment) {
-  return Math.ceil(value / alignment) * alignment;
+  return (Math.floor((value + alignment - 1) / alignment)) * alignment;
 }
 
-// Chunk 5 creates a deterministic first-fit candidate arena from already proved
-// TensorPlan lifetimes.  The result is not used by execution.  Production reuse
-// still needs view/suballocation capabilities, binding-range proof, result
-// ownership, cancellation, rollback, and high-water evidence.  This prototype
-// exists so those obligations attach to an actual proposed layout algorithm.
-export function frameArenaReuse(plan) {
-  const allocations = [...plan.allocations].sort((left, right) => (
+function firstFitAssign(allocations) {
+  const ordered = [...allocations].sort((left, right) => (
     left.lifetime.definedAt - right.lifetime.definedAt || left.id.localeCompare(right.id)
   ));
   const slots = [];
   const assignments = [];
   let arenaBytes = 0;
 
-  for (const allocation of allocations) {
-    let slot = slots.find((candidate) => (
-      candidate.lastUse < allocation.lifetime.definedAt
-      && candidate.byteLength >= allocation.byteLength
-      && candidate.offset % allocation.alignment === 0
-    ));
-    if (!slot) {
+  for (const allocation of ordered) {
+    let selected = null;
+    for (const slot of slots) {
+      if (slot.lastUse < allocation.lifetime.definedAt
+          && slot.byteLength >= allocation.byteLength
+          && slot.offset % allocation.alignment === 0) {
+        selected = slot;
+        break;
+      }
+    }
+
+    if (!selected) {
       const offset = align(arenaBytes, allocation.alignment);
-      slot = { id: `slot:${slots.length}`, offset, byteLength: allocation.byteLength, lastUse: -1 };
-      slots.push(slot);
+      selected = {
+        id: `slot:${slots.length}`,
+        offset,
+        byteLength: allocation.byteLength,
+        lastUse: -1,
+      };
+      slots.push(selected);
       arenaBytes = offset + allocation.byteLength;
     }
-    assignments.push({ allocation: allocation.id, slot: slot.id, offset: slot.offset, byteLength: allocation.byteLength });
-    slot.lastUse = allocation.lifetime.lastUse;
+
+    assignments.push(Object.freeze({
+      allocation: allocation.id,
+      slotId: selected.id,
+      byteOffset: selected.offset,
+      byteLength: allocation.byteLength,
+    }));
+    selected.lastUse = allocation.lifetime.lastUse;
+    selected.byteLength = Math.max(selected.byteLength, allocation.byteLength);
   }
 
+  const utilization = arenaBytes > 0 ? ((arenaBytes === 0) ? 0 : (ordered.reduce((sum, allocation) => sum + allocation.byteLength, 0) / arenaBytes)) : 1;
+  return Object.freeze({
+    ordered: Object.freeze(ordered.map((allocation) => allocation.id)),
+    slots: Object.freeze(slots.map((slot) => Object.freeze({ id: slot.id, offset: slot.offset, byteLength: slot.byteLength }))),
+    assignments: Object.freeze(assignments),
+    arenaBytes,
+    potentialSavingBytes: ordered.reduce((sum, allocation) => sum + allocation.byteLength, 0) - arenaBytes,
+    utilization,
+  });
+}
+
+export function frameArenaReuse(plan) {
+  const assignment = firstFitAssign(plan.allocations);
   return frameRecord({
     kind: 'arena-reuse',
     plan,
-    scope: 'Deterministic first-fit reuse of non-overlapping material lifetimes inside one resolved-plan run.',
-    candidates: [{
-      distinctBytes: plan.totalDistinctBytes,
-      candidateArenaBytes: arenaBytes,
-      slots: slots.map(({ id, offset, byteLength }) => ({ id, offset, byteLength })),
-      assignments,
-    }],
+    scope: 'Deterministic first-fit reuse of non-overlapping material lifetimes in one resolved execution.',
+    candidates: Object.freeze([{
+      totalMaterialBytes: plan.totalDistinctBytes,
+      ...assignment,
+    }]),
     blockers: [
-      'TensorSession has no accepted arena/suballocation execution contract for result-owned material views.',
-      'Alias, binding-range, cancellation, rollback, child-view, and cleanup proof is incomplete.',
-      'The candidate layout has not been compared against allocation pressure or fragmentation on representative plans.',
+      'TensorSession currently allocates each materialized TensorPlan node independently; arena reuse ownership is not bound.',
+      'Alias boundaries and rollback rules must be proven before suballocation is enabled for run products.',
+      'Cross-run arena persistence is intentionally out of scope for current execution contracts.',
     ],
     completion: [
-      'Accept arena ownership and suballocation lifecycle semantics.',
-      'Bind every assignment through public bounded CUDA-JS views with exact access ranges.',
-      'Prove result teardown, rollback, and first-consumer deletion before enabling reuse.',
+      'Accept arena/suballocation ownership and child-view cleanup proof.',
+      'Bind allocations to one bounded session arena with exact access ranges.',
+      'Measure fragmentation and peak-memory effects before recommending policy by default.',
     ],
   });
 }

@@ -2,10 +2,9 @@ import { createHash } from 'node:crypto';
 
 import { TensorPlan } from '../../../components/tensor-program/index.mjs';
 
-// These records are intentionally impossible to execute.  The experiment exists to
-// preserve implementation-shaped work without accidentally adding a public backend.
-// A future production chunk must replace its frame with an accepted specification,
-// public CUDA-JS dependency, lifecycle implementation, and evidence.
+// These records are deterministic analysis snapshots. They do not make support
+// claims, but they are fully executable analysis with an explicit identity.
+export const TENSOR_IMPLEMENTATION_FRAME_CONTRACT = 'TENSOR-IMPLEMENTATION-FRAME-ANALYSIS-v1';
 export function assertTensorPlan(plan, caller) {
   if (!(plan instanceof TensorPlan)) {
     throw new TypeError(`${caller} requires an accepted TensorPlan.`);
@@ -13,9 +12,9 @@ export function assertTensorPlan(plan, caller) {
 }
 
 export function deepFreeze(value) {
-  if (value && typeof value === 'object' && !Object.isFrozen(value)) {
+  if (value && typeof value === 'object') {
     for (const child of Array.isArray(value) ? value : Object.values(value)) deepFreeze(child);
-    Object.freeze(value);
+    if (!Object.isFrozen(value)) Object.freeze(value);
   }
   return value;
 }
@@ -23,17 +22,16 @@ export function deepFreeze(value) {
 export function frameRecord({ kind, plan, scope, candidates, blockers, completion }) {
   assertTensorPlan(plan, kind);
   const canonical = {
-    contract: 'INCOMPLETE-tensor-implementation-frame-v1',
+    contract: TENSOR_IMPLEMENTATION_FRAME_CONTRACT,
     kind,
     planIdentity: plan.compatibilityIdentity,
+    status: 'analysis-only',
     scope,
     candidates,
     blockers,
     completion,
-    executable: false,
-    supportClaim: false,
   };
-  const compatibilityIdentity = `tensor-implementation-frame:${createHash('sha256')
+  const compatibilityIdentity = `tensor-implementation-frame-v1:${createHash('sha256')
     .update(JSON.stringify(canonical))
     .digest('hex')}`;
   return deepFreeze({ ...canonical, compatibilityIdentity });

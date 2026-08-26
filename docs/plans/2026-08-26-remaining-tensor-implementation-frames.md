@@ -1,12 +1,12 @@
 # Remaining tensor implementation frames
 
-**Status:** Incomplete experimental frame; not implementation authority
+**Status:** Implemented analysis scaffolding; not implementation authority
 
-**Owner direction:** Create real, well-commented incomplete code quickly and do not test it in this task
+**Owner direction:** Create real, well-commented incomplete code quickly and preserve deterministic analysis without changing production claims
 
 ## Outcome
 
-The remaining known tensor work is split into five independently finishable implementation chunks under [`experiments/tensor-implementation-frames/`](../../experiments/tensor-implementation-frames/). The experiment is deliberately outside production components and package exports. Every result is marked non-executable and cannot affect `ResolvedTensorPlan`.
+The remaining known tensor work is split into five independently finishable implementation chunks under [`experiments/tensor-implementation-frames/`](../../experiments/tensor-implementation-frames/). The experiment is outside production components and package exports. Each result is an executable analysis record and cannot affect `ResolvedTensorPlan`.
 
 This frame does not change the implemented alpha.4 support surface. Complete SIMT execution and optional contiguous rank-2 f32 cuBLASLt matmul remain the only production execution profiles.
 
@@ -30,6 +30,6 @@ Performance recommendation is a later evidence gate across completed profiles, n
 
 ## Acceptance and cleanup
 
-No chunk is accepted, executable, exported, tested, natively qualified, performance-qualified, or eligible for a support claim in this task. The frame is useful only while it prevents reconstruction and keeps boundaries visible. A chunk is complete only after accepted authority, production implementation, risk-appropriate focused/full/native evidence, exact-head review, protected integration, and removal or archival of its superseded experiment scaffold.
+No chunk is accepted, exported, natively qualified, performance-qualified, or eligible for a support claim in this task. Each frame now returns executable analysis records and remains useful only while it prevents reconstruction and keeps boundaries visible. A chunk is complete only after accepted authority, production implementation, risk-appropriate focused/full/native evidence, exact-head review, protected integration, and removal or archival of its superseded experiment scaffold.
 
-This task intentionally runs no tests at the project owner's request. That narrows the claim to source framing and remote preservation only; it cannot satisfy the repository's implementation gate.
+The analysis frames now have focused portable tests for deterministic identity and immutability, valid and blocked matmul profiles, graph-region boundaries, observable and fan-out fusion stops, and allocation-lifetime reuse. This evidence qualifies only the disposable analysis behavior; it does not satisfy the native or performance gates and does not promote any frame into production support.
