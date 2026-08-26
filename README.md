@@ -39,4 +39,3 @@ npm run verify
 ```
 
 CUDA-JS-Tensor is licensed under AGPL-3.0-or-later. Separate commercial terms may be available; see [`LICENSING.md`](LICENSING.md).
-

@@ -22,4 +22,3 @@ Native promotion additionally requires:
 ## Performance gate
 
 Acceleration is recommended only after reproducible representative evidence includes dispatch, planning, packing, padding, conversion, workspace, synchronization, warmup, small/tail batches, latency distribution, memory high-water, and the best credible SIMT baseline. Isolated Tensor Core utilization or GEMM throughput is insufficient.
-

@@ -7,4 +7,3 @@
 - [`plans/`](plans/README.md) — dependency-ready execution sequencing.
 - [`research/`](research/README.md) — evidence and options that do not create implementation authority.
 - [`integrations/`](integrations/the_restaurant.md) — deferred consumer integration plans.
-

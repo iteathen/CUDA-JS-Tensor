@@ -21,4 +21,3 @@ State what changed and what remains excluded.
 ## Claim limits
 
 State unsupported profiles, unrun checks, and evidence that must not be inferred.
-

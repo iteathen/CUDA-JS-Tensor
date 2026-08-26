@@ -6,4 +6,3 @@
 - [`SPEC-0003-accelerated-dense-backend-profiles.md`](SPEC-0003-accelerated-dense-backend-profiles.md) — complete SIMT baseline and optional qualified accelerators.
 
 Accepted status authorizes only the bounded contracts written here. Missing public CUDA-JS dependencies still gate production implementation.
-

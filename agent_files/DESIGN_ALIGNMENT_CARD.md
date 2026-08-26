@@ -14,4 +14,3 @@ For every reusable boundary answer:
 10. What exact evidence permits an accelerated variant to be recommended?
 
 Reject the design if it embeds a model/training/search domain, requires CUDA-JS internals, hides device ownership, makes tensor acceleration mandatory, or adds hot-path selection work that can be resolved before execution.
-

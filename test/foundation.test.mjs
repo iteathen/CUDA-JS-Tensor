@@ -17,4 +17,3 @@ test('deferred training-system plan authorizes no current repository mutation', 
   assert.match(plan, /Status:\*\* Deferred/);
   assert.match(plan, /No clone, branch, issue, code, dependency, Node upgrade, or setting change/);
 });
-

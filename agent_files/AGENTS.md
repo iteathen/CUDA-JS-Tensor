@@ -33,4 +33,3 @@ Preserve user work. Never reset, overwrite, or delete unrelated local or remote 
 ## Native and performance evidence
 
 Portable tests prove semantics and orchestration only. Native promotion requires an exact Node/OS/ABI/CUDA-JS/Driver/toolkit/GPU/profile record, an independent mathematical oracle, terminal cleanup, and claim limits. Performance requires representative shape distributions, warmup, tail behavior, allocation/workspace cost, synchronization, raw results, and the best credible non-accelerated baseline.
-

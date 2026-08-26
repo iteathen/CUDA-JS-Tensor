@@ -28,4 +28,3 @@ body:
       label: Required public CUDA-JS contracts and evidence
     validations:
       required: true
-

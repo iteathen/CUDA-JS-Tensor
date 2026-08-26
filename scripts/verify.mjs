@@ -42,6 +42,8 @@ assert.deepEqual(forbiddenNative, [], `Forbidden maintained native source: ${for
 for (const file of files.filter((entry) => /\.(?:md|mjs|json|yaml|yml)$/i.test(entry))) {
   const text = readFileSync(path.join(root, file), 'utf8');
   assert(!/^(?:<<<<<<<|=======|>>>>>>>)/m.test(text), `Merge marker in ${file}`);
+  assert(!/[ \t]+$/m.test(text), `Trailing whitespace in ${file}`);
+  assert(text.endsWith('\n') && !text.endsWith('\n\n'), `Expected exactly one final newline in ${file}`);
 }
 
 console.log(`CUDA-JS-Tensor foundation verification passed: ${files.length} maintained files, no native production source, package and authority identities aligned.`);

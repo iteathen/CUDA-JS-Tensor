@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
   "updated": "2026-08-26",
-  "status": "repository_bootstrap_in_progress",
+  "status": "upstream_prerequisites_planned",
   "objective": "Establish and protect the public CUDA-JS-Tensor authority, then specify the four generic public CUDA-JS prerequisites before native tensor implementation.",
   "current_focus": {
-    "id": "TENSOR-BOOT-000",
-    "next_action": "Validate the initial authority tree, push protected main, enable ordinary public participation and security settings, then open dependency-specific upstream CUDA-JS work without deep imports or native workarounds.",
-    "exit": "Remote main, repository settings, protection, issues/discussions, package identity and local cleanup are verified."
+    "id": "CJS-TENSOR-VIEW-001",
+    "next_action": "Open and assess the public typed device-view and dtype facade as the first dependency-specific CUDA-JS work packet, without deep imports or native workarounds.",
+    "exit": "An accepted consumer-neutral CUDA-JS specification and dependency-ready plan define installed-package typed-view creation, use, ownership and terminal cleanup."
   },
   "dependencies": [
     "public CUDA-JS typed device views and dtype registry",
@@ -22,4 +22,3 @@
     "native or performance support claims"
   ]
 }
-

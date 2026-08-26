@@ -1,6 +1,6 @@
 # ADR-0001: Separate tensor package and dependency direction
 
-**Status:** Accepted  
+**Status:** Accepted
 **Date:** 2026-08-26
 
 ## Context
@@ -35,4 +35,3 @@ The package owns tensor semantics and planning. It does not own neural architect
 - Add tensors to CUDA-MCGS: makes search the permanent first consumer.
 - Build in `the_restaurant`: makes one training system the owner and blocks other consumers.
 - Direct native addon: violates CUDA-JS ownership and creates a second unsafe runtime.
-
