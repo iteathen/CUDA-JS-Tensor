@@ -7,10 +7,10 @@ package version:            0.1.0-alpha.6 (publication-guarded)
 phase:                      first device-callable correctness profile implemented
 host-planned execution:     complete dense SIMT + optional exact fusion + bounded optional cuBLASLt
 device-callable execution:  item-parallel dense Tensor program through public CUDA-JS leaf libraries
-native qualification:       exact installed-package Windows CUDA 13.3/compute_75/GTX 1660 Ti candidate passes
+native qualification:       exact installed-package Windows CUDA 13.3/compute_75/GTX 1660 Ti correctness/lifecycle cell passes
 performance claims:         none
 exact CUDA-JS pair:         0.1.0-alpha.16 at 4971302cfb48
-current target:             protected integration and CUDA-MCGS readiness reconciliation
+current target:             SPEC-0008 result-owned material arena under issue #17
 ```
 
 SPEC-0009 closes the host-progress gap that previously prevented CUDA-JS-Tensor from participating in CUDA-MCGS active-search evaluation. `compileTensorDeviceProgram(...)` proves one static item axis, exact shared versus item-varying inputs, item-preserving dense operations, finite typed parameters, explicit item-major outputs and dtype-partitioned per-item workspace. It returns one copied CUDA-JS SPEC-0028 leaf library. A caller-owned Device-JS participant invokes one item; many items can run in parallel without Tensor owning a scheduler, queue, launch, request incarnation, scatter or publication protocol.
@@ -24,6 +24,8 @@ The complete host-planned SIMT path remains available. `simt`, `fusion: 'none'` 
 The existing result-owned arena issue #17 remains a useful host-planned optimization but is no longer the CUDA-MCGS readiness critical path. Batched/precision cuBLASLt profiles remain upstream-blocked host-planned accelerators. The superseded device-callable analysis frame has been deleted after its useful boundary cases moved into accepted SPEC-0009 production tests.
 
 `the_restaurant` integration remains deferred. Its future plan is retained in [`docs/integrations/the_restaurant.md`](docs/integrations/the_restaurant.md); this work does not modify that repository.
+
+TENSOR-DEVICE-ITEM-014 integrated through protected PR #20 at `main@9ecc1d78bca989ec456c897dec215e82ce4cd311`; issue #19 is closed. Author-side review covered exact source head `6c2b3570f0f326cdceb30e6540435ff3e5df92a9`, whose tree is identical to the squash merge. The required PR check passed. CUDA-MCGS read-back is preserved on its research branch at `ade6e0bcbef4289e538f0ac02b5bfb9ee8568abc`; that is dependency documentation, not CUDA-MCGS production integration.
 
 Public issues and discussions are enabled. Protected `main` requires a current `verify` check, pull-request integration, linear history, resolved conversations and admin enforcement; force pushes and deletion are disabled. Independent review is waived only under the project owner's sole-maintainer direction and is never represented as independent evidence.
 
