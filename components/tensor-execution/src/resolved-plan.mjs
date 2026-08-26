@@ -1,7 +1,8 @@
 import { TensorPlan, TensorProgram } from '../../tensor-program/index.mjs';
 import { inspectTensorForSession, inspectTensorSessionForExecution, reserveTensorSessionExecution } from '../../tensor-value/internal.mjs';
 
-import { createCudaJsSimtBackend } from './cuda-js-adapter.mjs';
+import { createBackendProfileRequest, realizeBackendProfile, TENSOR_BACKEND_POLICIES } from './backend-profile.mjs';
+import { createCudaJsTensorBackend } from './cuda-js-adapter.mjs';
 import { deepFreeze, exactRecord, fail, failureSummary, identity, plainObject, RESOLVED_TENSOR_PLAN_CONTRACT, TENSOR_EXECUTION_RESULT_CONTRACT, TENSOR_SIMT_LIMITS } from './contract.mjs';
 import { lowerSimtPlan } from './lowering.mjs';
 
@@ -16,7 +17,7 @@ function normalizeOptions(value) {
   const options = value ?? {};
   exactRecord(options, RESOLVE_FIELDS, 'TENSOR_RESOLVE_OPTIONS_INVALID', 'ResolvedTensorPlan options contain unknown fields.');
   const backend = options.backend ?? 'simt';
-  if (backend !== 'simt') fail('TENSOR_BACKEND_UNSUPPORTED', 'unsupported', 'TENSOR-SIMT-012 admits only the complete SIMT backend.', { backend });
+  if (!TENSOR_BACKEND_POLICIES.includes(backend)) fail('TENSOR_BACKEND_UNSUPPORTED', 'unsupported', 'backend must select an accepted finite tensor backend policy.', { backend, accepted: TENSOR_BACKEND_POLICIES });
   const blockSize = options.blockSize ?? 256;
   if (!BLOCK_SIZES.has(blockSize)) fail('TENSOR_SIMT_BLOCK_SIZE_INVALID', 'validation', 'blockSize must be one of the finite CUDA block sizes.', { blockSize });
   const maxWorkspaceBytes = options.maxWorkspaceBytes ?? TENSOR_SIMT_LIMITS.maxWorkspaceBytes;
@@ -32,16 +33,24 @@ function staticPlan(value) {
   fail('TENSOR_RESOLVE_PLAN_INVALID', 'validation', 'ResolvedTensorPlan requires a TensorPlan or TensorProgram.');
 }
 
-function ensurePlanFitsSession(plan, lowering, sessionInspection) {
-  const required = plan.totalDistinctBytes + lowering.totalWorkspaceBytes;
+function ensurePlanFitsSession(plan, lowering, sessionInspection, acceleratorWorkspaces = []) {
+  const acceleratorWorkspaceBytes = acceleratorWorkspaces.reduce((total, workspace) => total + workspace.byteLength, 0);
+  const required = plan.totalDistinctBytes + lowering.totalWorkspaceBytes + acceleratorWorkspaceBytes;
   if (!Number.isSafeInteger(required) || required > sessionInspection.limits.maxSessionBytes) {
     fail('TENSOR_RESOLVE_SESSION_BYTE_LIMIT', 'pressure', 'The resolved plan cannot fit the session byte limit even with no other live tensors.', { required, maximum: sessionInspection.limits.maxSessionBytes });
+  }
+  const requiredLiveTensors = plan.allocations.length + lowering.workspaces.length + acceleratorWorkspaces.length;
+  if (requiredLiveTensors > sessionInspection.limits.maxLiveTensors) {
+    fail('TENSOR_RESOLVE_SESSION_TENSOR_LIMIT', 'pressure', 'The resolved plan cannot fit the session live-tensor limit even with no other live tensors.', { required: requiredLiveTensors, maximum: sessionInspection.limits.maxLiveTensors });
   }
   for (const allocation of plan.allocations) {
     if (allocation.byteLength > sessionInspection.limits.maxTensorBytes) fail('TENSOR_RESOLVE_TENSOR_BYTE_LIMIT', 'pressure', 'A planned tensor exceeds the session per-tensor limit.', { value: allocation.value, required: allocation.byteLength, maximum: sessionInspection.limits.maxTensorBytes });
   }
   for (const workspace of lowering.workspaces) {
     if (workspace.byteLength > sessionInspection.limits.maxTensorBytes) fail('TENSOR_RESOLVE_TENSOR_BYTE_LIMIT', 'pressure', 'A planned workspace exceeds the session per-tensor limit.', { value: workspace.id, required: workspace.byteLength, maximum: sessionInspection.limits.maxTensorBytes });
+  }
+  for (const workspace of acceleratorWorkspaces) {
+    if (workspace.byteLength > sessionInspection.limits.maxTensorBytes) fail('TENSOR_RESOLVE_TENSOR_BYTE_LIMIT', 'pressure', 'A planned accelerator workspace exceeds the session per-tensor limit.', { value: workspace.id, required: workspace.byteLength, maximum: sessionInspection.limits.maxTensorBytes });
   }
   for (const output of lowering.outputs) {
     const base = lowering.references.get(output.baseValueId);
@@ -169,11 +178,13 @@ export class ResolvedTensorPlan {
   get contract() { return RESOLVED_TENSOR_PLAN_CONTRACT; }
   get state() { return resolvedData(this, 'ResolvedTensorPlan.state').state; }
   get plan() { return resolvedData(this, 'ResolvedTensorPlan.plan').plan; }
-  get backend() { return 'simt'; }
+  get backend() { return resolvedData(this, 'ResolvedTensorPlan.backend').profile.backend; }
+  get backendPolicy() { return resolvedData(this, 'ResolvedTensorPlan.backendPolicy').options.backend; }
   get compatibilityIdentity() { return resolvedData(this, 'ResolvedTensorPlan.compatibilityIdentity').compatibilityIdentity; }
-  get kernelCount() { return resolvedData(this, 'ResolvedTensorPlan.kernelCount').lowering.kernels.length; }
-  get bindingCount() { return resolvedData(this, 'ResolvedTensorPlan.bindingCount').lowering.bindings.length; }
-  get workspaceBytes() { return resolvedData(this, 'ResolvedTensorPlan.workspaceBytes').lowering.totalWorkspaceBytes; }
+  get kernelCount() { return resolvedData(this, 'ResolvedTensorPlan.kernelCount').profile.simtNodeCount; }
+  get cublasLtNodeCount() { return resolvedData(this, 'ResolvedTensorPlan.cublasLtNodeCount').profile.cublasLtNodeCount; }
+  get bindingCount() { return resolvedData(this, 'ResolvedTensorPlan.bindingCount').bindingRecords.length; }
+  get workspaceBytes() { return resolvedData(this, 'ResolvedTensorPlan.workspaceBytes').workspaceBytes; }
   get canonical() { return resolvedData(this, 'ResolvedTensorPlan.canonical').canonical; }
   describe() { return this.canonical; }
 
@@ -205,14 +216,14 @@ export class ResolvedTensorPlan {
         baseTensors.set(node.id, tensor);
       }
       const workspaceById = new Map();
-      for (const workspace of data.lowering.workspaces) {
+      for (const workspace of data.workspaces) {
         const tensor = await data.session.allocate({ dtype: workspace.dtype, capacityShape: [workspace.elementCount], access: 'read-write' });
         workspaces.push(tensor);
         workspaceById.set(workspace.id, tensor);
       }
 
       const cudaBindings = {};
-      for (const binding of data.lowering.bindings) {
+      for (const binding of data.bindingRecords) {
         let tensor;
         if (binding.role === 'input' || binding.role === 'material') tensor = baseTensors.get(binding.valueId);
         else tensor = workspaceById.get(binding.valueId);
@@ -290,27 +301,51 @@ export async function resolveTensorPlanWithAdapter(session, planOrProgram, optio
     const sessionInspection = inspectTensorSessionForExecution(session);
     const lowering = lowerSimtPlan(plan, normalized);
     ensurePlanFitsSession(plan, lowering, sessionInspection);
-    backendAdapter = await adapterFactory(sessionInspection.runtime, lowering);
+    const profileRequest = createBackendProfileRequest(plan, lowering, normalized);
+    const resourceLimits = Object.freeze({
+      acceleratorWorkspaceBytes: Math.max(0, Math.min(
+        normalized.maxWorkspaceBytes - lowering.totalWorkspaceBytes,
+        sessionInspection.limits.maxSessionBytes - plan.totalDistinctBytes - lowering.totalWorkspaceBytes,
+      )),
+      maxAcceleratorWorkspaceBytesPerPlan: sessionInspection.limits.maxTensorBytes,
+      maxAcceleratorWorkspaceCount: Math.max(0, sessionInspection.limits.maxLiveTensors - plan.allocations.length - lowering.workspaces.length),
+    });
+    backendAdapter = await adapterFactory(sessionInspection.runtime, lowering, profileRequest, Object.freeze({ ...normalized, ...resourceLimits }));
+    const profile = backendAdapter.profile ?? realizeBackendProfile(profileRequest, lowering, []);
+    const acceleratorWorkspaces = backendAdapter.workspaces ?? Object.freeze([]);
+    ensurePlanFitsSession(plan, lowering, sessionInspection, acceleratorWorkspaces);
+    const bindingRecords = backendAdapter.bindingRecords ?? lowering.bindings;
+    const workspaces = Object.freeze([...lowering.workspaces, ...acceleratorWorkspaces]);
+    const workspaceBytes = backendAdapter.workspaceBytes ?? lowering.totalWorkspaceBytes;
     const canonical = deepFreeze({
       contract: RESOLVED_TENSOR_PLAN_CONTRACT,
       planIdentity: plan.compatibilityIdentity,
       sessionCompatibilityIdentity: sessionInspection.compatibilityIdentity,
-      backend: normalized.backend,
+      backend: profile.backend,
+      backendPolicy: normalized.backend,
       options: { ...normalized },
+      resourceLimits: { ...resourceLimits },
       loweringIdentity: lowering.compatibilityIdentity,
-      kernelCount: lowering.kernels.length,
-      bindingCount: lowering.bindings.length,
-      workspaceBytes: lowering.totalWorkspaceBytes,
+      backendProfileIdentity: profile.compatibilityIdentity,
+      backendProfile: profile.canonical,
+      kernelCount: profile.simtNodeCount,
+      cublasLtNodeCount: profile.cublasLtNodeCount,
+      bindingCount: bindingRecords.length,
+      workspaceBytes,
       backendIdentity: backendAdapter.identity,
       backendDescriptor: backendAdapter.descriptor,
-      cleanup: 'resolved-plan-owns-compiled-module-functions-and-prepared-dag; result-owns-run-allocations',
+      cleanup: 'resolved-plan-owns-backend-plans-compiled-module-functions-and-prepared-dag; result-owns-run-allocations',
     });
     const data = {
       session,
       plan,
       options: normalized,
       lowering,
+      profile,
       backendAdapter,
+      bindingRecords,
+      workspaces,
+      workspaceBytes,
       canonical,
       compatibilityIdentity: identity('resolved-tensor-plan-v1', canonical),
       state: 'open',
@@ -334,5 +369,5 @@ export async function resolveTensorPlanWithAdapter(session, planOrProgram, optio
 }
 
 export function resolveTensorPlan(session, planOrProgram, options) {
-  return resolveTensorPlanWithAdapter(session, planOrProgram, options, createCudaJsSimtBackend);
+  return resolveTensorPlanWithAdapter(session, planOrProgram, options, createCudaJsTensorBackend);
 }

@@ -1,22 +1,22 @@
 {
   "schema_version": 2,
   "updated": "2026-08-26",
-  "status": "resolved_simt_integrated",
+  "status": "cublaslt_validated_pending_review_integration",
   "objective": "Add optional host-planned dense acceleration over the complete generated SIMT baseline without weakening tensor semantics, lifecycle truth, fallback completeness or CUDA-JS ownership.",
   "current_focus": {
     "id": "TENSOR-CUBLASLT-013",
     "issue": 8,
-    "next_action": "Assess and specify the minimum resolved-plan composition boundary for eligible public CUDA-JS SPEC-0029 cuBLASLt matmul operations, exact SIMT fallback, inspectable selection and total-cost qualification before implementation.",
-    "exit": "An accepted child specification and dependency-ready plan define exact eligibility, composition, identity, fallback, resource/lifecycle ownership and evidence gates, or record a concrete public CUDA-JS blocker without a Tensor workaround."
+    "next_action": "Freeze and review the validated SPEC-0006 candidate, integrate it through protected main with an expected-head guard, reconcile issue/status evidence and dispose the task worktree and branches.",
+    "exit": "One protected CUDA-JS-Tensor revision contains the accepted optional realization, complete SIMT fallback, exact identity/failure/lifecycle evidence, updated public documentation and clean local/remote disposition."
   },
   "dependencies": [
-    "cuda-js@0.1.0-alpha.14 protected-main revision fb27296cffd7191180b0e3cd609224ed2ded182e",
+    "cuda-js@0.1.0-alpha.15 protected-main revision af29b95e0707b36b88ee4e234c25a9e7f7ed3a1d (SPEC-0031 implementation entered at 20f831cc51766aee726313f7f78819b576d56307)",
     "implemented TensorSession/TensorSpec/Tensor portable package surface",
     "implemented SPEC-0004 TensorProgram and static TensorPlan semantics",
     "public CUDA-JS Device-JS compiler, typed views, operations and prepared DAG",
     "implemented CUDA-JS SPEC-0030 dense numeric Device-JS and corrected native prepared-DAG identity",
     "integrated CUDA-JS-Tensor SPEC-0005 resolved SIMT baseline at main revision a2c9d4a022e016c5ec249b38cdc43dc398309a37",
-    "public CUDA-JS SPEC-0029 context-bound cuBLASLt adapter"
+    "public CUDA-JS SPEC-0029 context-bound cuBLASLt adapter and SPEC-0031 prepared matmul node"
   ],
   "deferred": [
     "the_restaurant implementation or repository mutation",

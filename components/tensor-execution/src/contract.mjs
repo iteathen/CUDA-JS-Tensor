@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 
 import { TensorError } from '../../tensor-value/index.mjs';
 
-export const RESOLVED_TENSOR_PLAN_CONTRACT = 'SPEC-0005-resolved-simt-plan-v1';
+export const RESOLVED_TENSOR_PLAN_CONTRACT = 'SPEC-0006-resolved-dense-plan-v1';
 export const TENSOR_EXECUTION_RESULT_CONTRACT = 'SPEC-0005-tensor-execution-result-v1';
 export const TENSOR_SIMT_LIMITS = Object.freeze({
   maxKernels: 32,

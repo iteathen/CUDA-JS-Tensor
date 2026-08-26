@@ -8,7 +8,7 @@
     "path": "components/public-api",
     "purpose": "Compose accepted public tensor component ports into the single installed-package export without adding semantics or runtime ownership.",
     "public_contracts": ["index.mjs", "index.d.ts"],
-    "allowed_dependencies": ["tensor.value", "tensor.program-plan", "tensor.execution.simt"],
+    "allowed_dependencies": ["tensor.value", "tensor.program-plan", "tensor.execution"],
     "forbidden_dependencies": ["cuda-js-internals", "component-deep-import", "native-cuda", "consumer-policy"],
     "validation": ["npm run test:package", "npm run verify"],
     "owner": "tensor.public-api",

@@ -1,6 +1,6 @@
-# Resolved tensor plan and generated SIMT execution
+# Resolved tensor plan and dense execution
 
-This component implements accepted `TENSOR-SIMT-012` under SPEC-0005. It turns a backend-neutral `TensorPlan` or `TensorProgram` into one immutable session-bound generated Device-JS realization, then submits all nonempty kernels through one public CUDA-JS prepared DAG.
+This component implements the complete `TENSOR-SIMT-012` baseline under SPEC-0005 and optional `TENSOR-CUBLASLT-013` under SPEC-0006. It turns a backend-neutral `TensorPlan` or `TensorProgram` into one immutable session-bound realization, then submits generated kernels and any selected public cuBLASLt nodes through one public CUDA-JS prepared DAG.
 
 The easy and expert forms normalize identically:
 
@@ -24,6 +24,6 @@ await result.close();
 await easy.close();
 ```
 
-The resolved plan owns compiler/module/function/prepared resources and cascades its live results. A result owns only its run-created output material, derived views and reduction workspace; it borrows inputs. The session cascades resolved plans before tensors and its runtime. Result cleanup is retryable while caller-created child views remain live and remains explicit if any terminal cleanup cannot be proved.
+The resolved plan owns compiler/module/function/fixed-library-plan/prepared resources and cascades its live results. Resolved plans share one public cuBLASLt adapter lease per session/runtime and the last user closes it after its plans. A result owns only its run-created output material, derived views and explicit reduction/accelerator workspace; it borrows inputs. The session cascades resolved plans before tensors and its runtime. Result cleanup is retryable while caller-created child views remain live and remains explicit if any terminal cleanup cannot be proved.
 
-The SIMT path is complete for SPEC-0004's first dense catalog. View nodes are zero-kernel indexing facts; material nodes generate deterministic restricted Device-JS. Fixed-tree reductions use explicit finite workspace and staged adjacent-pair kernels. There is no maintained CUDA/PTX source, private CUDA-JS import, hidden host callback loop, fusion, arena reuse, accelerator selection or performance claim here.
+The SIMT path is complete for SPEC-0004's first dense catalog. SPEC-0006 may replace only eligible rank-2 contiguous f32 matmul kernels at their existing DAG position. `simt` remains the convenience default; `prefer-cublaslt` records exact fallbacks and `cublaslt` rejects any ineligible/non-admitted matmul. There is no maintained CUDA/PTX source, private CUDA-JS import, hidden host callback loop, fusion, arena reuse, automatic performance policy or speedup claim here.

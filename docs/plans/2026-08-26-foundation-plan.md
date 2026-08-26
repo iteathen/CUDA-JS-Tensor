@@ -26,7 +26,7 @@
 | `TENSOR-VALUE-010` | Portable TensorSession/TensorSpec/Tensor value model | `CJS-TENSOR-VIEW-001` for native path | Implemented portable/package profile; zero/one/many shapes, views, limits, ownership, overload equivalence, deletion and cleanup pass. Native promotion remains unclaimed. |
 | `TENSOR-PROGRAM-011` | Immutable TensorProgram and finite static TensorPlan | `TENSOR-VALUE-010` | Implemented portable/package profile: first dense inference, declared alias/lifetime/distinct-allocation identity and failure tests pass; execution facts remain explicitly unresolved. |
 | `TENSOR-SIMT-012` | ResolvedTensorPlan plus generated Device-JS dense baseline | public views/compiler/operations, `TENSOR-PROGRAM-011`, and achieved `CJS-DEVICE-NUMERIC-005` profile | Integrated through PR #7 at `main@a2c9d4a0`; alpha.3 passes exact session/backend/program/workspace/cleanup binding, full portable/package validation and an independent installed-package Windows native mathematical/replay/lifecycle fixture. |
-| `TENSOR-CUBLASLT-013` | Host accelerated matmul adapter ([issue #8](https://github.com/iteathen/CUDA-JS-Tensor/issues/8)) | `CJS-LIB-ADAPTER-004`, `TENSOR-PROGRAM-011`, `TENSOR-SIMT-012` | Exact/tolerance oracle and representative benefit including all overhead; otherwise the complete SIMT backend remains selected. |
+| `TENSOR-CUBLASLT-013` | Host accelerated matmul adapter ([issue #8](https://github.com/iteathen/CUDA-JS-Tensor/issues/8)); SPEC-0006 accepted | CUDA-JS SPEC-0031 at alpha.15, `TENSOR-PROGRAM-011`, `TENSOR-SIMT-012` | Exact native oracle, one mixed prepared DAG and terminal cleanup; SIMT stays the default until separate representative total-cost evidence supports promotion. |
 | `TENSOR-DEVICE-DENSE-014` | Device-callable compact dense subgraph | `CJS-DEVICE-LIB-002`, `TENSOR-SIMT-012` | Exact eligibility/resource/participation gates and end-to-end evidence; otherwise fallback. |
 | `TENSOR-RELEASE-020` | Package consumers, examples, compatibility and release evidence | accepted preceding slices | Clean tarball, unrelated consumers, exact support claims, no private dependency. |
 
@@ -35,10 +35,10 @@ Only one shared CUDA-JS contract changes at a time. Downstream evidence is inval
 ## Sequencing
 
 1. Bootstrap and protect the repository.
-2. Integrate the generic CUDA-JS prerequisites and record one exact compatibility pair. Completed through CUDA-JS `fb27296c` / `0.1.0-alpha.14`, including SPEC-0030 dense numeric Device-JS and native prepared-DAG correction.
+2. Integrate the generic CUDA-JS prerequisites and record one exact compatibility pair. Current pair is CUDA-JS `af29b95e` / `0.1.0-alpha.15`, including SPEC-0030 dense numeric Device-JS, native prepared-DAG correction and SPEC-0031 mixed cuBLASLt nodes.
 3. Implement portable value/program semantics over public CUDA-JS only. `TENSOR-VALUE-010`, `TENSOR-PROGRAM-011` and resolved generated SIMT execution under `TENSOR-SIMT-012` are integrated.
 4. Implement the consumer-neutral CUDA-JS dense numeric Device-JS profile exposed by program-semantics assessment, then the generated SIMT path. Both are integrated; SPEC-0005 governs the Tensor resolution/lowering/result boundary without generated native-source workarounds.
-5. Add cuBLASLt, then device-callable dense adapters only after exact public CUDA-JS mechanisms and license/profile review.
+5. Add the bounded SPEC-0006 host-planned cuBLASLt realization over public CUDA-JS alpha.15. Preserve the complete SIMT default until performance qualification; device-callable dense adapters remain later work.
 6. Qualify and publish only the exact achieved surface.
 
 ## Backpressure and split rules

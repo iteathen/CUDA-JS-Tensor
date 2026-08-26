@@ -6,6 +6,8 @@
 **Issue:** #6
 **Exact dependency:** `cuda-js@0.1.0-alpha.14` from protected `main@fb27296cffd7191180b0e3cd609224ed2ded182e`
 
+**Amended compatibility note:** SPEC-0006 advances the package pair to CUDA-JS alpha.15 while preserving this complete SIMT realization as the default and fallback.
+
 ## Outcome
 
 `ResolvedTensorPlan` binds one immutable `TensorPlan` to one live `TensorSession`, one complete generated Device-JS SIMT realization, exact compiler/module/prepared-DAG identities, finite workspace, and one cleanup graph. A `TensorProgram` convenience input first normalizes through `TensorPlan.create`; it does not create different execution semantics.

@@ -32,8 +32,8 @@ function numericValues(dtype, bytes) {
   return values;
 }
 
-async function execute(session, program, inputBytes, { replays = 1 } = {}) {
-  const resolved = await resolveTensorPlan(session, program);
+async function execute(session, program, inputBytes, { replays = 1, resolveOptions = undefined } = {}) {
+  const resolved = await resolveTensorPlan(session, program, resolveOptions);
   const inputs = {};
   const observations = [];
   try {
@@ -53,9 +53,13 @@ async function execute(session, program, inputBytes, { replays = 1 } = {}) {
       }
     }
     return {
+      backend: resolved.backend,
+      backendPolicy: resolved.backendPolicy,
       kernelCount: resolved.kernelCount,
+      cublasLtNodeCount: resolved.cublasLtNodeCount,
       bindingCount: resolved.bindingCount,
       workspaceBytes: resolved.workspaceBytes,
+      backendProfile: resolved.canonical.backendProfile,
       prepared: resolved.canonical.backendDescriptor.prepared ?? null,
       compiler: resolved.canonical.backendDescriptor.compiler ?? null,
       observations,
@@ -67,8 +71,8 @@ async function execute(session, program, inputBytes, { replays = 1 } = {}) {
 }
 
 assert.equal(process.version, 'v26.7.0');
-assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.package.version, '0.1.0-alpha.3');
-assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version, '0.1.0-alpha.14');
+assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.package.version, '0.1.0-alpha.4');
+assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version, '0.1.0-alpha.15');
 
 const runtime = await openCudaRuntime({
   compiler: true,
@@ -117,6 +121,52 @@ try {
   assert.equal(compositeRun.compiler.headerProfile, 'cuda-numeric');
   summary.composite = { kernels: compositeRun.kernelCount, bindings: compositeRun.bindingCount, workspaceBytes: compositeRun.workspaceBytes, replays: compositeRun.observations.length, compiler: { architecture: compositeRun.compiler.architecture, headerProfile: compositeRun.compiler.headerProfile } };
 
+  const accelerated = TensorProgram.define((graph) => {
+    const left = graph.unary('abs', graph.input('left', { dtype: 'f32', capacityShape: [2, 3], access: 'read-write' }));
+    const right = graph.input('right', { dtype: 'f32', capacityShape: [3, 2], access: 'read-write' });
+    return graph.unary('neg', graph.matmul(left, right));
+  });
+  const acceleratedRun = await execute(session, accelerated, {
+    left: numericBytes('f32', [1, 4, 9, 16, 25, 36]),
+    right: numericBytes('f32', [1, 2, 3, 4, 5, 6]),
+  }, { replays: 2, resolveOptions: { backend: 'cublaslt', maxWorkspaceBytes: 1024 * 1024 } });
+  for (const replay of acceleratedRun.observations) assert.deepEqual(numericValues('f32', replay.outputs.output), [-58, -72, -271, -348]);
+  assert.equal(acceleratedRun.backendPolicy, 'cublaslt');
+  assert.equal(acceleratedRun.backend, 'mixed');
+  assert.equal(acceleratedRun.kernelCount, 2);
+  assert.equal(acceleratedRun.cublasLtNodeCount, 1);
+  assert.equal(acceleratedRun.prepared.contract, 'SPEC-0020-prepared-kernel-dag-v1+SPEC-0031-prepared-cublaslt-f32-matmul-node-v1');
+  assert.equal(acceleratedRun.prepared.nodeCount, acceleratedRun.kernelCount + acceleratedRun.cublasLtNodeCount);
+  assert.equal(acceleratedRun.backendProfile.provider.profile, 'cublaslt-f32-row-major-matmul-v1');
+  summary.accelerated = {
+    backend: acceleratedRun.backend,
+    kernels: acceleratedRun.kernelCount,
+    cublasLtNodes: acceleratedRun.cublasLtNodeCount,
+    workspaceBytes: acceleratedRun.workspaceBytes,
+    replays: acceleratedRun.observations.length,
+    provider: acceleratedRun.backendProfile.provider,
+  };
+
+  const transposed = TensorProgram.define((graph) => graph.matmul(
+    graph.input('left', { dtype: 'f32', capacityShape: [3, 2], access: 'read-write' }),
+    graph.input('right', { dtype: 'f32', capacityShape: [2, 3], access: 'read-write' }),
+    { transposeA: true, transposeB: true },
+  ));
+  const transposedRun = await execute(session, transposed, {
+    left: numericBytes('f32', [1, 4, 2, 5, 3, 6]),
+    right: numericBytes('f32', [7, 9, 11, 8, 10, 12]),
+  }, { resolveOptions: { backend: 'cublaslt', maxWorkspaceBytes: 1 } });
+  assert.deepEqual(numericValues('f32', transposedRun.observations[0].outputs.output), [58, 64, 139, 154]);
+  assert.equal(transposedRun.backend, 'cublaslt');
+  assert.equal(transposedRun.kernelCount, 0);
+  assert.equal(transposedRun.cublasLtNodeCount, 1);
+  assert.deepEqual(transposedRun.backendProfile.matmuls[0].plan.requirements, { a: 6, b: 6, c: 4, d: 4 });
+  summary.transposedAccelerated = {
+    backend: transposedRun.backend,
+    cublasLtNodes: transposedRun.cublasLtNodeCount,
+    output: numericValues('f32', transposedRun.observations[0].outputs.output),
+  };
+
   const casts = TensorProgram.define((graph) => graph.cast(graph.input('values', { dtype: 'f64', capacityShape: [5], access: 'read-write' }), 'i32'));
   const castRun = await execute(session, casts, { values: numericBytes('f64', [Number.NaN, Infinity, -Infinity, 3.9, -3.9]) });
   assert.deepEqual(numericValues('i32', castRun.observations[0].outputs.output), [0, 2_147_483_647, -2_147_483_648, 3, -3]);
@@ -156,4 +206,4 @@ assert.deepEqual(sessionTerminal.accounting, { liveTensors: 0, reservedBytes: 0,
 assert.equal(runtimeTerminal.graceful, true);
 assert.equal(runtimeTerminal.driver.resourceCounts.live, 0);
 assert.equal(runtimeTerminal.driver.resourceCounts.orphaned, 0);
-console.log(JSON.stringify({ consumer: 'installed-native-resolved-simt', node: process.version, platform: process.platform, device: runtimeDescription.device?.architecture ?? null, summary, sessionGraceful: sessionTerminal.graceful, runtimeGraceful: runtimeTerminal.graceful }));
+console.log(JSON.stringify({ consumer: 'installed-native-resolved-dense', node: process.version, platform: process.platform, device: runtimeDescription.device?.architecture ?? null, summary, sessionGraceful: sessionTerminal.graceful, runtimeGraceful: runtimeTerminal.graceful }));
