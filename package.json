@@ -9,6 +9,7 @@
     "node": ">=26.1.0"
   },
   "scripts": {
+    "format": "node scripts/format-text.mjs",
     "test": "node --test",
     "verify": "node scripts/verify.mjs && node --test"
   },
@@ -27,4 +28,3 @@
     "tensor"
   ]
 }
-

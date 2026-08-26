@@ -27,4 +27,3 @@ Training loops, neural layers, autodiff, losses, optimizers, checkpoints, model 
 ## Phase policy
 
 This is a public pre-release project. No stability, publication, native support, performance, or production-readiness claim exists until separately qualified and explicitly released.
-

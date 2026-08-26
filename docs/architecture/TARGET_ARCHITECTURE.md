@@ -42,4 +42,3 @@ Every inference appears in `ResolvedTensorPlan` and its compatibility identity. 
 V1 is one device/session, ranks 0–16, static capacity shapes, optional bounded active axis 0, closed dtypes admitted by CUDA-JS, row-major default, positive/zero strides, no negative strides, dense elementwise/reduction/matmul operations, and finite workspace.
 
 Multi-device use composes independent sessions and independently compiled programs. Cross-session tensor use rejects before device work. Peer access, collectives, sharding and migration require future contracts.
-

@@ -1,6 +1,6 @@
 # CUDA-JS-Tensor foundation plan
 
-**Date:** 2026-08-26  
+**Date:** 2026-08-26
 **Parent objective:** Deliver a separate, universal, easy-and-complete tensor library over public CUDA-JS, with a complete SIMT path and qualified optional dense acceleration.
 
 ## Global invariants
@@ -47,4 +47,3 @@ Split before a focus branch cannot retain implementation, focused tests, reposit
 ## Cleanup
 
 Each branch disposes generated artifacts, caches, worktrees, remote branches, drafts and experiments after preserving required evidence. Protected main, user work, source authority and qualification evidence remain protected.
-

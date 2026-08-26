@@ -1,6 +1,6 @@
 # SPEC-0001: Tensor session, specification and value model
 
-**Status:** Accepted  
+**Status:** Accepted
 **Date:** 2026-08-26
 
 ## TensorSession
@@ -43,4 +43,3 @@ Views are child capabilities. A parent allocation cannot close while a live view
 ## Defaults
 
 Row-major contiguous storage, output allocation, and safe accumulator choices may be inferred. Every inferred fact appears in the resolved plan. Defaults never infer neural/model meaning, cross-device movement, unsafe in-place writes, reduced precision, or a performance claim.
-

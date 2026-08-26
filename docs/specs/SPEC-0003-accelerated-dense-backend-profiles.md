@@ -1,6 +1,6 @@
 # SPEC-0003: Accelerated dense backend profiles
 
-**Status:** Accepted architecture; implementation dependency-gated  
+**Status:** Accepted architecture; implementation dependency-gated
 **Date:** 2026-08-26
 
 ## Complete baseline
@@ -32,4 +32,3 @@ Promotion requires independent mathematical equivalence and representative end-t
 - NVIDIA cuBLAS/cuBLASLt documentation: https://docs.nvidia.com/cuda/cublas/
 - NVIDIA cuBLASDx documentation: https://docs.nvidia.com/cuda/cublasdx/
 - NVIDIA CUTLASS documentation: https://docs.nvidia.com/cutlass/latest/
-

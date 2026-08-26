@@ -7,4 +7,3 @@ Read [`AGENTS.md`](AGENTS.md), the governing ADR/specification, and the system r
 Do not submit native addons, direct CUDA bindings, `.cu`/`.ptx` production files, generated artifacts, machine-specific provider paths, model/training policy, or deep CUDA-JS imports.
 
 Bug reports should include exact package/revision, Node/OS/ABI, CUDA-JS version, CUDA environment when relevant, minimal shape/dtype/layout, expected and actual behavior, and whether all resources closed terminally. Remove credentials and stable machine identifiers.
-

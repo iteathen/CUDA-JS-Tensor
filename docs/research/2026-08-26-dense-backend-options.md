@@ -1,6 +1,6 @@
 # Dense backend options
 
-**Date:** 2026-08-26  
+**Date:** 2026-08-26
 **Disposition:** Use one complete generated SIMT baseline; plan cuBLASLt for host-submitted dense math; investigate cuBLASDx first for device-callable compact dense subgraphs; retain CUTLASS only as a versioned source-composed fallback.
 
 ## Evidence
@@ -16,4 +16,3 @@ These libraries do not establish universal support for all shapes, layouts, dtyp
 ## Result
 
 The tensor contract stays mathematical and backend-neutral. A resolved plan selects an adapter only after exact eligibility. Unsupported or unprofitable cases use SIMT. Device-callable acceleration is a core planned feature, but no particular library is mandatory if exact gates or evidence fail.
-

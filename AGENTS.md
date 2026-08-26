@@ -40,4 +40,3 @@ npm run verify
 ```
 
 No implementation, support, performance, compatibility, publication, or cleanup claim exists beyond the exact evidence run.
-

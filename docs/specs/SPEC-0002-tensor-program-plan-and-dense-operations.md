@@ -1,6 +1,6 @@
 # SPEC-0002: Tensor program, plan and dense operations
 
-**Status:** Accepted  
+**Status:** Accepted
 **Date:** 2026-08-26
 
 ## Program and plan
@@ -33,4 +33,3 @@ Fusion cannot erase an observable intermediate requested by the caller, widen al
 ## Execution
 
 Host mode submits the resolved finite DAG through public CUDA-JS operations/prepared execution. Device-callable mode compiles a bounded eligible subgraph into another device program and requires an accepted public CUDA-JS device-library composition contract. Ineligible nodes fail resolution or form explicit host/device boundaries; no backend callback loop advances device-resident work.
-

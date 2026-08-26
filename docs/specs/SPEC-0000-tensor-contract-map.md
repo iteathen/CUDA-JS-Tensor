@@ -1,6 +1,6 @@
 # SPEC-0000: Tensor contract map
 
-**Status:** Accepted  
+**Status:** Accepted
 **Date:** 2026-08-26
 
 ## Normative dependency order
@@ -36,4 +36,3 @@ TensorSession
 - context-bound CUDA library adapters and a first cuBLASLt profile.
 
 Until these are accepted and implemented, this repository may implement portable value/program semantics but cannot invent substitute native ownership.
-

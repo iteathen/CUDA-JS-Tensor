@@ -10,4 +10,3 @@
 - Do not touch `the_restaurant` while its integration lane is deferred.
 - Preserve exact errors and cleanup truth without leaking private provider details.
 - Report limits honestly and keep the worktree, repository, remote branches, issues, PRs, and generated artifacts clean.
-

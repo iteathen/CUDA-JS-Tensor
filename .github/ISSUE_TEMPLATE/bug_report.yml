@@ -23,4 +23,3 @@ body:
       description: CUDA-JS-Tensor/CUDA-JS revisions, Node, OS/ABI, and exact qualified CUDA profile when relevant.
     validations:
       required: true
-

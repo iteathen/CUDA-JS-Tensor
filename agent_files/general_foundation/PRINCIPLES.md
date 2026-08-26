@@ -10,4 +10,3 @@
 8. Treat acceleration as a qualified variant, not a semantic requirement.
 9. Preserve complete deletion: removing one backend or consumer leaves no solely owned residue.
 10. Measure the complete system before making performance or default-selection claims.
-
