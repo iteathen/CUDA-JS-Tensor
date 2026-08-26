@@ -1,6 +1,6 @@
 # CUDA-JS-Tensor
 
-CUDA-JS-Tensor is a consumer-neutral tensor library for CUDA-JS. Its public alpha layers an easy canonical facade over complete expert contracts for finite tensor values, immutable operation DAGs, session-bound resolved plans and generated SIMT execution. Qualified accelerated dense-math adapters remain separate bounded successors.
+CUDA-JS-Tensor is a consumer-neutral tensor library for CUDA-JS. Its public alpha layers an easy canonical facade over complete expert contracts for finite tensor values, immutable operation DAGs, session-bound resolved plans, complete generated SIMT execution and optional bounded dense acceleration.
 
 The design deliberately separates layers:
 
@@ -16,7 +16,7 @@ The project is not a neural-network framework, training system, CUDA binding, or
 
 ## Current status
 
-Public pre-release. `cuda-js-tensor@0.1.0-alpha.3` implements SPEC-0005 over exact public `cuda-js@0.1.0-alpha.14` from protected `main@fb27296cffd7191180b0e3cd609224ed2ded182e`; the resolved SIMT slice was integrated through CUDA-JS-Tensor PR #7 at `main@a2c9d4a022e016c5ec249b38cdc43dc398309a37`. It retains `TensorSession`/`TensorSpec`/`Tensor`, immutable first-dense `TensorProgram` and finite static `TensorPlan`, and adds public copied-byte seeding/observation plus session-bound `ResolvedTensorPlan`, complete generated Device-JS SIMT lowering, one prepared DAG and per-run `TensorExecutionResult` ownership. Full portable/package validation and an installed public-package Windows CUDA 13.3/compute_75/GTX 1660 Ti mathematical/replay/cleanup fixture pass. The package remains publication-guarded; this evidence does not imply npm publication, another native profile, accelerator, tensor-core, fusion or performance support.
+Public pre-release. `cuda-js-tensor@0.1.0-alpha.4` implements SPEC-0006 over exact public `cuda-js@0.1.0-alpha.15` from protected `main@af29b95e0707b36b88ee4e234c25a9e7f7ed3a1d`. It retains the complete SPEC-0005 generated Device-JS SIMT baseline and adds explicit `prefer-cublaslt` and strict `cublaslt` policies for eligible rank-2 contiguous f32 matmul. Selected library nodes and generated kernels share one public CUDA-JS prepared DAG; provider, plan, fallback and workspace facts enter immutable resolved identity. `simt` remains the convenience default because no performance promotion has been established. The package remains publication-guarded; exact native evidence is correctness/lifecycle evidence only and does not imply tensor-core use, Linux, broader provider/device support, multi-GPU behavior or a speedup.
 
 The first dense slice targets:
 

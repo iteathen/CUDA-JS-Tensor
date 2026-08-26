@@ -9,7 +9,7 @@
     "purpose": "Own bounded tensor specifications, one-runtime sessions, opaque allocation/view capabilities, exact accounting, and dependency-ordered cleanup over public CUDA-JS contracts.",
     "public_contracts": ["index.mjs", "index.d.ts"],
     "internal_contracts": ["internal.mjs"],
-    "allowed_dependencies": ["node-standard-library", "public-cuda-js-0.1.0-alpha.14"],
+    "allowed_dependencies": ["node-standard-library", "public-cuda-js-0.1.0-alpha.15"],
     "forbidden_dependencies": ["cuda-js-internals", "native-cuda", "generated-cuda", "tensor-program-policy", "neural-policy", "mcgs-policy"],
     "validation": ["npm run test:tensor-value", "npm run test:package", "npm run verify"],
     "owner": "tensor.session/tensor.spec/tensor.value",

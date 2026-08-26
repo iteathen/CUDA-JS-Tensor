@@ -8,7 +8,7 @@ function expectCode(code) {
   return (error) => error?.code === code;
 }
 
-function fakeRuntime({ allocationFailure = null, viewFailure = null, viewCloseFailures = [], memoryCloseFailure = null, version = '0.1.0-alpha.14' } = {}) {
+function fakeRuntime({ allocationFailure = null, viewFailure = null, viewCloseFailures = [], memoryCloseFailure = null, version = '0.1.0-alpha.15' } = {}) {
   let runtimeClosed = false;
   let memoryClosed = false;
   let viewClosed = false;

@@ -1,6 +1,6 @@
 # SPEC-0003: Accelerated dense backend profiles
 
-**Status:** Accepted architecture; complete SIMT implementation profile selected by SPEC-0005
+**Status:** Accepted architecture; complete SIMT profile selected by SPEC-0005 and first optional host-planned profile selected by SPEC-0006
 **Date:** 2026-08-26
 
 ## Complete baseline
@@ -12,6 +12,8 @@ SPEC-0005 is the first concrete realization: one session-bound generated Device-
 ## Host-planned accelerated profile
 
 The first accelerated host profile maps eligible matrix multiplication nodes to the public CUDA-JS SPEC-0029 cuBLASLt adapter. Algorithm selection, heuristic result, workspace, alignment, precision, epilogue, stream/operation dependency and cleanup are resolved through bounded public records. Heuristics are reusable plan material, not repeated hidden hot-path decisions.
+
+SPEC-0006 fixes the first eligibility boundary to rank-2, nonempty, row-major contiguous f32 matmul and composes its public SPEC-0029 plans through CUDA-JS SPEC-0031 in the same prepared DAG as adjacent SIMT kernels. SIMT remains the convenience default until representative total-cost evidence supports a policy promotion.
 
 ## Device-callable profile
 
