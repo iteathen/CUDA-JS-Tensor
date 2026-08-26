@@ -5,7 +5,7 @@
   "objective": "Turn the remaining tensor analysis frames into independently removable production Legos in dependency order without weakening the complete SIMT baseline, importing CUDA-JS ownership or guessing a device participation model.",
   "current_focus": {
     "id": "SPEC-0008-TENSOR-ARENA",
-    "issue": null,
+    "issue": 17,
     "next_action": "Assess, specify and implement optional result-owned alias-closed material arena reuse over the accepted post-fusion material schedule without changing distinct-allocation defaults or backend workspace ownership.",
     "exit": "SPEC-0008 is accepted with exact range identity, liveness, alignment, rollback and child-before-parent cleanup semantics, or arena reuse is deferred without changing the complete distinct-allocation path."
   },

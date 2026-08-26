@@ -26,6 +26,6 @@ The alpha.5 exact installed-package native fixture passes through public exports
 
 TENSOR-CUBLASLT-013 integrated through protected PR #10 at `main@8910309a0aff9b8da4fc281949068d8d1fcaa6ea`; issue #8 is closed. Author-side review covered the complete exact head. Independent review was waived under the project owner's sole-maintainer direction and is not represented as independent evidence.
 
-TENSOR-FUSION-017 is implemented as the alpha.5 candidate under accepted SPEC-0007. Its exact protected-main revision and issue closure are recorded after guarded integration; no performance qualification or default promotion is claimed.
+TENSOR-FUSION-017 integrated through protected PR #16 at `main@821b1cbe1c32835559cb669248771310718b2f05`; issue #14 is closed. Author-side review covered exact source head `d75b48435e1570d1dfb4a4b8202d49f15d2f9a7d`, whose tree is identical to the squash merge. Independent review was waived under the project owner's sole-maintainer direction and is not represented as independent evidence. No performance qualification or default promotion is claimed.
 
 Public issues and discussions are enabled. Protected `main` requires a current `verify` check, pull-request integration, linear history, resolved conversations and admin enforcement; force pushes and deletion are disabled. GitHub Actions are limited to GitHub-owned actions with read-only workflow permissions, and repository security scanning, push protection, vulnerability alerts, automated security fixes and private reporting are enabled.
