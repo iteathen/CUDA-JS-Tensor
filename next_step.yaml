@@ -1,13 +1,13 @@
 {
   "schema_version": 3,
   "updated": "2026-08-26",
-  "status": "tensor_fusion_child_specification_ready",
+  "status": "tensor_arena_child_specification_ready",
   "objective": "Turn the remaining tensor analysis frames into independently removable production Legos in dependency order without weakening the complete SIMT baseline, importing CUDA-JS ownership or guessing a device participation model.",
   "current_focus": {
-    "id": "SPEC-0007-TENSOR-FUSION",
-    "issue": 14,
-    "next_action": "Specify exact single-consumer cast/unary/binary fusion with operation-by-operation rounding, observable-boundary preservation, finite generated-kernel identity, unchanged access/failure semantics and complete unfused deletion.",
-    "exit": "SPEC-0007 is accepted with an implementation-ready exact fusion contract and falsifiers, or fusion is deferred without changing production code."
+    "id": "SPEC-0008-TENSOR-ARENA",
+    "issue": null,
+    "next_action": "Assess, specify and implement optional result-owned alias-closed material arena reuse over the accepted post-fusion material schedule without changing distinct-allocation defaults or backend workspace ownership.",
+    "exit": "SPEC-0008 is accepted with exact range identity, liveness, alignment, rollback and child-before-parent cleanup semantics, or arena reuse is deferred without changing the complete distinct-allocation path."
   },
   "dependencies": [
     "cuda-js@0.1.0-alpha.15 protected-main revision af29b95e0707b36b88ee4e234c25a9e7f7ed3a1d (SPEC-0031 implementation entered at 20f831cc51766aee726313f7f78819b576d56307)",
@@ -22,7 +22,7 @@
     "TENSOR-DEVICE-DENSE-014 until a real caller selects exact participation and CUDA-JS accepts the minimum generic parallel helpers",
     "TENSOR-BATCHED-GEMM-015 until CUDA-JS exposes a strided-batched matmul plan/prepared-node child",
     "TENSOR-PRECISION-GEMM-016 until CUDA-JS exposes closed typed matmul plan/prepared-node children",
-    "TENSOR-ARENA-018 until the post-fusion material schedule is accepted",
+    "TENSOR-ARENA-018 pending accepted SPEC-0008 over the now-accepted post-fusion material schedule",
     "the_restaurant implementation or repository mutation",
     "multi-device tensors, P2P, collectives and sharding",
     "autodiff, NN layers, optimizers, losses, checkpoints and training policy",

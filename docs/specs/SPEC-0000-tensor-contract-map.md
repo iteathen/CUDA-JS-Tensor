@@ -40,3 +40,5 @@ All prerequisites, including the later dense numeric Device-JS profile, native p
 SPEC-0004 assessment exposed one executor-specific gate: complete SIMT needs consumer-neutral Device-JS f64/f16/bf16 pointer/local arithmetic and exact casts/math. CUDA-JS SPEC-0030 and the alpha.14 prepared-DAG correction now satisfy that gate. SPEC-0005 therefore owns `TENSOR-SIMT-012` without adding tensor vocabulary upstream.
 
 SPEC-0006 consumes SPEC-0031 to replace only eligible rank-2 contiguous f32 matmul execution nodes while preserving the complete lowering, mathematical semantics and one prepared lifecycle. Tensor selection/fallback remains here; provider/native execution remains in CUDA-JS.
+
+SPEC-0007 is Tensor-owned exact elementwise realization: it selects only bounded unobservable single-consumer cast/unary/binary regions, substitutes one generated Device-JS kernel at the region's final position, and removes only internal materials. It consumes existing public CUDA-JS Device-JS and prepared-DAG contracts; it adds no upstream primitive, scheduler, provider policy or native boundary. The complete unfused SPEC-0005 path remains the default and deletion fallback.

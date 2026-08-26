@@ -6,19 +6,19 @@
     "status": "public-alpha",
     "product_area": "components",
     "path": "components/tensor-execution",
-    "purpose": "Bind immutable tensor plans to one session, a complete deterministic Device-JS SIMT realization and optional bounded cuBLASLt matmul nodes with finite prepared execution and explicit result cleanup.",
+    "purpose": "Bind immutable tensor plans to one session, a complete deterministic Device-JS SIMT realization, optional exact elementwise fusion and optional bounded cuBLASLt matmul nodes with finite prepared execution and explicit result cleanup.",
     "public_contracts": ["index.mjs", "index.d.ts"],
     "allowed_dependencies": ["node-standard-library", "tensor.value", "tensor.program-plan", "public-cuda-js-0.1.0-alpha.15"],
     "forbidden_dependencies": ["cuda-js-internals", "native-cuda", "embedded-cuda-source", "consumer-policy", "neural-policy", "mcgs-policy", "the_restaurant"],
     "validation": ["npm run test:tensor-execution", "npm run test:package", "npm run smoke:native:tensor-execution", "npm run verify"],
-    "owner": "tensor.resolved-plan/tensor.backend.simt/tensor.backend.cublaslt/tensor.execution-result",
+    "owner": "tensor.resolved-plan/tensor.backend.simt/tensor.backend.fusion/tensor.backend.cublaslt/tensor.execution-result",
     "lifecycle": "Resolved plans own fixed library plans plus compiled module/function/prepared-DAG capabilities and share one session/runtime adapter lease; each result owns only its run-created tensors/views/workspaces; sessions remain the aggregate terminal owner.",
     "design": {
-      "owned_invariant": "One accepted mathematical TensorPlan resolves to one finite inspectable complete-SIMT or mixed identity and every run either returns exact owned outputs or retains unproved rollback truth.",
+      "owned_invariant": "One accepted mathematical TensorPlan resolves to one finite inspectable complete-SIMT, exact-fused or mixed identity and every run either returns exact owned outputs or retains unproved rollback truth.",
       "public_ports": ["ResolvedTensorPlan", "resolveTensorPlan", "TensorExecutionResult"],
       "injected_dependencies": ["TensorSession", "TensorPlan or TensorProgram", "public CUDA-JS runtime from the session"],
       "adapter_boundaries": ["generated Device-JS compiler", "public CUDA-JS cuBLASLt plan", "public CUDA-JS prepared operation DAG"],
-      "simplest_sufficient_total_system": "One complete lowering owner, one explicit backend-profile owner, one CUDA-JS adapter, one resolved-plan lifecycle owner and no second scheduler or native boundary."
+      "simplest_sufficient_total_system": "One complete lowering owner with a removable exact-fusion selector, one explicit backend-profile owner, one CUDA-JS adapter, one resolved-plan lifecycle owner and no second scheduler or native boundary."
     }
   }
 }

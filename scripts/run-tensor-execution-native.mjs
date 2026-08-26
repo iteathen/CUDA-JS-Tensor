@@ -26,7 +26,7 @@ try {
   await copyFile(path.join(root, 'conformance', 'native', 'fixtures', 'resolved-simt-consumer.mjs'), path.join(directory, 'consumer.mjs'));
   run([npmCli, 'install', '--ignore-scripts', '--package-lock=false', path.join(directory, tarball)], directory);
   const installed = JSON.parse(await readFile(path.join(directory, 'node_modules', 'cuda-js-tensor', 'package.json'), 'utf8'));
-  assert.equal(installed.version, '0.1.0-alpha.4');
+  assert.equal(installed.version, '0.1.0-alpha.5');
   const output = run(['--experimental-ffi', 'consumer.mjs'], directory);
   const observation = JSON.parse(output.split(/\r?\n/).at(-1));
   assert.equal(observation.consumer, 'installed-native-resolved-dense');
@@ -37,6 +37,7 @@ try {
   assert.deepEqual({ backend: observation.summary.accelerated.backend, kernels: observation.summary.accelerated.kernels, cublasLtNodes: observation.summary.accelerated.cublasLtNodes, replays: observation.summary.accelerated.replays }, { backend: 'mixed', kernels: 2, cublasLtNodes: 1, replays: 2 });
   assert.deepEqual(observation.summary.transposedAccelerated, { backend: 'cublaslt', cublasLtNodes: 1, output: [58, 64, 139, 154] });
   assert.deepEqual(observation.summary.cast, [0, 2_147_483_647, -2_147_483_648, 3, -3]);
+  assert.deepEqual(observation.summary.fusion, { fusedKernels: 1, unfusedKernels: 3, fusedNodes: 3, output: [-2, -3, -4, -5], typedOutput: [2, 3], specialValues: { negativeZero: true, nan: true, tail: [null, -4] } });
   assert.deepEqual(observation.summary.fixedTree.output, [0]);
   console.log(JSON.stringify(observation));
 } finally {

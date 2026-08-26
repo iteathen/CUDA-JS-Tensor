@@ -15,6 +15,7 @@ const required = [
   'docs/specs/SPEC-0004-first-dense-program-semantics.md',
   'docs/specs/SPEC-0005-resolved-simt-execution.md',
   'docs/specs/SPEC-0006-host-planned-cublaslt-matmul.md',
+  'docs/specs/SPEC-0007-exact-elementwise-fusion.md',
   'docs/plans/2026-08-26-foundation-plan.md', 'docs/integrations/the_restaurant.md', 'next_step.yaml',
   'conformance/README.md', 'conformance/native/README.md', 'conformance/native/fixtures/resolved-simt-consumer.mjs',
   'components/README.md', 'components/tensor-value/README.md', 'components/tensor-value/component.yaml',
@@ -30,7 +31,7 @@ for (const file of required) assert(existsSync(path.join(root, file)), `Missing 
 
 const packageJson = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8'));
 assert.equal(packageJson.name, 'cuda-js-tensor');
-assert.equal(packageJson.version, '0.1.0-alpha.4');
+assert.equal(packageJson.version, '0.1.0-alpha.5');
 assert.equal(packageJson.private, true, 'Package must remain publication-guarded during foundation work.');
 assert.equal(packageJson.license, 'AGPL-3.0-or-later');
 assert.equal(packageJson.dependencies?.['cuda-js'], 'https://codeload.github.com/iteathen/CUDA-JS/tar.gz/af29b95e0707b36b88ee4e234c25a9e7f7ed3a1d');

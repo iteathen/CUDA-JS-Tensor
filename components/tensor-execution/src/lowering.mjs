@@ -2,6 +2,7 @@ import { tensorDtypeWidth } from '../../tensor-value/index.mjs';
 import { TensorPlan } from '../../tensor-program/index.mjs';
 
 import { checkedAdd, checkedMultiply, deepFreeze, fail, identity, TENSOR_SIMT_LIMITS } from './contract.mjs';
+import { createFusionProfile } from './fusion-profile.mjs';
 
 const FLOAT_DTYPES = new Set(['f16', 'bf16', 'f32', 'f64']);
 
@@ -98,11 +99,16 @@ function bindingRecord(name, role, dtype, byteLength, valueId = null) {
   return Object.freeze({ name, role, dtype, byteLength, valueId });
 }
 
-export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSOR_SIMT_LIMITS.maxWorkspaceBytes } = {}) {
+export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSOR_SIMT_LIMITS.maxWorkspaceBytes, fusion = 'none' } = {}) {
   if (!(plan instanceof TensorPlan)) fail('TENSOR_RESOLVE_PLAN_INVALID', 'validation', 'SIMT lowering requires a TensorPlan.');
   const program = plan.program;
+  const fusionProfile = createFusionProfile(plan, fusion);
+  const fusionByOutputNode = new Map(fusionProfile.regions.map((region) => [region.outputNode, region]));
+  const fusionByNode = new Map(fusionProfile.regions.flatMap((region) => region.nodeIds.map((nodeId) => [nodeId, region])));
+  const removedMaterials = new Set(fusionProfile.regions.flatMap((region) => region.removedMaterials));
   const references = new Map();
   const bindings = [];
+  const materials = [];
   const workspaces = [];
   const functions = [];
   const kernels = [];
@@ -124,14 +130,20 @@ export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSO
     if (node.materialization === 'view') {
       const source = references.get(node.inputIds[0]);
       references.set(node.id, Object.freeze({ ...source, spec: node.outputSpec }));
+    } else if (removedMaterials.has(node.id)) {
+      references.set(node.id, Object.freeze({ binding: null, spec: node.outputSpec, originByteOffset: 0, baseValueId: null, fusionRegion: fusionByNode.get(node.id).id }));
     } else {
-      const binding = addBinding('material', node.outputSpec.dtype, Math.max(node.outputSpec.requiredByteEnd, node.outputSpec.alignment), node.id);
+      const byteLength = Math.max(node.outputSpec.requiredByteEnd, node.outputSpec.alignment);
+      const binding = addBinding('material', node.outputSpec.dtype, byteLength, node.id);
       references.set(node.id, materialReference(binding, node.outputSpec, node.id));
+      materials.push(Object.freeze({ valueId: node.id, binding, spec: node.outputSpec, byteLength }));
     }
   }
 
+  const materialBytes = materials.reduce((total, material) => checkedAdd(total, material.byteLength, 'materialBytes'), 0);
+
   let priorKernel = null;
-  function addKernel(parameterRecords, bodyLines, workItems, accessRecords, semanticNode) {
+  function addKernel(parameterRecords, bodyLines, workItems, accessRecords, semanticNode, semanticNodes = [semanticNode], fusionRegion = null) {
     if (workItems === 0) return null;
     if (!Number.isSafeInteger(workItems) || workItems < 1 || workItems > TENSOR_SIMT_LIMITS.maxLogicalWorkItems) {
       fail('TENSOR_SIMT_WORK_LIMIT', 'pressure', 'A generated SIMT kernel exceeds the finite logical-work limit.', { workItems, maximum: TENSOR_SIMT_LIMITS.maxLogicalWorkItems });
@@ -145,6 +157,8 @@ export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSO
     const kernel = Object.freeze({
       id,
       semanticNode,
+      semanticNodes: Object.freeze([...semanticNodes]),
+      fusionRegion,
       functionName,
       source,
       parameterRecords: Object.freeze(parameterRecords.map((entry) => Object.freeze({ ...entry }))),
@@ -159,7 +173,65 @@ export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSO
     return kernel;
   }
 
+  function addFusedKernel(region) {
+    const outputNode = region.nodes.at(-1);
+    const output = references.get(outputNode.id);
+    const externalReferences = region.externalInputs.map((valueId) => {
+      const reference = references.get(valueId);
+      if (!reference?.binding) fail('TENSOR_FUSION_INPUT_BINDING_MISSING', 'internal', 'A selected fusion region lost an external storage binding.', { region: region.id, valueId });
+      return reference;
+    });
+    const externalIndex = new Map(region.externalInputs.map((valueId, index) => [valueId, index]));
+    const outputCoordinates = coordinates('index', outputNode.outputSpec.logicalShape, 'c');
+    const parameterRecords = externalReferences.map((reference) => ({ binding: reference.binding, dtype: reference.spec.dtype }));
+    parameterRecords.push({ binding: output.binding, dtype: output.spec.dtype });
+    const accessRecords = externalReferences.map((reference, index) => accessFor(reference, index, 'read'));
+    accessRecords.push(accessFor(output, parameterRecords.length - 1, 'write'));
+    const body = [
+      'let index = gpu.cast.u64(gpu.thread.globalX());',
+      `if (index < ${u64(region.workItems)}) {`,
+      ...outputCoordinates.lines.map((line) => `  ${line}`),
+    ];
+    const values = new Map();
+
+    function inputExpression(node, inputId, inputPosition, nodeIndex) {
+      if (values.has(inputId)) return values.get(inputId);
+      const reference = references.get(inputId);
+      const parameter = externalIndex.get(inputId);
+      if (!reference || parameter === undefined) fail('TENSOR_FUSION_INPUT_INVALID', 'internal', 'A selected fusion input is neither internal nor an external binding.', { region: region.id, node: node.id, inputId });
+      const coordinateExpressions = node.op === 'binary'
+        ? broadcastCoordinates(reference.spec, outputCoordinates.names)
+        : outputCoordinates.names;
+      const offsetName = `f${nodeIndex}Input${inputPosition}`;
+      body.push(...offsetLines(offsetName, reference.spec, reference.originByteOffset, coordinateExpressions).map((line) => `  ${line}`));
+      return `p${parameter}[${offsetName}]`;
+    }
+
+    for (let nodeIndex = 0; nodeIndex < region.nodes.length; nodeIndex += 1) {
+      const node = region.nodes[nodeIndex];
+      const inputs = node.inputIds.map((inputId, inputPosition) => inputExpression(node, inputId, inputPosition, nodeIndex));
+      const inputSpecs = node.inputIds.map((inputId) => program.valueSpec(inputId));
+      let expression;
+      if (node.op === 'cast') expression = cast(node.outputSpec.dtype, inputSpecs[0].dtype, inputs[0]);
+      else if (node.op === 'unary') expression = unary(node.options.operator, node.outputSpec.dtype, inputs[0]);
+      else if (node.op === 'binary') expression = combine(node.options.operator, node.outputSpec.dtype, inputs[0], inputs[1]);
+      else fail('TENSOR_FUSION_OPERATION_INVALID', 'internal', 'A selected fusion region contains a non-elementwise operation.', { region: region.id, node: node.id, op: node.op });
+      const valueName = `fusedValue${nodeIndex}`;
+      body.push(`  let ${valueName} = ${expression};`);
+      values.set(node.id, valueName);
+    }
+
+    body.push(`  p${parameterRecords.length - 1}[index] = ${values.get(outputNode.id)};`);
+    body.push('}');
+    return addKernel(parameterRecords, body, region.workItems, accessRecords, outputNode.id, region.nodeIds, region.id);
+  }
+
   for (const node of program.nodes) {
+    const fusionRegion = fusionByNode.get(node.id);
+    if (fusionRegion) {
+      if (fusionByOutputNode.has(node.id)) addFusedKernel(fusionRegion);
+      continue;
+    }
     if (node.materialization !== 'materialize') continue;
     const output = references.get(node.id);
     const outputCount = node.outputSpec.logicalElementCount;
@@ -328,13 +400,17 @@ export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSO
     return Object.freeze({ name: output.name, valueId: output.valueId, baseValueId: reference.baseValueId, spec: output.spec });
   });
   const canonical = deepFreeze({
-    contract: 'SPEC-0005-generated-simt-lowering-v1',
+    contract: 'SPEC-0005-generated-simt-lowering-v1+SPEC-0007-exact-elementwise-fusion-v1',
     planIdentity: plan.compatibilityIdentity,
     blockSize,
     limits: { ...TENSOR_SIMT_LIMITS, maxWorkspaceBytes },
+    fusionProfileIdentity: fusionProfile.compatibilityIdentity,
+    fusionProfile: fusionProfile.canonical,
     bindings: bindings.map((entry) => ({ ...entry })),
+    materials: materials.map((entry) => ({ valueId: entry.valueId, binding: entry.binding, specIdentity: entry.spec.compatibilityIdentity, byteLength: entry.byteLength })),
+    materialBytes,
     workspaces: workspaces.map((entry) => ({ ...entry })),
-    kernels: kernels.map((kernel) => ({ id: kernel.id, semanticNode: kernel.semanticNode, functionName: kernel.functionName, workItems: kernel.workItems, grid: kernel.grid, block: kernel.block, after: [...kernel.after], parameters: kernel.parameterRecords.map((entry) => ({ ...entry })), accesses: kernel.accesses.map((entry) => ({ ...entry })) })),
+    kernels: kernels.map((kernel) => ({ id: kernel.id, semanticNode: kernel.semanticNode, semanticNodes: [...kernel.semanticNodes], fusionRegion: kernel.fusionRegion, functionName: kernel.functionName, workItems: kernel.workItems, grid: kernel.grid, block: kernel.block, after: [...kernel.after], parameters: kernel.parameterRecords.map((entry) => ({ ...entry })), accesses: kernel.accesses.map((entry) => ({ ...entry })) })),
     totalWorkspaceBytes,
     outputs: outputRecords.map((entry) => ({ name: entry.name, valueId: entry.valueId, baseValueId: entry.baseValueId, specIdentity: entry.spec.compatibilityIdentity })),
   });
@@ -343,11 +419,14 @@ export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSO
     functions: Object.freeze(functions),
     kernels: Object.freeze(kernels),
     bindings: Object.freeze(bindings),
+    materials: Object.freeze(materials),
+    materialBytes,
     workspaces: Object.freeze(workspaces),
     references,
     outputs: Object.freeze(outputRecords),
+    fusionProfile,
     totalWorkspaceBytes,
     canonical,
-    compatibilityIdentity: identity('tensor-simt-lowering-v1', canonical),
+    compatibilityIdentity: identity('tensor-simt-lowering-v2', canonical),
   });
 }

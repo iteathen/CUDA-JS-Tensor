@@ -6,7 +6,6 @@ import {
   frameArenaReuse,
   frameBatchedMatmul,
   frameDeviceCallableDense,
-  frameElementwiseFusion,
   framePrecisionMatmul,
 } from '../src/index.mjs';
 import { TENSOR_IMPLEMENTATION_FRAME_CONTRACT } from '../src/frame-contract.mjs';
@@ -20,7 +19,6 @@ test('all frames reject non-plans and return deterministic deeply immutable anal
     frameBatchedMatmul,
     framePrecisionMatmul,
     frameDeviceCallableDense,
-    frameElementwiseFusion,
     frameArenaReuse,
   ];
   for (const frame of functions) {
@@ -228,51 +226,6 @@ test('device-callable analysis exposes every observable output inside one connec
   });
   const candidate = frameDeviceCallableDense(tensorPlan).candidates[0];
   assert.deepEqual(candidate.boundaryOutputs, ['node:0', 'node:1']);
-});
-
-test('fusion includes a binary side input while preserving both external boundaries', () => {
-  const tensorPlan = plan((graph) => {
-    const left = graph.input('left', { dtype: 'f32', capacityShape: [4] });
-    const right = graph.input('right', { dtype: 'f32', capacityShape: [4] });
-    const normalized = graph.unary('abs', left);
-    const combined = graph.binary('add', normalized, right);
-    return graph.unary('sqrt', combined);
-  });
-  const chains = frameElementwiseFusion(tensorPlan).candidates;
-  assert.equal(chains.length, 1);
-  assert.equal(chains[0].candidateSize, 3);
-  assert.equal(chains[0].hasBinary, true);
-  assert.deepEqual(chains[0].nodes.map(({ op }) => op), ['unary', 'binary', 'unary']);
-  assert.deepEqual(chains[0].boundaryInputs, ['input:left', 'input:right']);
-  assert.deepEqual(chains[0].boundaryOutputs, ['node:2']);
-});
-
-test('fusion stops at observable intermediates and fan-out boundaries', () => {
-  const tensorPlan = plan((graph) => {
-    const input = graph.input('input', { dtype: 'f32', capacityShape: [4] });
-    const observable = graph.unary('abs', input);
-    const next = graph.unary('sqrt', observable);
-    const tail = graph.unary('neg', next);
-    return { observable, tail };
-  });
-  const chains = frameElementwiseFusion(tensorPlan).candidates;
-  assert.equal(chains.length, 1);
-  assert.deepEqual(chains[0].nodes.map(({ id }) => id), ['node:1', 'node:2']);
-  assert.deepEqual(chains[0].boundaryInputs, ['node:0']);
-  assert.deepEqual(chains[0].boundaryOutputs, ['node:2']);
-});
-
-test('fusion treats duplicate input edges to one node as one consumer', () => {
-  const tensorPlan = plan((graph) => {
-    const input = graph.input('input', { dtype: 'f32', capacityShape: [4] });
-    const normalized = graph.unary('abs', input);
-    return graph.binary('add', normalized, normalized);
-  });
-  const candidate = frameElementwiseFusion(tensorPlan).candidates[0];
-  assert.equal(candidate.candidateSize, 2);
-  assert.deepEqual(candidate.nodes.map(({ id }) => id), ['node:0', 'node:1']);
-  assert.deepEqual(candidate.boundaryInputs, ['input:input']);
-  assert.deepEqual(candidate.boundaryOutputs, ['node:1']);
 });
 
 test('arena first-fit reuses only non-overlapping lifetimes and reports exact savings', () => {
