@@ -36,3 +36,5 @@ TensorSession
 - context-bound CUDA library adapters and a first cuBLASLt profile — implemented by CUDA-JS SPEC-0023/SPEC-0029.
 
 All four prerequisites are present in the exact protected-main CUDA-JS revision `2da65ff2e4287450171c477031dd380a21fa095f` (`cuda-js@0.1.0-alpha.12`). This resolves mechanism availability only. Each CUDA-JS-Tensor component still requires its own semantic, lifecycle, native and performance evidence, and no substitute native ownership is permitted.
+
+SPEC-0004 assessment exposes one later executor-specific gate: the complete SIMT profile needs consumer-neutral Device-JS f64/f16/bf16 pointer/local arithmetic and exact abs/special-value helpers beyond the current f32-oriented language profile. `CJS-DEVICE-NUMERIC-005` owns that upstream work before `TENSOR-SIMT-012`; it does not invalidate the completed value or static-program slices.

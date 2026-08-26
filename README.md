@@ -16,7 +16,7 @@ The project is not a neural-network framework, training system, CUDA binding, or
 
 ## Current status
 
-Public pre-release. `cuda-js-tensor@0.1.0-alpha.1` implements the portable/package `TensorSession`, `TensorSpec`, and opaque `Tensor` value foundation over the exact public `cuda-js@0.1.0-alpha.12` compatibility revision. The package remains publication-guarded; no npm publication, native qualification, dense execution, or performance support claim exists.
+Public pre-release. `cuda-js-tensor@0.1.0-alpha.2` implements the portable/package `TensorSession`/`TensorSpec`/`Tensor` value foundation plus immutable first-dense `TensorProgram` and finite static `TensorPlan` semantics over the exact public `cuda-js@0.1.0-alpha.12` compatibility revision. The package remains publication-guarded; no npm publication, resolved dense execution, native qualification, or performance support claim exists.
 
 The first dense slice targets:
 
@@ -24,7 +24,7 @@ The first dense slice targets:
 - rank 0–16 static capacity shapes with an optional bounded active axis 0;
 - row-major default, explicit positive/zero strides, and no negative strides in v1;
 - allocation, copy, cast, views, elementwise operations, reductions, matrix multiplication, and batched matrix multiplication;
-- immutable `TensorProgram`, `TensorPlan`, and `ResolvedTensorPlan`;
+- immutable `TensorProgram` and finite static `TensorPlan`, followed by backend-owned `ResolvedTensorPlan`;
 - a complete generated Device-JS SIMT baseline;
 - host-planned cuBLASLt and device-callable dense-subgraph adapters only through the exact accepted public CUDA-JS capabilities and separate tensor qualification.
 

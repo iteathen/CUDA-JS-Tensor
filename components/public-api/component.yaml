@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "component": {
+    "id": "tensor.public-api",
+    "name": "CUDA-JS-Tensor public package facade",
+    "status": "public-portable-alpha",
+    "product_area": "components",
+    "path": "components/public-api",
+    "purpose": "Compose accepted public tensor component ports into the single installed-package export without adding semantics or runtime ownership.",
+    "public_contracts": ["index.mjs", "index.d.ts"],
+    "allowed_dependencies": ["tensor.value", "tensor.program-plan"],
+    "forbidden_dependencies": ["cuda-js-internals", "component-deep-import", "native-cuda", "consumer-policy"],
+    "validation": ["npm run test:package", "npm run verify"],
+    "owner": "tensor.public-api",
+    "lifecycle": "Pure ESM export composition; owns no state or resource.",
+    "design": {
+      "owned_invariant": "Every installed-package symbol is exported through one reviewed facade while package-internal ports remain unexported.",
+      "public_ports": ["cuda-js-tensor package root"],
+      "injected_dependencies": [],
+      "adapter_boundaries": ["installed ESM package"],
+      "simplest_sufficient_total_system": "Two declarative re-export files and one manifest."
+    }
+  }
+}

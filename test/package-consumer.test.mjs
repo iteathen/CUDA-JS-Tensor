@@ -25,7 +25,7 @@ test('packed package installs and an unrelated public consumer uses only canonic
     await writeFile(path.join(directory, 'package.json'), JSON.stringify({ name: 'tensor-unrelated-consumer', private: true, type: 'module' }, null, 2));
     run(npmCommand, [...npmPrefix, 'install', '--ignore-scripts', '--package-lock=false', path.join(directory, tarball)], directory);
     await writeFile(path.join(directory, 'consumer.mjs'), `
-import { CUDA_JS_TENSOR_COMPATIBILITY, TensorSession, TensorSpec } from 'cuda-js-tensor';
+import { CUDA_JS_TENSOR_COMPATIBILITY, TensorPlan, TensorProgram, TensorSession, TensorSpec } from 'cuda-js-tensor';
 let runtimeClosed = false;
 const runtime = {
   async describe() { return { package: { name: 'cuda-js', version: '0.1.0-alpha.12', publicApiSchema: 1 }, state: 'open', profile: 'consumer-double', device: null }; },
@@ -41,6 +41,9 @@ const session = await TensorSession.open({ runtime, runtimeOwnership: 'owned' })
 const spec = TensorSpec.create('f32', [2, 3]);
 const tensor = await session.allocate(spec);
 if (tensor.byteLength !== 24 || tensor.spec.compatibilityIdentity !== spec.compatibilityIdentity) throw new Error('tensor contract mismatch');
+const program = TensorProgram.define((graph) => graph.copy(graph.input('input', spec)));
+const plan = TensorPlan.create(program);
+if (plan.totalDistinctBytes !== 24 || plan.executable !== false || !plan.unresolved.includes('backend-selection')) throw new Error('static plan contract mismatch');
 try {
   await import('cuda-js-tensor/components/tensor-value/internal.mjs');
   throw new Error('package-internal port escaped');
@@ -48,17 +51,19 @@ try {
   if (error.code !== 'ERR_PACKAGE_PATH_NOT_EXPORTED') throw error;
 }
 const terminal = await session.close();
-if (!terminal.graceful || !runtimeClosed || CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version !== '0.1.0-alpha.12') throw new Error('terminal contract mismatch');
+if (!terminal.graceful || !runtimeClosed || CUDA_JS_TENSOR_COMPATIBILITY.package.version !== '0.1.0-alpha.2' || CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version !== '0.1.0-alpha.12') throw new Error('terminal contract mismatch');
 console.log('installed CUDA-JS-Tensor consumer passed');
 `);
     const output = run(process.execPath, [path.join(directory, 'consumer.mjs')], directory);
     assert.match(output, /installed CUDA-JS-Tensor consumer passed/);
 
     const installedPackage = JSON.parse(await readFile(path.join(directory, 'node_modules', 'cuda-js-tensor', 'package.json'), 'utf8'));
-    assert.equal(installedPackage.version, '0.1.0-alpha.1');
+    assert.equal(installedPackage.version, '0.1.0-alpha.2');
     assert.deepEqual(Object.keys(installedPackage.exports), ['.']);
     const installedComponentEntries = await readdir(path.join(directory, 'node_modules', 'cuda-js-tensor', 'components', 'tensor-value'));
     assert.equal(installedComponentEntries.includes('test'), false);
+    const installedProgramEntries = await readdir(path.join(directory, 'node_modules', 'cuda-js-tensor', 'components', 'tensor-program'));
+    assert.equal(installedProgramEntries.includes('test'), false);
   } finally {
     await rm(directory, { recursive: true, force: true });
   }

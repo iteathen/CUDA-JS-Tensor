@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "component": {
+    "id": "tensor.program-plan",
+    "name": "Immutable tensor program and static plan",
+    "status": "public-portable-alpha",
+    "product_area": "components",
+    "path": "components/tensor-program",
+    "purpose": "Own immutable backend-neutral dense DAG semantics, exact inference, liveness, declared aliasing and finite static allocation planning without claiming execution resolution.",
+    "public_contracts": ["index.mjs", "index.d.ts"],
+    "allowed_dependencies": ["node-standard-library", "tensor.value"],
+    "forbidden_dependencies": ["cuda-js-internals", "native-cuda", "execution-backend", "runtime-session", "neural-policy", "mcgs-policy"],
+    "validation": ["npm run test:tensor-program", "npm run test:package", "npm run verify"],
+    "owner": "tensor.program/tensor.plan/tensor.ops.dense-semantics",
+    "lifecycle": "Programs and static plans are immutable host values with no CUDA or session resource ownership; later resolved plans own backend/session resources.",
+    "design": {
+      "owned_invariant": "The same finite mathematical program has one canonical shape/dtype/alias/liveness identity independent of convenience form or future backend.",
+      "public_ports": ["TensorProgram", "TensorValueRef", "TensorPlan"],
+      "injected_dependencies": ["TensorSpec values"],
+      "adapter_boundaries": ["future resolved SIMT plan"],
+      "simplest_sufficient_total_system": "One temporary builder normalizing to one immutable DAG and one non-optimizing static plan."
+    }
+  }
+}
