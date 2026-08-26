@@ -1,13 +1,13 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "updated": "2026-08-26",
-  "status": "cublaslt_integrated_next_profile_assessment_pending",
-  "objective": "Assess the next optional compact dense execution profile without weakening the complete SIMT baseline, the integrated host-planned path, dependency direction or evidence standards.",
+  "status": "tensor_fusion_child_specification_ready",
+  "objective": "Turn the remaining tensor analysis frames into independently removable production Legos in dependency order without weakening the complete SIMT baseline, importing CUDA-JS ownership or guessing a device participation model.",
   "current_focus": {
-    "id": "TENSOR-DEVICE-DENSE-014",
-    "issue": null,
-    "next_action": "Reassess the second-instance value and exact public CUDA-JS SPEC-0028 provider/resource/participation boundary before opening an implementation issue or accepting a child specification.",
-    "exit": "A bounded assessment either defines a consumer-neutral device-callable dense-subgraph profile with concrete value and exact gates, or defers it without adding speculative machinery."
+    "id": "SPEC-0007-TENSOR-FUSION",
+    "issue": 14,
+    "next_action": "Specify exact single-consumer cast/unary/binary fusion with operation-by-operation rounding, observable-boundary preservation, finite generated-kernel identity, unchanged access/failure semantics and complete unfused deletion.",
+    "exit": "SPEC-0007 is accepted with an implementation-ready exact fusion contract and falsifiers, or fusion is deferred without changing production code."
   },
   "dependencies": [
     "cuda-js@0.1.0-alpha.15 protected-main revision af29b95e0707b36b88ee4e234c25a9e7f7ed3a1d (SPEC-0031 implementation entered at 20f831cc51766aee726313f7f78819b576d56307)",
@@ -19,6 +19,10 @@
     "public CUDA-JS SPEC-0029 context-bound cuBLASLt adapter and SPEC-0031 prepared matmul node"
   ],
   "deferred": [
+    "TENSOR-DEVICE-DENSE-014 until a real caller selects exact participation and CUDA-JS accepts the minimum generic parallel helpers",
+    "TENSOR-BATCHED-GEMM-015 until CUDA-JS exposes a strided-batched matmul plan/prepared-node child",
+    "TENSOR-PRECISION-GEMM-016 until CUDA-JS exposes closed typed matmul plan/prepared-node children",
+    "TENSOR-ARENA-018 until the post-fusion material schedule is accepted",
     "the_restaurant implementation or repository mutation",
     "multi-device tensors, P2P, collectives and sharding",
     "autodiff, NN layers, optimizers, losses, checkpoints and training policy",
