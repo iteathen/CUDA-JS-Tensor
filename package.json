@@ -1,0 +1,30 @@
+{
+  "name": "cuda-js-tensor",
+  "version": "0.1.0-alpha.0",
+  "description": "Consumer-neutral tensor planning and accelerated tensor execution for CUDA-JS",
+  "type": "module",
+  "private": true,
+  "license": "AGPL-3.0-or-later",
+  "engines": {
+    "node": ">=26.1.0"
+  },
+  "scripts": {
+    "test": "node --test",
+    "verify": "node scripts/verify.mjs && node --test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iteathen/CUDA-JS-Tensor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/iteathen/CUDA-JS-Tensor/issues"
+  },
+  "homepage": "https://github.com/iteathen/CUDA-JS-Tensor#readme",
+  "keywords": [
+    "cuda",
+    "gpu",
+    "javascript",
+    "tensor"
+  ]
+}
+

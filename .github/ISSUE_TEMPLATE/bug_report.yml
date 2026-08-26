@@ -1,0 +1,26 @@
+name: Bug report
+description: Report a reproducible CUDA-JS-Tensor defect
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Minimal reproduction
+      description: Include tensor dtype, capacity/logical shape, strides/layout, operation and lifecycle. Remove credentials and stable machine identifiers.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Exact environment
+      description: CUDA-JS-Tensor/CUDA-JS revisions, Node, OS/ABI, and exact qualified CUDA profile when relevant.
+    validations:
+      required: true
+

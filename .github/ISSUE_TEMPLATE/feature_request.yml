@@ -1,0 +1,31 @@
+name: Feature request
+description: Propose a consumer-neutral tensor capability
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: invariant
+    attributes:
+      label: Owned invariant and use cases
+      description: Identify at least two materially different consumers when proposing a reusable abstraction.
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Scope, exclusions and deletion result
+    validations:
+      required: true
+  - type: textarea
+    id: resources
+    attributes:
+      label: Shape, memory, synchronization, failure and cleanup bounds
+    validations:
+      required: true
+  - type: textarea
+    id: dependencies
+    attributes:
+      label: Required public CUDA-JS contracts and evidence
+    validations:
+      required: true
+

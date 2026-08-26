@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "updated": "2026-08-26",
+  "status": "repository_bootstrap_in_progress",
+  "objective": "Establish and protect the public CUDA-JS-Tensor authority, then specify the four generic public CUDA-JS prerequisites before native tensor implementation.",
+  "current_focus": {
+    "id": "TENSOR-BOOT-000",
+    "next_action": "Validate the initial authority tree, push protected main, enable ordinary public participation and security settings, then open dependency-specific upstream CUDA-JS work without deep imports or native workarounds.",
+    "exit": "Remote main, repository settings, protection, issues/discussions, package identity and local cleanup are verified."
+  },
+  "dependencies": [
+    "public CUDA-JS typed device views and dtype registry",
+    "public typed device-callable library composition",
+    "public prepared finite operation DAG",
+    "public context-bound CUDA library adapters with cuBLASLt profile"
+  ],
+  "deferred": [
+    "the_restaurant implementation or repository mutation",
+    "multi-device tensors, P2P, collectives and sharding",
+    "autodiff, NN layers, optimizers, losses, checkpoints and training policy",
+    "publication to npm",
+    "native or performance support claims"
+  ]
+}
+
