@@ -58,7 +58,7 @@ Portable tests prove deterministic selection, overload equivalence, strict rejec
 
 Passing equivalence does not prove a speedup, tensor-core use, CUDA Graph execution, Linux support, broader CUDA/provider/device compatibility, batched GEMM, multi-GPU behavior or a recommended default. A default-policy promotion requires separate representative end-to-end measurements including planning, provider open, plan creation, workspace, warmup, submission, synchronization, small/tail cases, latency distribution, memory high-water and the best credible SIMT baseline.
 
-The alpha.4 integration candidate passes the full portable/package gate and an unrelated installed-package native fixture on exact Node 26.7.0 / Windows CUDA 13.3 / compute_75 / GTX 1660 Ti / cuBLASLt 13.5.1. Native evidence replays a mixed kernel → cuBLASLt → kernel DAG twice, checks strict double-transpose output independently, retains the complete SIMT catalog fixture and reaches zero live/orphaned CUDA-JS resources. This is bounded correctness/lifecycle evidence only.
+The alpha.4 implementation integrated through protected PR #10 at `main@8910309a0aff9b8da4fc281949068d8d1fcaa6ea`. It passes the full portable/package gate and an unrelated installed-package native fixture on exact Node 26.7.0 / Windows CUDA 13.3 / compute_75 / GTX 1660 Ti / cuBLASLt 13.5.1. Native evidence replays a mixed kernel → cuBLASLt → kernel DAG twice, checks strict double-transpose output independently, retains the complete SIMT catalog fixture and reaches zero live/orphaned CUDA-JS resources. This is bounded correctness/lifecycle evidence only.
 
 ## Falsifiers and non-goals
 
