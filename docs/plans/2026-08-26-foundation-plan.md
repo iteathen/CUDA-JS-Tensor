@@ -31,7 +31,7 @@
 | `TENSOR-ARENA-018` | Optional result-owned material arena ([issue #17](https://github.com/iteathen/CUDA-JS-Tensor/issues/17)) | accepted post-fusion material schedule, CUDA-JS SPEC-0021 | Alias-closed range/rollback/child cleanup; complete distinct-allocation deletion. Follows fusion. |
 | `TENSOR-BATCHED-GEMM-015` | Optional rank-3 f32 cuBLASLt profile | future CUDA-JS strided-batched plan/node child ([CUDA-JS #75](https://github.com/iteathen/CUDA-JS/issues/75)) | One bounded provider plan, no rank-2 host loop; currently blocked upstream. |
 | `TENSOR-PRECISION-GEMM-016` | Optional f16/bf16/f64 cuBLASLt profiles | future CUDA-JS typed plan/node children ([CUDA-JS #75](https://github.com/iteathen/CUDA-JS/issues/75)) | Exact input/compute/scale/output semantics; currently blocked upstream. |
-| `TENSOR-DEVICE-DENSE-014` | Device-callable compact dense subgraph | `CJS-DEVICE-LIB-002`, selected CUDA-JS parallel helpers, `TENSOR-SIMT-012` | Exact useful collective participation/resource/publication gates; deferred rather than implemented as a serial device function. |
+| `TENSOR-DEVICE-ITEM-014` | Item-parallel device-callable Tensor program ([issue #19](https://github.com/iteathen/CUDA-JS-Tensor/issues/19)); SPEC-0009 | `CJS-DEVICE-LIB-002`, `CJS-DEVICE-NUMERIC-005`, `TENSOR-PROGRAM-011` | Alpha.6 candidate implemented: one caller participant per statically independent item, finite typed ABI/workspace, public leaf-library import, complete host-planned deletion and exact native multi-item output/cleanup evidence. Cooperative intra-item acceleration remains separate. |
 | `TENSOR-RELEASE-020` | Package consumers, examples, compatibility and release evidence | accepted preceding slices | Clean tarball, unrelated consumers, exact support claims, no private dependency. |
 
 Only one shared CUDA-JS contract changes at a time. Downstream evidence is invalidated when its exact upstream package/revision or contract changes.
@@ -39,13 +39,14 @@ Only one shared CUDA-JS contract changes at a time. Downstream evidence is inval
 ## Sequencing
 
 1. Bootstrap and protect the repository.
-2. Integrate the generic CUDA-JS prerequisites and record one exact compatibility pair. Current pair is CUDA-JS `af29b95e` / `0.1.0-alpha.15`, including SPEC-0030 dense numeric Device-JS, native prepared-DAG correction and SPEC-0031 mixed cuBLASLt nodes.
+2. Integrate the generic CUDA-JS prerequisites and record one exact compatibility pair. Current pair is CUDA-JS `4971302c` / `0.1.0-alpha.16`, including selected-runtime target-correct Device-JS libraries, SPEC-0030 dense numeric Device-JS, native prepared-DAG correction and SPEC-0031 mixed cuBLASLt nodes.
 3. Implement portable value/program semantics over public CUDA-JS only. `TENSOR-VALUE-010`, `TENSOR-PROGRAM-011` and resolved generated SIMT execution under `TENSOR-SIMT-012` are integrated.
 4. Implement the consumer-neutral CUDA-JS dense numeric Device-JS profile exposed by program-semantics assessment, then the generated SIMT path. Both are integrated; SPEC-0005 governs the Tensor resolution/lowering/result boundary without generated native-source workarounds.
-5. Add the bounded SPEC-0006 host-planned cuBLASLt realization over public CUDA-JS alpha.15. Preserve the complete SIMT default until performance qualification; device-callable dense adapters remain later work.
-6. Exact elementwise fusion is implemented under SPEC-0007; specify and implement result-owned arena reuse over its accepted realized material schedule next.
-7. Extend accelerated batched/precision and device-callable profiles only after their bounded CUDA-JS dependencies are accepted.
-8. Qualify and publish only the exact achieved surface.
+5. Add the bounded SPEC-0006 host-planned cuBLASLt realization over public CUDA-JS alpha.15. Preserve the complete SIMT default until performance qualification.
+6. Exact elementwise fusion is implemented under SPEC-0007.
+7. The CUDA-MCGS caller selects a useful item-parallel participation class; implement SPEC-0009 through public CUDA-JS SPEC-0028 without importing scheduler/publication meaning.
+8. Continue result-owned arena and accelerated batched/precision/cooperative profiles only under their independent dependency and evidence gates.
+9. Qualify and publish only the exact achieved surface.
 
 ## Backpressure and split rules
 

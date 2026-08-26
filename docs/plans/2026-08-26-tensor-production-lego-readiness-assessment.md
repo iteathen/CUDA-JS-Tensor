@@ -1,10 +1,12 @@
 # Tensor production LEGO readiness assessment
 
-**Status:** Bounded production-readiness assessment; child specifications and implementations remain pending
+**Status:** Bounded historical assessment; device-callable disposition superseded by the later CUDA-MCGS caller assessment, other pending children remain current
 
 **Exact CUDA-JS-Tensor input:** `main@cf975f906d9c3ede8b94275bb2a6e1447634dc9f`
 
-**Exact CUDA-JS input:** `cuda-js@0.1.0-alpha.15` from protected `main@af29b95e0707b36b88ee4e234c25a9e7f7ed3a1d`
+**Exact CUDA-JS input at assessment:** `cuda-js@0.1.0-alpha.15` from protected `main@af29b95e0707b36b88ee4e234c25a9e7f7ed3a1d`
+
+**Later dependency update:** SPEC-0009 consumes selected-target-correct `cuda-js@0.1.0-alpha.16` from protected `main@4971302cfb48431c0843126a59d5884d84a81641`
 
 ## Question and disposition
 
@@ -14,9 +16,9 @@ They cannot be promoted as one batch. The frames cross three different owners:
 
 1. Tensor-owned graph realization: exact elementwise fusion and result-owned material arenas.
 2. CUDA-JS-owned native library mechanisms: typed and strided-batched cuBLASLt plans/prepared nodes.
-3. CUDA-JS-owned device-language mechanisms plus Tensor-owned participation semantics: efficient device-callable dense regions.
+3. CUDA-JS-owned device-language mechanisms plus Tensor-owned participation semantics: item-parallel correctness now implemented; cooperative intra-item acceleration remains later.
 
-`TENSOR-FUSION-017` completed as the alpha.5 candidate under accepted SPEC-0007 using current public CUDA-JS. `TENSOR-ARENA-018` is now dependency-ready over the accepted realized material schedule. The other three profiles remain blocked on explicitly bounded CUDA-JS capabilities; CUDA-JS-Tensor must not substitute host loops, serial device functions, private imports, generated CUDA escape paths, or provider-specific state.
+`TENSOR-FUSION-017` completed under accepted SPEC-0007. `TENSOR-ARENA-018` is dependency-ready over the accepted realized material schedule. Batched and precision provider profiles remain blocked on bounded CUDA-JS capabilities. The later [CUDA-MCGS readiness assessment](2026-08-26-cuda-mcgs-readiness-assessment-and-plan.md) supplies a real item-batch caller and supersedes this document's collective-only device-callable assumption: SPEC-0009 now implements one caller participant per independent item without a host loop or guessed scheduler.
 
 ## Strongest adversarial case
 
@@ -73,11 +75,11 @@ CUDA-JS must first accept closed typed plan/prepared-node profiles that distingu
 
 The batched and precision gaps should share one CUDA-JS matmul-family owner but enter as independently bounded child profiles so either can be deleted without removing the other.
 
-### `TENSOR-DEVICE-DENSE-014` — upstream and participation blocked
+### `TENSOR-DEVICE-ITEM-014` — superseded disposition; implemented under SPEC-0009
 
-CUDA-JS SPEC-0028 solves typed leaf-library compilation/import/linking. It does not provide the efficient collective execution model required by a dense region. CUDA-JS's shared-memory, local-array, multidimensional-index, block/warp synchronization and related trusted parallel primitives remain proposal-only. A serial device function would be functionally possible for tiny regions but would not be an honest reusable acceleration Lego for CUDA-MCGS.
+This assessment originally assumed the first useful callable had to accelerate one item cooperatively. CUDA-MCGS later supplied a materially different natural participation class: many independent evaluator items are ready together, and one caller-owned participant may execute each item. That is batch-parallel device execution, not one device function serializing the whole batch.
 
-Before Tensor implementation, a real caller profile must select the smallest useful participation class—likely one fixed block or warp group—with exact participant count, barrier legality, shared/global workspace, output ownership and caller obligations. CUDA-JS should then accept only the generic parallel helpers required by that profile. Tensor may generate a fixed-shape typed leaf library through SPEC-0028 after those gates; cuBLASDx or CUTLASS remains an optional separately qualified provider, not the contract.
+SPEC-0009 therefore uses existing public CUDA-JS SPEC-0028/0030, proves item independence, exposes finite item-major outputs/workspace and leaves scheduling/publication to the caller. Block/warp-cooperative intra-item execution, shared-memory helpers, cuBLASDx and CUTLASS remain optional later acceleration profiles rather than correctness prerequisites.
 
 ## Dependency and implementation order
 
@@ -91,12 +93,15 @@ CUDA-JS typed/strided-batched matmul family
   -> TENSOR-BATCHED-GEMM-015 and TENSOR-PRECISION-GEMM-016 child specs
   -> independently removable production profiles
 
-selected real device caller + minimum CUDA-JS trusted parallel helpers
-  -> Tensor device-callable participation/ABI child spec
-  -> TENSOR-DEVICE-DENSE-014 production implementation
+selected real independent-item caller + CUDA-JS SPEC-0028/0030
+  -> SPEC-0009 item-parallel callable profile
+  -> TENSOR-DEVICE-ITEM-014 production implementation
+
+selected cooperative caller + minimum CUDA-JS trusted parallel helpers
+  -> optional block/warp-cooperative device-callable acceleration profile
 ```
 
-Fusion is the completed first integration-spine child; arena is the immediate next child. The two CUDA-JS dependency lanes may proceed independently but do not block arena. Device-callable dense stays later because choosing participation without the caller shape would hard-code a speculative scheduler into a universal library.
+Fusion and the item-parallel callable are completed integration-spine children; arena remains the next independent host-planned child. The two provider dependency lanes may proceed independently but do not block arena. Cooperative intra-item acceleration stays later because choosing its participation shape without evidence would hard-code a speculative physical scheduler into a universal library.
 
 ## Acceptance, falsifiers and cleanup
 

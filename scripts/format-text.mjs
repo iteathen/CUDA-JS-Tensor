@@ -1,12 +1,13 @@
 import { execFileSync } from 'node:child_process';
 import { extname } from 'node:path';
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 
 const textExtensions = new Set(['.json', '.md', '.mjs', '.yaml', '.yml']);
 const textNames = new Set(['.gitattributes', '.gitignore', 'LICENSE']);
 const files = execFileSync('git', ['ls-files', '--cached', '--others', '--exclude-standard', '-z'], { encoding: 'utf8' })
   .split('\0')
   .filter(Boolean)
+  .filter((file) => existsSync(file))
   .filter((file) => textExtensions.has(extname(file)) || textNames.has(file));
 
 for (const file of files) {

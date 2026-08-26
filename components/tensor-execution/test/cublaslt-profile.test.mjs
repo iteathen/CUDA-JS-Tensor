@@ -3,8 +3,7 @@ import test from 'node:test';
 
 import { TensorPlan, TensorProgram } from '../../tensor-program/index.mjs';
 import { TensorSession } from '../../tensor-value/index.mjs';
-import { createBackendProfileRequest, lowerSimtPlan } from '../testing.mjs';
-import { ResolvedTensorPlan, resolveTensorPlan } from '../index.mjs';
+import { createBackendProfileRequest, createCudaJsTensorBackend, lowerSimtPlan, resolveTensorPlanWithAdapter } from '../testing.mjs';
 
 const SHA256 = '1'.repeat(64);
 
@@ -30,7 +29,7 @@ function fakePublicRuntime({ openError = null, planError = null, prepareError = 
 
   const runtime = {
     observation,
-    async describe() { return { package: { name: 'cuda-js', version: '0.1.0-alpha.15', publicApiSchema: 1 }, state: 'open', profile: 'tensor-cublaslt-test', device: { architecture: { class: 'compute_75' } } }; },
+    async describe() { return { package: { name: 'cuda-js', version: '0.1.0-alpha.16', publicApiSchema: 1 }, state: 'open', profile: 'tensor-cublaslt-test', device: { architecture: { class: 'compute_75' } } }; },
     async allocateDevice({ byteLength }) {
       const views = [];
       const memory = stateful('device-memory', {
@@ -112,6 +111,29 @@ function fakePublicRuntime({ openError = null, planError = null, prepareError = 
     get closed() { return runtimeClosed; },
   };
   return runtime;
+}
+
+async function fakeCompileDeviceProgram(runtime, request) {
+  const compiler = await runtime.compile({ source: request.source });
+  const kernels = request.functions.filter((entry) => entry.kind === 'kernel').map((entry) => Object.freeze({
+    name: entry.name,
+    functionName: entry.name,
+    parameters: Object.freeze(entry.parameters.map(() => Object.freeze({ kind: 'device-memory' }))),
+  }));
+  return Object.freeze({
+    compiler: Object.freeze({ ...compiler, headerProfile: null }),
+    deviceProgram: Object.freeze({ contract: 'tensor-cublaslt-test-device-program-v1', sha256: SHA256, kernels: Object.freeze(kernels) }),
+  });
+}
+
+function resolveWithFakeCompiler(session, planOrProgram, options) {
+  return resolveTensorPlanWithAdapter(session, planOrProgram, options, (runtime, lowering, request, normalized) => createCudaJsTensorBackend(
+    runtime,
+    lowering,
+    request,
+    normalized,
+    Object.freeze({ compileDeviceProgram: fakeCompileDeviceProgram }),
+  ));
 }
 
 function mixedProgram() {
@@ -207,7 +229,7 @@ test('explicit preference builds one mixed prepared DAG and owns exact workspace
   const session = await TensorSession.open({ runtime, runtimeOwnership: 'owned' });
   const left = await session.allocate({ dtype: 'f32', capacityShape: [2, 3], access: 'read' });
   const right = await session.allocate({ dtype: 'f32', capacityShape: [3, 2], access: 'read' });
-  const resolved = await resolveTensorPlan(session, mixedProgram(), { backend: 'prefer-cublaslt', maxWorkspaceBytes: 1024 });
+  const resolved = await resolveWithFakeCompiler(session, mixedProgram(), { backend: 'prefer-cublaslt', maxWorkspaceBytes: 1024 });
   assert.equal(resolved.backendPolicy, 'prefer-cublaslt');
   assert.equal(resolved.backend, 'mixed');
   assert.equal(resolved.kernelCount, 2);
@@ -235,8 +257,8 @@ test('resolved plans share one session/runtime adapter and release it after the 
   const runtime = fakePublicRuntime({ workspaceBytes: 0 });
   const session = await TensorSession.open({ runtime, runtimeOwnership: 'owned' });
   const program = mixedProgram();
-  const first = await resolveTensorPlan(session, program, { backend: 'cublaslt' });
-  const second = await ResolvedTensorPlan.create(session, TensorPlan.create(program), { backend: 'cublaslt' });
+  const first = await resolveWithFakeCompiler(session, program, { backend: 'cublaslt' });
+  const second = await resolveWithFakeCompiler(session, TensorPlan.create(program), { backend: 'cublaslt' });
   assert.equal(runtime.observation.adapterOpens, 1);
   assert.equal(first.compatibilityIdentity, second.compatibilityIdentity);
   await first.close();
@@ -249,21 +271,21 @@ test('resolved plans share one session/runtime adapter and release it after the 
 test('preference records only admitted fallback outcomes while strict and identity failures remain hard', async () => {
   const unavailable = fakePublicRuntime({ openError: 'CUBLASLT_PROFILE_UNAVAILABLE' });
   const unavailableSession = await TensorSession.open({ runtime: unavailable, runtimeOwnership: 'owned' });
-  const preferred = await resolveTensorPlan(unavailableSession, mixedProgram(), { backend: 'prefer-cublaslt' });
+  const preferred = await resolveWithFakeCompiler(unavailableSession, mixedProgram(), { backend: 'prefer-cublaslt' });
   assert.equal(preferred.backend, 'simt');
   assert.equal(preferred.canonical.backendProfile.matmuls[0].reasons.includes('profile-unavailable:CUBLASLT_PROFILE_UNAVAILABLE'), true);
   await preferred.close();
-  await assert.rejects(resolveTensorPlan(unavailableSession, mixedProgram(), { backend: 'cublaslt' }), { code: 'CUBLASLT_PROFILE_UNAVAILABLE' });
+  await assert.rejects(resolveWithFakeCompiler(unavailableSession, mixedProgram(), { backend: 'cublaslt' }), { code: 'CUBLASLT_PROFILE_UNAVAILABLE' });
   assert.equal((await unavailableSession.close()).graceful, true);
 
   const wrongIdentity = fakePublicRuntime({ openError: 'CUBLASLT_PROVIDER_IDENTITY' });
   const identitySession = await TensorSession.open({ runtime: wrongIdentity, runtimeOwnership: 'owned' });
-  await assert.rejects(resolveTensorPlan(identitySession, mixedProgram(), { backend: 'prefer-cublaslt' }), { code: 'CUBLASLT_PROVIDER_IDENTITY' });
+  await assert.rejects(resolveWithFakeCompiler(identitySession, mixedProgram(), { backend: 'prefer-cublaslt' }), { code: 'CUBLASLT_PROVIDER_IDENTITY' });
   assert.equal((await identitySession.close()).graceful, true);
 
   const occupied = fakePublicRuntime({ openError: 'CUBLASLT_ADAPTER_ALREADY_OPEN' });
   const occupiedSession = await TensorSession.open({ runtime: occupied, runtimeOwnership: 'owned' });
-  const occupiedFallback = await resolveTensorPlan(occupiedSession, mixedProgram(), { backend: 'prefer-cublaslt' });
+  const occupiedFallback = await resolveWithFakeCompiler(occupiedSession, mixedProgram(), { backend: 'prefer-cublaslt' });
   assert.equal(occupiedFallback.backend, 'simt');
   assert.equal(occupiedFallback.canonical.backendProfile.matmuls[0].reasons.includes('profile-unavailable:CUBLASLT_ADAPTER_ALREADY_OPEN'), true);
   await occupiedFallback.close();
@@ -273,7 +295,7 @@ test('preference records only admitted fallback outcomes while strict and identi
 test('algorithm preference fallback and post-plan preparation rollback close every acquired child', async () => {
   const unavailableAlgorithm = fakePublicRuntime({ planError: 'CUBLASLT_ALGORITHM_UNAVAILABLE' });
   const fallbackSession = await TensorSession.open({ runtime: unavailableAlgorithm, runtimeOwnership: 'owned' });
-  const fallback = await resolveTensorPlan(fallbackSession, mixedProgram(), { backend: 'prefer-cublaslt' });
+  const fallback = await resolveWithFakeCompiler(fallbackSession, mixedProgram(), { backend: 'prefer-cublaslt' });
   assert.equal(fallback.backend, 'simt');
   assert.equal(fallback.canonical.backendProfile.matmuls[0].reasons.includes('algorithm-unavailable:CUBLASLT_ALGORITHM_UNAVAILABLE'), true);
   assert.equal(unavailableAlgorithm.observation.adapterCloses, 1);
@@ -282,7 +304,7 @@ test('algorithm preference fallback and post-plan preparation rollback close eve
 
   const preparationFailure = fakePublicRuntime({ prepareError: 'PREPARED_REJECTED', workspaceBytes: 0 });
   const failureSession = await TensorSession.open({ runtime: preparationFailure, runtimeOwnership: 'owned' });
-  await assert.rejects(resolveTensorPlan(failureSession, mixedProgram(), { backend: 'cublaslt' }), { code: 'PREPARED_REJECTED' });
+  await assert.rejects(resolveWithFakeCompiler(failureSession, mixedProgram(), { backend: 'cublaslt' }), { code: 'PREPARED_REJECTED' });
   assert.equal(preparationFailure.observation.planCloses, 1);
   assert.equal(preparationFailure.observation.adapterCloses, 1);
   assert.deepEqual((await failureSession.status()).accounting, { liveTensors: 0, reservedBytes: 0, pendingCreates: 0, resolvedPlans: 0, pendingResolutions: 0, unprovedResources: 0 });
@@ -296,14 +318,14 @@ test('preference falls back at the resolved accelerator workspace-count gate whi
     runtimeOwnership: 'owned',
     limits: { maxLiveTensors: 3 },
   });
-  const preferred = await resolveTensorPlan(session, mixedProgram(), { backend: 'prefer-cublaslt' });
+  const preferred = await resolveWithFakeCompiler(session, mixedProgram(), { backend: 'prefer-cublaslt' });
   assert.equal(preferred.backend, 'simt');
   assert.equal(preferred.canonical.resourceLimits.maxAcceleratorWorkspaceCount, 0);
   assert.equal(preferred.canonical.backendProfile.matmuls[0].reasons.includes('resource-unavailable:TENSOR_CUBLASLT_WORKSPACE_COUNT_LIMIT'), true);
   assert.equal(runtime.observation.planCloses, 1);
   assert.equal(runtime.observation.adapterCloses, 1);
   await preferred.close();
-  await assert.rejects(resolveTensorPlan(session, mixedProgram(), { backend: 'cublaslt' }), { code: 'TENSOR_CUBLASLT_WORKSPACE_COUNT_LIMIT' });
+  await assert.rejects(resolveWithFakeCompiler(session, mixedProgram(), { backend: 'cublaslt' }), { code: 'TENSOR_CUBLASLT_WORKSPACE_COUNT_LIMIT' });
   assert.equal(runtime.observation.planCloses, 2);
   assert.equal(runtime.observation.adapterCloses, 2);
   assert.equal((await session.close()).graceful, true);

@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 
-import { openCudaRuntime } from 'cuda-js';
-import { CUDA_JS_TENSOR_COMPATIBILITY, resolveTensorPlan, TensorProgram, TensorSession } from 'cuda-js-tensor';
+import { compileDeviceProgram, openCudaRuntime } from 'cuda-js';
+import { compileTensorDeviceProgram, CUDA_JS_TENSOR_COMPATIBILITY, resolveTensorPlan, TensorProgram, TensorSession } from 'cuda-js-tensor';
 
 function numericBytes(dtype, values) {
   const widths = { i32: 4, f32: 4, f64: 8, f16: 2, bf16: 2 };
@@ -74,8 +74,8 @@ async function execute(session, program, inputBytes, { replays = 1, resolveOptio
 }
 
 assert.equal(process.version, 'v26.7.0');
-assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.package.version, '0.1.0-alpha.5');
-assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version, '0.1.0-alpha.15');
+assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.package.version, '0.1.0-alpha.6');
+assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version, '0.1.0-alpha.16');
 
 const runtime = await openCudaRuntime({
   compiler: true,
@@ -238,6 +238,90 @@ try {
   assert.deepEqual(reduced, [0]);
   assert(reductionRun.workspaceBytes > 0);
   summary.fixedTree = { output: reduced, workspaceBytes: reductionRun.workspaceBytes };
+
+  const deviceDense = TensorProgram.define((graph) => {
+    const features = graph.input('features', { dtype: 'f32', capacityShape: [4, 3], access: 'read' });
+    const weights = graph.input('weights', { dtype: 'f32', capacityShape: [3, 2], access: 'read' });
+    const bias = graph.input('bias', { dtype: 'f32', capacityShape: [2], access: 'read' });
+    const values = graph.binary('add', graph.matmul(features, weights), bias);
+    const score = graph.reduce('sum', values, { axes: [1], order: 'fixed-tree-v1' });
+    return { values, score };
+  });
+  const deviceProgram = await compileTensorDeviceProgram(session, deviceDense, { itemCapacity: 4, itemInputs: ['features'] });
+  const pointerParameters = deviceProgram.parameters.filter((entry) => entry.role !== 'item-index');
+  const kernelParameters = [...pointerParameters.map((entry) => ({ name: entry.parameterName, type: entry.type })), { name: 'status', type: 'ptr<u32>' }];
+  const callArguments = ['itemIndex', ...pointerParameters.map((entry) => entry.parameterName)].join(', ');
+  const callerSource = `function evaluateBatch(${kernelParameters.map((entry) => entry.name).join(', ')}) {
+  let itemIndex = gpu.thread.globalX();
+  status[itemIndex] = evaluateItem(${callArguments});
+}`;
+  const composed = await compileDeviceProgram(runtime, {
+    source: callerSource,
+    functions: [{ name: 'evaluateBatch', kind: 'kernel', parameters: kernelParameters, returns: 'void' }],
+    imports: [deviceProgram.importAs('evaluateItem')],
+  });
+  const module = await runtime.loadModule({ format: composed.linker.artifact.format, bytes: composed.linker.artifact.bytes });
+  const descriptor = composed.deviceProgram.kernels.find((entry) => entry.name === 'evaluateBatch');
+  const fn = await module.getFunction({ name: descriptor.functionName, parameters: descriptor.parameters });
+  const allocations = [];
+  const views = [];
+  let operation = null;
+  try {
+    const inputValues = {
+      features: numericBytes('f32', [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]),
+      weights: numericBytes('f32', [1, 2, 3, 4, 5, 6]),
+      bias: numericBytes('f32', [10, 20]),
+    };
+    const arguments_ = [];
+    for (const parameter of pointerParameters) {
+      const memory = await runtime.allocateDevice({ byteLength: parameter.byteLength });
+      allocations.push(memory);
+      const view = await memory.view({ dtype: parameter.dtype, elementCount: parameter.elementCount, access: parameter.access });
+      views.push(view);
+      arguments_.push(view);
+      if (parameter.role === 'input') await memory.write(inputValues[parameter.name]);
+    }
+    const statusMemory = await runtime.allocateDevice({ byteLength: 8 * 4 });
+    allocations.push(statusMemory);
+    const statusView = await statusMemory.view({ dtype: 'u32', elementCount: 8, access: 'write' });
+    views.push(statusView);
+    arguments_.push(statusView);
+    operation = await fn.submit({
+      grid: { x: 1, y: 1, z: 1 },
+      block: { x: 8, y: 1, z: 1 },
+      arguments: arguments_,
+      accesses: [
+        ...pointerParameters.map((parameter, argumentIndex) => ({ argumentIndex, byteOffset: 0, byteLength: parameter.byteLength, mode: parameter.access })),
+        { argumentIndex: pointerParameters.length, byteOffset: 0, byteLength: 32, mode: 'write' },
+      ],
+    });
+    assert.equal((await operation.wait()).status, 'completed');
+    const valuesParameter = pointerParameters.find((entry) => entry.role === 'output' && entry.name === 'values');
+    const scoreParameter = pointerParameters.find((entry) => entry.role === 'output' && entry.name === 'score');
+    const valuesMemory = allocations[pointerParameters.indexOf(valuesParameter)];
+    const scoreMemory = allocations[pointerParameters.indexOf(scoreParameter)];
+    const values = numericValues('f32', (await valuesMemory.read({ byteLength: valuesParameter.byteLength })).bytes);
+    const scores = numericValues('f32', (await scoreMemory.read({ byteLength: scoreParameter.byteLength })).bytes);
+    const statuses = Array.from(new Uint32Array((await statusMemory.read({ byteLength: 32 })).bytes.buffer));
+    assert.deepEqual(values, [32, 48, 59, 84, 86, 120, 113, 156]);
+    assert.deepEqual(scores, [80, 143, 206, 269]);
+    assert.deepEqual(statuses, [0, 0, 0, 0, 1, 1, 1, 1]);
+    summary.deviceCallable = {
+      format: deviceProgram.library.format,
+      architecture: deviceProgram.library.architecture,
+      parameters: deviceProgram.parameters.length,
+      workspaceBytes: deviceProgram.totalWorkspaceBytes,
+      values,
+      scores,
+      statuses,
+    };
+  } finally {
+    if (operation) await operation.close();
+    await fn.close();
+    await module.close();
+    for (const view of views.reverse()) if (view.state === 'open') await view.close();
+    for (const memory of allocations.reverse()) if (memory.state === 'open') await memory.close();
+  }
 } finally {
   sessionTerminal = await session.close();
   runtimeTerminal = await runtime.close();

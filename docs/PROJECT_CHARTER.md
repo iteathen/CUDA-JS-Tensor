@@ -19,6 +19,7 @@ Training loops, neural layers, autodiff, losses, optimizers, checkpoints, model 
 - A caller can open a safe default session and perform useful dense tensor work with minimal configuration.
 - An expert can specify exact dtype, shape, stride, active extent, precision, aliasing, workspace, backend and lifecycle policies.
 - Both forms resolve to one inspectable canonical plan.
+- A consumer that owns device-side progress can import one finite item-independent Tensor program without a host advancement loop or Tensor-owned scheduler.
 - The complete SIMT path works without optional accelerators.
 - Qualified accelerated variants are strongly recommended only where end-to-end evidence justifies them.
 - Removing CUDA-MCGS, neural inference, or any first consumer leaves the tensor library coherent.

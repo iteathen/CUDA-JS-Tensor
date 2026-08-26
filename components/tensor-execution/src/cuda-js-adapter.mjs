@@ -12,6 +12,7 @@ const PREFERENCE_FALLBACK_CODES = new Set([
   'TENSOR_CUBLASLT_WORKSPACE_COUNT_LIMIT',
 ]);
 const SHARED_CUBLASLT = new WeakMap();
+const DEFAULT_PORTS = Object.freeze({ compileDeviceProgram });
 
 function tensorCleanupFailure(code, message, primary, cleanup) {
   fail(code, 'cleanup-unproved', message, { primary: failureSummary(primary), cleanup }, { cause: primary });
@@ -112,13 +113,13 @@ function planRecord(plan) {
   });
 }
 
-async function compileSimtKernels(runtime, lowering, selectedNodeIds, resources) {
+async function compileSimtKernels(runtime, lowering, selectedNodeIds, resources, compileProgram) {
   const kernels = lowering.kernels.filter((kernel) => !selectedNodeIds.has(kernel.id));
   if (kernels.length === 0) return Object.freeze({ kernels: Object.freeze([]), functionByName: new Map(), compiler: null, deviceProgram: null, module: null });
   const functionNames = new Set(kernels.map((kernel) => kernel.functionName));
   const functions = lowering.functions.filter((entry) => functionNames.has(entry.name));
   const source = kernels.map((kernel) => kernel.source).join('\n\n');
-  const compiled = await compileDeviceProgram(runtime, { source, functions });
+  const compiled = await compileProgram(runtime, { source, functions });
   resources.module = await runtime.loadModule({ format: compiled.compiler.artifact.format, bytes: compiled.compiler.artifact.bytes });
   const descriptors = new Map(compiled.deviceProgram.kernels.map((entry) => [entry.name, entry]));
   for (const kernel of kernels) {
@@ -141,7 +142,10 @@ async function compileSimtKernels(runtime, lowering, selectedNodeIds, resources)
   });
 }
 
-export async function createCudaJsTensorBackend(runtime, lowering, request, options) {
+export async function createCudaJsTensorBackend(runtime, lowering, request, options, ports = DEFAULT_PORTS) {
+  if (ports === null || typeof ports !== 'object' || Object.keys(ports).some((key) => key !== 'compileDeviceProgram') || typeof ports.compileDeviceProgram !== 'function') {
+    fail('TENSOR_BACKEND_PORTS_INVALID', 'validation', 'Tensor backend ports require exactly one compileDeviceProgram function.');
+  }
   const resources = { module: null, functions: [], dag: null, plans: [], adapterLease: null };
   const outcomes = request.matmuls.map((entry) => simtOutcome(entry));
   const outcomeIndex = new Map(outcomes.map((entry, index) => [entry.semanticNode, index]));
@@ -226,7 +230,7 @@ export async function createCudaJsTensorBackend(runtime, lowering, request, opti
       if (!release.graceful) fail('TENSOR_CUBLASLT_ADAPTER_ROLLBACK_UNPROVED', 'cleanup-unproved', 'Unused shared cuBLASLt adapter cleanup was not proved.', { failures: release.failures });
     }
 
-    const compiled = await compileSimtKernels(runtime, lowering, new Set(selected.keys()), resources);
+    const compiled = await compileSimtKernels(runtime, lowering, new Set(selected.keys()), resources, ports.compileDeviceProgram);
     const nodes = lowering.kernels.map((kernel) => {
       const accelerated = selected.get(kernel.id);
       if (accelerated) {
