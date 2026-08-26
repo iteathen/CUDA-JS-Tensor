@@ -8,7 +8,7 @@ function expectCode(code) {
   return (error) => error?.code === code;
 }
 
-function fakeRuntime({ allocationFailure = null, viewFailure = null, viewCloseFailures = [], memoryCloseFailure = null, version = '0.1.0-alpha.12' } = {}) {
+function fakeRuntime({ allocationFailure = null, viewFailure = null, viewCloseFailures = [], memoryCloseFailure = null, version = '0.1.0-alpha.14' } = {}) {
   let runtimeClosed = false;
   let memoryClosed = false;
   let viewClosed = false;
@@ -20,8 +20,11 @@ function fakeRuntime({ allocationFailure = null, viewFailure = null, viewCloseFa
     },
     async allocateDevice({ byteLength }) {
       if (allocationFailure) throw allocationFailure;
+      const storage = new Uint8Array(byteLength);
       return {
         byteLength,
+        async write(bytes, { deviceOffset = 0 } = {}) { storage.set(Uint8Array.from(bytes), deviceOffset); return { byteLength: bytes.byteLength }; },
+        async read({ deviceOffset = 0, byteLength: readLength }) { return { bytes: Uint8Array.from(storage.subarray(deviceOffset, deviceOffset + readLength)) }; },
         async view(options) {
           if (viewFailure) throw viewFailure;
           return {
@@ -61,7 +64,7 @@ test('borrowed session overloads normalize defaults and preserve caller runtime 
   assert.deepEqual(Object.keys(easy), []);
   assert.equal(JSON.stringify(easy), '{}');
   assert.equal(easy.spec.compatibilityIdentity, explicit.spec.compatibilityIdentity);
-  assert.deepEqual((await session.status()).accounting, { liveTensors: 2, reservedBytes: 48, pendingCreates: 0, unprovedResources: 0 });
+  assert.deepEqual((await session.status()).accounting, { liveTensors: 2, reservedBytes: 48, pendingCreates: 0, resolvedPlans: 0, pendingResolutions: 0, unprovedResources: 0 });
 
   await easy.close();
   await explicit.close();
@@ -138,7 +141,7 @@ test('session limits reserve before asynchronous work and recover after ordinary
   const tensor = await tensorPromise;
   await tensor.close();
   await assert.rejects(session.allocate('f64', [3]), expectCode('TENSOR_ALLOCATION_LIMIT'));
-  assert.deepEqual((await session.status()).accounting, { liveTensors: 0, reservedBytes: 0, pendingCreates: 0, unprovedResources: 0 });
+  assert.deepEqual((await session.status()).accounting, { liveTensors: 0, reservedBytes: 0, pendingCreates: 0, resolvedPlans: 0, pendingResolutions: 0, unprovedResources: 0 });
   await session.close();
   await runtime.close();
 });
@@ -148,7 +151,7 @@ test('CUDA-JS allocation and view admission failures release provisional session
   const allocationRuntime = fakeRuntime({ allocationFailure });
   const allocationSession = await TensorSession.open(allocationRuntime);
   await assert.rejects(allocationSession.allocate('f32', [4]), expectCode('MEMORY_ALLOCATION_FAILED'));
-  assert.deepEqual((await allocationSession.status()).accounting, { liveTensors: 0, reservedBytes: 0, pendingCreates: 0, unprovedResources: 0 });
+  assert.deepEqual((await allocationSession.status()).accounting, { liveTensors: 0, reservedBytes: 0, pendingCreates: 0, resolvedPlans: 0, pendingResolutions: 0, unprovedResources: 0 });
   await allocationSession.close();
   await allocationRuntime.close();
 
@@ -156,7 +159,7 @@ test('CUDA-JS allocation and view admission failures release provisional session
   const viewRuntime = fakeRuntime({ viewFailure });
   const viewSession = await TensorSession.open(viewRuntime);
   await assert.rejects(viewSession.allocate('f32', [4]), expectCode('MEMORY_VIEW_FAILED'));
-  assert.deepEqual((await viewSession.status()).accounting, { liveTensors: 0, reservedBytes: 0, pendingCreates: 0, unprovedResources: 0 });
+  assert.deepEqual((await viewSession.status()).accounting, { liveTensors: 0, reservedBytes: 0, pendingCreates: 0, resolvedPlans: 0, pendingResolutions: 0, unprovedResources: 0 });
   assert.equal(viewRuntime.memoryClosed, true);
   await viewSession.close();
   await viewRuntime.close();
@@ -175,6 +178,28 @@ test('retriable view-close backpressure preserves the tensor for a later termina
   await runtime.close();
 });
 
+test('public tensor byte transfers snapshot exact contiguous logical storage and enforce access', async () => {
+  const runtime = fakeRuntime();
+  const session = await TensorSession.open(runtime);
+  const tensor = await session.allocate({ dtype: 'u32', capacityShape: [2], access: 'read-write' });
+  const input = Uint8Array.of(1, 2, 3, 4, 5, 6, 7, 8);
+  assert.equal((await tensor.write(input)).byteLength, 8);
+  input.fill(0);
+  const first = await tensor.read();
+  assert.deepEqual([...first.bytes], [1, 2, 3, 4, 5, 6, 7, 8]);
+  first.bytes.fill(9);
+  assert.deepEqual([...(await tensor.read()).bytes], [1, 2, 3, 4, 5, 6, 7, 8]);
+  const readOnly = await tensor.view({ dtype: 'u32', capacityShape: [2], access: 'read' });
+  await assert.rejects(readOnly.write(new Uint8Array(8)), expectCode('TENSOR_WRITE_ACCESS_DENIED'));
+  await readOnly.close();
+  const strided = await tensor.view({ dtype: 'u32', capacityShape: [1], strides: [2], access: 'read' });
+  await assert.rejects(strided.read(), expectCode('TENSOR_TRANSFER_LAYOUT_UNSUPPORTED'));
+  await strided.close();
+  await tensor.close();
+  await session.close();
+  await runtime.close();
+});
+
 test('non-retriable allocation close failure remains explicit and never recovers reserved bytes', async () => {
   const closeFailure = Object.assign(new Error('free unproved'), { code: 'MEMORY_FREE_UNPROVED', category: 'restart-required' });
   const runtime = fakeRuntime({ memoryCloseFailure: closeFailure });
@@ -183,7 +208,7 @@ test('non-retriable allocation close failure remains explicit and never recovers
   const tensorReport = await tensor.close();
   assert.equal(tensorReport.disposition, 'cleanup-unproved');
   assert.equal(tensor.state, 'orphaned');
-  assert.deepEqual((await session.status()).accounting, { liveTensors: 0, reservedBytes: 16, pendingCreates: 0, unprovedResources: 1 });
+  assert.deepEqual((await session.status()).accounting, { liveTensors: 0, reservedBytes: 16, pendingCreates: 0, resolvedPlans: 0, pendingResolutions: 0, unprovedResources: 1 });
   const sessionReport = await session.close();
   assert.equal(sessionReport.graceful, false);
   assert.equal(sessionReport.state, 'orphaned');
@@ -196,7 +221,7 @@ test('allocation rollback retains capacity and reports cleanup as unproved', asy
   const runtime = fakeRuntime({ viewFailure, memoryCloseFailure: closeFailure });
   const session = await TensorSession.open(runtime);
   await assert.rejects(session.allocate('f32', [4]), (error) => error instanceof TensorError && error.code === 'TENSOR_ALLOCATION_ROLLBACK_UNPROVED');
-  assert.deepEqual((await session.status()).accounting, { liveTensors: 0, reservedBytes: 16, pendingCreates: 0, unprovedResources: 1 });
+  assert.deepEqual((await session.status()).accounting, { liveTensors: 0, reservedBytes: 16, pendingCreates: 0, resolvedPlans: 0, pendingResolutions: 0, unprovedResources: 1 });
   const report = await session.close();
   assert.equal(report.graceful, false);
   assert.equal(report.state, 'orphaned');

@@ -27,4 +27,6 @@ A changed child view may be derived from a contiguous parent when its exact byte
 
 The package-internal `inspectTensorForSession` port is the only future planner/adapter bridge. It rejects cross-session and terminal resources before returning the public CUDA-JS typed view capability inside the package. It is not an installed-package export.
 
+`Tensor.write(bytes)` and `Tensor.read()` are explicit copied-byte ports for contiguous non-broadcast logical tensors. They enforce access, snapshot storage, perform no dtype conversion, and return zero-byte success for empty tensors. Strided host transfer rejects until an exact gather/scatter owner is accepted.
+
 `npm run smoke:native:tensor-value` performs an optional bounded allocation/view/terminal-cleanup smoke on the current host. A pass proves only that lifecycle path on that invocation; it is not native qualification or numerical evidence.

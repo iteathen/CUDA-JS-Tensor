@@ -102,6 +102,8 @@ export class Tensor {
   readonly access: TensorAccess;
   readonly aliasGroup: string;
   readonly sessionCompatibilityIdentity: string;
+  write(bytes: Uint8Array): Promise<Readonly<{ schemaVersion: 1; kind: 'tensor-write'; byteLength: number }>>;
+  read(): Promise<Readonly<{ schemaVersion: 1; kind: 'tensor-read'; byteLength: number; bytes: Uint8Array }>>;
   view(): Promise<Tensor>;
   view(spec: TensorSpec): Promise<Tensor>;
   view(options: TensorSpecOptions): Promise<Tensor>;

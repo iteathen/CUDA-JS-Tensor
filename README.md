@@ -1,6 +1,6 @@
 # CUDA-JS-Tensor
 
-CUDA-JS-Tensor is a consumer-neutral tensor library for CUDA-JS. Its first portable value slice provides an easy canonical facade and complete expert contracts for finite tensor shapes, views, session ownership and resource bounds. Operation DAGs, resolved execution plans, generated SIMT kernels, and qualified accelerated dense-math adapters remain the next bounded slices.
+CUDA-JS-Tensor is a consumer-neutral tensor library for CUDA-JS. Its public alpha layers an easy canonical facade over complete expert contracts for finite tensor values, immutable operation DAGs, session-bound resolved plans and generated SIMT execution. Qualified accelerated dense-math adapters remain separate bounded successors.
 
 The design deliberately separates layers:
 
@@ -16,7 +16,7 @@ The project is not a neural-network framework, training system, CUDA binding, or
 
 ## Current status
 
-Public pre-release. `cuda-js-tensor@0.1.0-alpha.2` implements the portable/package `TensorSession`/`TensorSpec`/`Tensor` value foundation plus immutable first-dense `TensorProgram` and finite static `TensorPlan` semantics over the exact public `cuda-js@0.1.0-alpha.12` compatibility revision. The package remains publication-guarded; no npm publication, resolved dense execution, native qualification, or performance support claim exists.
+Public pre-release. `cuda-js-tensor@0.1.0-alpha.3` is the validated SPEC-0005 candidate over exact public `cuda-js@0.1.0-alpha.14` from protected `main@fb27296cffd7191180b0e3cd609224ed2ded182e`. It retains `TensorSession`/`TensorSpec`/`Tensor`, immutable first-dense `TensorProgram` and finite static `TensorPlan`, and adds public copied-byte seeding/observation plus session-bound `ResolvedTensorPlan`, complete generated Device-JS SIMT lowering, one prepared DAG and per-run `TensorExecutionResult` ownership. Full portable/package validation and an installed public-package Windows CUDA 13.3/compute_75/GTX 1660 Ti mathematical/replay/cleanup fixture pass. The package remains publication-guarded; this evidence does not imply npm publication, another native profile, accelerator, tensor-core, fusion or performance support.
 
 The first dense slice targets:
 

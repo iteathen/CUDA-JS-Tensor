@@ -1,6 +1,6 @@
 {
   "name": "cuda-js-tensor",
-  "version": "0.1.0-alpha.2",
+  "version": "0.1.0-alpha.3",
   "description": "Consumer-neutral tensor planning and accelerated tensor execution for CUDA-JS",
   "type": "module",
   "private": true,
@@ -14,8 +14,10 @@
     "test": "node --test",
     "test:tensor-value": "node --test components/tensor-value/test/*.test.mjs",
     "test:tensor-program": "node --test components/tensor-program/test/*.test.mjs",
+    "test:tensor-execution": "node --test components/tensor-execution/test/*.test.mjs",
     "test:package": "node --test test/package-consumer.test.mjs",
     "smoke:native:tensor-value": "node --experimental-ffi scripts/smoke-tensor-value-native.mjs",
+    "smoke:native:tensor-execution": "node scripts/run-tensor-execution-native.mjs",
     "verify": "node scripts/verify.mjs && node --test"
   },
   "exports": {
@@ -38,11 +40,16 @@
     "components/tensor-program/*.md",
     "components/tensor-program/*.yaml",
     "components/tensor-program/src/",
+    "components/tensor-execution/*.mjs",
+    "components/tensor-execution/*.d.ts",
+    "components/tensor-execution/*.md",
+    "components/tensor-execution/*.yaml",
+    "components/tensor-execution/src/",
     "components/public-api/",
     "scripts/smoke-tensor-value-native.mjs"
   ],
   "dependencies": {
-    "cuda-js": "https://codeload.github.com/iteathen/CUDA-JS/tar.gz/2da65ff2e4287450171c477031dd380a21fa095f"
+    "cuda-js": "https://codeload.github.com/iteathen/CUDA-JS/tar.gz/fb27296cffd7191180b0e3cd609224ed2ded182e"
   },
   "repository": {
     "type": "git",

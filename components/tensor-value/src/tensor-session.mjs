@@ -6,12 +6,12 @@ import { createTensorSpec, TensorSpec } from './tensor-spec.mjs';
 export const CUDA_JS_TENSOR_COMPATIBILITY = deepFreeze({
   schemaVersion: 1,
   contract: 'SPEC-0001-tensor-session-value-v1',
-  package: { name: 'cuda-js-tensor', version: '0.1.0-alpha.2' },
+  package: { name: 'cuda-js-tensor', version: '0.1.0-alpha.3' },
   cudaJs: {
     name: 'cuda-js',
-    version: '0.1.0-alpha.12',
+    version: '0.1.0-alpha.14',
     publicApiSchema: 1,
-    protectedMainRevision: '2da65ff2e4287450171c477031dd380a21fa095f',
+    protectedMainRevision: 'fb27296cffd7191180b0e3cd609224ed2ded182e',
   },
 });
 
@@ -327,6 +327,9 @@ export class TensorSession {
       tensorSequence: 0,
       storageSequence: 0,
       pendingCreates: 0,
+      pendingExecutionCreates: 0,
+      executionChildren: new Set(),
+      executionSequence: 0,
       liveTensorCount: 0,
       reservedBytes: 0,
       unproved: [],
@@ -380,16 +383,29 @@ export class TensorSession {
       compatibilityIdentity: data.compatibilityIdentity,
       limits: { ...data.limits },
       defaults: { ...data.defaults },
-      accounting: { liveTensors: data.liveTensorCount, reservedBytes: data.reservedBytes, pendingCreates: data.pendingCreates, unprovedResources: data.unproved.length },
+      accounting: { liveTensors: data.liveTensorCount, reservedBytes: data.reservedBytes, pendingCreates: data.pendingCreates, resolvedPlans: data.executionChildren.size, pendingResolutions: data.pendingExecutionCreates, unprovedResources: data.unproved.length },
     });
   }
 
   async close() {
     const data = sessionData(this, 'TensorSession.close');
     if (data.state === 'closed' || data.state === 'orphaned') return data.terminalReport;
-    if (data.pendingCreates > 0) fail('TENSOR_SESSION_BUSY', 'backpressure', 'TensorSession cannot close while tensor creation is in progress.', { pendingCreates: data.pendingCreates });
+    if (data.pendingCreates > 0 || data.pendingExecutionCreates > 0) fail('TENSOR_SESSION_BUSY', 'backpressure', 'TensorSession cannot close while tensor or resolved-plan creation is in progress.', { pendingCreates: data.pendingCreates, pendingResolutions: data.pendingExecutionCreates });
     data.state = 'closing';
     const failures = [];
+    for (const child of [...data.executionChildren].reverse()) {
+      try {
+        const report = await child.close();
+        if (report?.graceful !== true) failures.push(Object.freeze({ kind: 'resolved-plan', failure: { code: 'TENSOR_RESOLVED_PLAN_CLEANUP_UNPROVED', category: 'cleanup-unproved', name: 'TensorError' } }));
+      } catch (error) {
+        if (error?.category === 'backpressure') {
+          data.state = 'open';
+          fail('TENSOR_SESSION_BUSY', 'backpressure', 'TensorSession cannot close while a resolved plan remains busy.', { causeCode: error.code ?? null }, { cause: error });
+        }
+        failures.push(Object.freeze({ kind: 'resolved-plan', failure: failureSummary(error) }));
+        data.unproved.push(Object.freeze({ kind: 'resolved-plan', failure: failureSummary(error), allocationBytes: 0 }));
+      }
+    }
     const tensors = [...data.tensors].sort((left, right) => {
       const leftData = tensorData(left, 'TensorSession.close');
       const rightData = tensorData(right, 'TensorSession.close');
@@ -402,6 +418,10 @@ export class TensorSession {
         const report = await closeTensor(tensor);
         if (report.disposition !== 'closed') failures.push(Object.freeze({ kind: 'tensor', failure: { code: 'TENSOR_CLEANUP_UNPROVED', category: 'cleanup-unproved', name: 'TensorError' } }));
       } catch (error) {
+        if (error?.category === 'backpressure') {
+          data.state = 'open';
+          fail('TENSOR_SESSION_BUSY', 'backpressure', 'TensorSession cannot close while a tensor resource remains busy.', { causeCode: error.code ?? null }, { cause: error });
+        }
         failures.push(Object.freeze({ kind: 'tensor', failure: failureSummary(error) }));
       }
     }
@@ -409,7 +429,7 @@ export class TensorSession {
     let runtimeReport = null;
     if (data.ownershipMode === 'owned') {
       try { runtimeReport = await data.runtime.close(); } catch (error) { failures.push(Object.freeze({ kind: 'runtime', failure: failureSummary(error) })); }
-      data.state = runtimeReport?.graceful === true ? 'closed' : 'orphaned';
+      data.state = runtimeReport?.graceful === true && failures.length === 0 && data.unproved.length === 0 ? 'closed' : 'orphaned';
     } else if (failures.length === 0 && data.unproved.length === 0) {
       data.state = 'closed';
     } else {
@@ -427,7 +447,7 @@ export class TensorSession {
       runtimeGraceful: data.ownershipMode === 'owned' ? runtimeReport?.graceful === true : null,
       failures,
       unprovedResources: data.unproved.map((entry) => ({ ...entry })),
-      accounting: { liveTensors: data.liveTensorCount, reservedBytes: data.reservedBytes },
+      accounting: { liveTensors: data.liveTensorCount, reservedBytes: data.reservedBytes, resolvedPlans: data.executionChildren.size, pendingResolutions: data.pendingExecutionCreates },
     });
     if (data.state !== 'open') data.terminalReport = report;
     return report;
@@ -451,6 +471,31 @@ export class Tensor {
   get access() { return tensorData(this, 'Tensor.access').spec.access; }
   get aliasGroup() { return tensorData(this, 'Tensor.aliasGroup').aliasGroup; }
   get sessionCompatibilityIdentity() { return tensorData(this, 'Tensor.sessionCompatibilityIdentity').sessionData.compatibilityIdentity; }
+
+  async write(bytes) {
+    const data = tensorData(this, 'Tensor.write');
+    assertTensorOpen(data, 'Tensor.write');
+    assertSessionOpen(data.sessionData, 'Tensor.write');
+    if (data.spec.access === 'read') fail('TENSOR_WRITE_ACCESS_DENIED', 'validation', 'Tensor.write requires write authority.');
+    if (data.spec.layout !== 'row-major-contiguous' || data.spec.hasBroadcastAliasing) fail('TENSOR_TRANSFER_LAYOUT_UNSUPPORTED', 'unsupported', 'Tensor.write requires a contiguous non-broadcast tensor; materialize strided values first.');
+    const byteLength = data.spec.logicalElementCount * data.spec.dtypeWidth;
+    if (!(bytes instanceof Uint8Array) || bytes.byteLength !== byteLength) fail('TENSOR_WRITE_BYTES_INVALID', 'validation', 'Tensor.write requires exactly one logical tensor of bytes.', { expected: byteLength, actual: bytes instanceof Uint8Array ? bytes.byteLength : null });
+    if (byteLength > 0) await data.memory.write(Uint8Array.from(bytes), { deviceOffset: data.spec.byteOffset });
+    return deepFreeze({ schemaVersion: 1, kind: 'tensor-write', byteLength });
+  }
+
+  async read() {
+    const data = tensorData(this, 'Tensor.read');
+    assertTensorOpen(data, 'Tensor.read');
+    assertSessionOpen(data.sessionData, 'Tensor.read');
+    if (data.spec.access === 'write') fail('TENSOR_READ_ACCESS_DENIED', 'validation', 'Tensor.read requires read authority.');
+    if (data.spec.layout !== 'row-major-contiguous' || data.spec.hasBroadcastAliasing) fail('TENSOR_TRANSFER_LAYOUT_UNSUPPORTED', 'unsupported', 'Tensor.read requires a contiguous non-broadcast tensor; materialize strided values first.');
+    const byteLength = data.spec.logicalElementCount * data.spec.dtypeWidth;
+    const bytes = byteLength === 0
+      ? new Uint8Array()
+      : Uint8Array.from((await data.memory.read({ deviceOffset: data.spec.byteOffset, byteLength })).bytes);
+    return Object.freeze({ schemaVersion: 1, kind: 'tensor-read', byteLength, bytes });
+  }
 
   async view(options) {
     const parentData = tensorData(this, 'Tensor.view');
@@ -532,5 +577,49 @@ export function inspectTensorForSession(session, tensor) {
     storageIdentity: data.storageIdentity,
     aliasGroup: data.aliasGroup,
     sessionCompatibilityIdentity: owner.compatibilityIdentity,
+  });
+}
+
+export function inspectTensorSessionForExecution(session) {
+  const data = sessionData(session, 'inspectTensorSessionForExecution');
+  assertSessionOpen(data, 'inspectTensorSessionForExecution');
+  return Object.freeze({
+    runtime: data.runtime,
+    compatibilityIdentity: data.compatibilityIdentity,
+    runtimeIdentity: data.runtimeIdentity,
+    limits: data.limits,
+    accounting: Object.freeze({ liveTensors: data.liveTensorCount, reservedBytes: data.reservedBytes, pendingCreates: data.pendingCreates, resolvedPlans: data.executionChildren.size, pendingResolutions: data.pendingExecutionCreates }),
+  });
+}
+
+export function reserveTensorSessionExecution(session) {
+  const data = sessionData(session, 'reserveTensorSessionExecution');
+  assertSessionOpen(data, 'reserveTensorSessionExecution');
+  data.pendingExecutionCreates += 1;
+  let state = 'pending';
+  let child = null;
+  const cancel = () => {
+    if (state !== 'pending') return;
+    state = 'cancelled';
+    data.pendingExecutionCreates -= 1;
+  };
+  return Object.freeze({
+    commit(close) {
+      if (state !== 'pending' || typeof close !== 'function') fail('TENSOR_EXECUTION_REGISTRATION_INVALID', 'internal', 'Resolved-plan session registration is invalid.');
+      assertSessionOpen(data, 'reserveTensorSessionExecution.commit');
+      child = Object.freeze({ sequence: ++data.executionSequence, close });
+      data.pendingExecutionCreates -= 1;
+      data.executionChildren.add(child);
+      state = 'registered';
+      return Object.freeze({
+        release(report) {
+          if (state !== 'registered') return;
+          state = 'released';
+          data.executionChildren.delete(child);
+          if (report?.graceful !== true) data.unproved.push(Object.freeze({ kind: 'resolved-plan', failure: { code: 'TENSOR_RESOLVED_PLAN_CLEANUP_UNPROVED', category: 'cleanup-unproved', name: 'TensorError' }, allocationBytes: 0 }));
+        },
+      });
+    },
+    cancel,
   });
 }
