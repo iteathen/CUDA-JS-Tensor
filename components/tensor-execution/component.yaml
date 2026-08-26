@@ -3,7 +3,7 @@
   "component": {
     "id": "tensor.execution.simt",
     "name": "Resolved tensor plan and generated SIMT execution",
-    "status": "public-alpha-candidate",
+    "status": "public-alpha",
     "product_area": "components",
     "path": "components/tensor-execution",
     "purpose": "Bind immutable tensor plans to one session and a complete deterministic Device-JS SIMT realization with finite prepared execution and explicit result cleanup.",

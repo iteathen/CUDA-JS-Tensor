@@ -3,13 +3,13 @@
 ```text
 repository:                 public protected foundation established
 package name:               cuda-js-tensor (reserved by intent, unpublished)
-package version:            0.1.0-alpha.3 validated candidate (publication-guarded)
+package version:            0.1.0-alpha.3 (publication-guarded)
 phase:                      resolved generated-SIMT implementation pre-release
-production implementation: value + immutable program/static plan + resolved SIMT candidate
-native qualification:       exact installed-package Windows CUDA 13.3/compute_75/GTX 1660 Ti candidate passes
+production implementation: value + immutable program/static plan + resolved SIMT
+native qualification:       exact installed-package Windows CUDA 13.3/compute_75/GTX 1660 Ti profile passes
 performance claims:         none
 exact CUDA-JS pair:         0.1.0-alpha.14 at fb27296cffd7
-current target:             TENSOR-SIMT-012 exact-head review and protected integration
+current target:             TENSOR-CUBLASLT-013 assessment/specification under issue #8
 ```
 
 The first product is a universal tensor library with convenience layered over complete contracts. Dense operations are the first bounded slice, not evidence that every future tensor or consumer is dense.

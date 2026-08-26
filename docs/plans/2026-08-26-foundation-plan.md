@@ -25,8 +25,8 @@
 | `CJS-DEVICE-NUMERIC-005` | Upstream consumer-neutral dense numeric Device-JS profile ([CUDA-JS #139](https://github.com/iteathen/CUDA-JS/issues/139)) | Implemented program semantics expose exact executor needs | Completed in CUDA-JS SPEC-0030; alpha.14 also corrects native prepared-DAG identity and proves exact recorded-profile replay. |
 | `TENSOR-VALUE-010` | Portable TensorSession/TensorSpec/Tensor value model | `CJS-TENSOR-VIEW-001` for native path | Implemented portable/package profile; zero/one/many shapes, views, limits, ownership, overload equivalence, deletion and cleanup pass. Native promotion remains unclaimed. |
 | `TENSOR-PROGRAM-011` | Immutable TensorProgram and finite static TensorPlan | `TENSOR-VALUE-010` | Implemented portable/package profile: first dense inference, declared alias/lifetime/distinct-allocation identity and failure tests pass; execution facts remain explicitly unresolved. |
-| `TENSOR-SIMT-012` | ResolvedTensorPlan plus generated Device-JS dense baseline | public views/compiler/operations, `TENSOR-PROGRAM-011`, and achieved `CJS-DEVICE-NUMERIC-005` profile | Alpha.3 candidate passes exact session/backend/program/workspace/cleanup binding, full portable/package validation and an independent installed-package Windows native mathematical/replay/lifecycle fixture; protected integration remains. |
-| `TENSOR-CUBLASLT-013` | Host accelerated matmul adapter | `CJS-LIB-ADAPTER-004`, `TENSOR-PROGRAM-011` | Exact/tolerance oracle and representative benefit including all overhead. |
+| `TENSOR-SIMT-012` | ResolvedTensorPlan plus generated Device-JS dense baseline | public views/compiler/operations, `TENSOR-PROGRAM-011`, and achieved `CJS-DEVICE-NUMERIC-005` profile | Integrated through PR #7 at `main@a2c9d4a0`; alpha.3 passes exact session/backend/program/workspace/cleanup binding, full portable/package validation and an independent installed-package Windows native mathematical/replay/lifecycle fixture. |
+| `TENSOR-CUBLASLT-013` | Host accelerated matmul adapter ([issue #8](https://github.com/iteathen/CUDA-JS-Tensor/issues/8)) | `CJS-LIB-ADAPTER-004`, `TENSOR-PROGRAM-011`, `TENSOR-SIMT-012` | Exact/tolerance oracle and representative benefit including all overhead; otherwise the complete SIMT backend remains selected. |
 | `TENSOR-DEVICE-DENSE-014` | Device-callable compact dense subgraph | `CJS-DEVICE-LIB-002`, `TENSOR-SIMT-012` | Exact eligibility/resource/participation gates and end-to-end evidence; otherwise fallback. |
 | `TENSOR-RELEASE-020` | Package consumers, examples, compatibility and release evidence | accepted preceding slices | Clean tarball, unrelated consumers, exact support claims, no private dependency. |
 
@@ -36,8 +36,8 @@ Only one shared CUDA-JS contract changes at a time. Downstream evidence is inval
 
 1. Bootstrap and protect the repository.
 2. Integrate the generic CUDA-JS prerequisites and record one exact compatibility pair. Completed through CUDA-JS `fb27296c` / `0.1.0-alpha.14`, including SPEC-0030 dense numeric Device-JS and native prepared-DAG correction.
-3. Implement portable value/program semantics over public CUDA-JS only. `TENSOR-VALUE-010` and the pure `TENSOR-PROGRAM-011` static-plan slice are implemented; resolved execution advances under `TENSOR-SIMT-012`.
-4. Implement the consumer-neutral CUDA-JS dense numeric Device-JS profile exposed by program-semantics assessment, then the generated SIMT path. The upstream profile is integrated; SPEC-0005 now governs the generated SIMT resolved-plan implementation without generated native-source workarounds.
+3. Implement portable value/program semantics over public CUDA-JS only. `TENSOR-VALUE-010`, `TENSOR-PROGRAM-011` and resolved generated SIMT execution under `TENSOR-SIMT-012` are integrated.
+4. Implement the consumer-neutral CUDA-JS dense numeric Device-JS profile exposed by program-semantics assessment, then the generated SIMT path. Both are integrated; SPEC-0005 governs the Tensor resolution/lowering/result boundary without generated native-source workarounds.
 5. Add cuBLASLt, then device-callable dense adapters only after exact public CUDA-JS mechanisms and license/profile review.
 6. Qualify and publish only the exact achieved surface.
 
