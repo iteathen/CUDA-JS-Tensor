@@ -1,6 +1,6 @@
 {
   "name": "cuda-js-tensor",
-  "version": "0.1.0-alpha.5",
+  "version": "0.1.0-alpha.6",
   "description": "Consumer-neutral tensor planning and accelerated tensor execution for CUDA-JS",
   "type": "module",
   "private": true,
@@ -49,7 +49,7 @@
     "scripts/smoke-tensor-value-native.mjs"
   ],
   "dependencies": {
-    "cuda-js": "https://codeload.github.com/iteathen/CUDA-JS/tar.gz/af29b95e0707b36b88ee4e234c25a9e7f7ed3a1d"
+    "cuda-js": "https://codeload.github.com/iteathen/CUDA-JS/tar.gz/4971302cfb48431c0843126a59d5884d84a81641"
   },
   "repository": {
     "type": "git",

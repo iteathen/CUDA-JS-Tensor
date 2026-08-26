@@ -26,7 +26,7 @@ try {
   await copyFile(path.join(root, 'conformance', 'native', 'fixtures', 'resolved-simt-consumer.mjs'), path.join(directory, 'consumer.mjs'));
   run([npmCli, 'install', '--ignore-scripts', '--package-lock=false', path.join(directory, tarball)], directory);
   const installed = JSON.parse(await readFile(path.join(directory, 'node_modules', 'cuda-js-tensor', 'package.json'), 'utf8'));
-  assert.equal(installed.version, '0.1.0-alpha.5');
+  assert.equal(installed.version, '0.1.0-alpha.6');
   const output = run(['--experimental-ffi', 'consumer.mjs'], directory);
   const observation = JSON.parse(output.split(/\r?\n/).at(-1));
   assert.equal(observation.consumer, 'installed-native-resolved-dense');
@@ -39,6 +39,15 @@ try {
   assert.deepEqual(observation.summary.cast, [0, 2_147_483_647, -2_147_483_648, 3, -3]);
   assert.deepEqual(observation.summary.fusion, { fusedKernels: 1, unfusedKernels: 3, fusedNodes: 3, output: [-2, -3, -4, -5], typedOutput: [2, 3], specialValues: { negativeZero: true, nan: true, tail: [null, -4] } });
   assert.deepEqual(observation.summary.fixedTree.output, [0]);
+  assert.deepEqual(observation.summary.deviceCallable, {
+    format: 'ptx',
+    architecture: 'compute_75',
+    parameters: 7,
+    workspaceBytes: 112,
+    values: [32, 48, 59, 84, 86, 120, 113, 156],
+    scores: [80, 143, 206, 269],
+    statuses: [0, 0, 0, 0, 1, 1, 1, 1],
+  });
   console.log(JSON.stringify(observation));
 } finally {
   await rm(directory, { recursive: true, force: true });

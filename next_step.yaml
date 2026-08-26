@@ -1,32 +1,40 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "updated": "2026-08-26",
-  "status": "tensor_arena_child_specification_ready",
-  "objective": "Turn the remaining tensor analysis frames into independently removable production Legos in dependency order without weakening the complete SIMT baseline, importing CUDA-JS ownership or guessing a device participation model.",
+  "status": "cuda_mcgs_tensor_readiness_integration_ready",
+  "objective": "Make CUDA-JS-Tensor usable from CUDA-MCGS device-owned active-search progress through consumer-neutral public CUDA-JS contracts while preserving complete host-planned fallbacks, one-device ownership, explicit finite resources and removable acceleration profiles.",
   "current_focus": {
-    "id": "SPEC-0008-TENSOR-ARENA",
-    "issue": 17,
-    "next_action": "Assess, specify and implement optional result-owned alias-closed material arena reuse over the accepted post-fusion material schedule without changing distinct-allocation defaults or backend workspace ownership.",
-    "exit": "SPEC-0008 is accepted with exact range identity, liveness, alignment, rollback and child-before-parent cleanup semantics, or arena reuse is deferred without changing the complete distinct-allocation path."
+    "id": "MCGS-TENSOR-READY-01",
+    "issue": 19,
+    "plan": "docs/plans/2026-08-26-cuda-mcgs-readiness-assessment-and-plan.md",
+    "next_action": "Review, protectively integrate and read back the alpha.6 SPEC-0009 item-parallel device-callable Tensor program, then record the exact merged revision and reconcile the CUDA-MCGS consumer dependency without beginning CUDA-MCGS production lowering.",
+    "exit": "An installed public CUDA-JS-Tensor package can compile one statically item-independent dense Tensor program as a CUDA-JS leaf library, an unrelated Device-JS caller can import and execute multiple valid/invalid item indices against independent outputs, terminal cleanup is proved on the exact recorded native cell, issue and branch state are disposed, and remaining gaps are correctly assigned."
   },
-  "dependencies": [
-    "cuda-js@0.1.0-alpha.15 protected-main revision af29b95e0707b36b88ee4e234c25a9e7f7ed3a1d (SPEC-0031 implementation entered at 20f831cc51766aee726313f7f78819b576d56307)",
-    "implemented TensorSession/TensorSpec/Tensor portable package surface",
-    "implemented SPEC-0004 TensorProgram and static TensorPlan semantics",
-    "public CUDA-JS Device-JS compiler, typed views, operations and prepared DAG",
-    "implemented CUDA-JS SPEC-0030 dense numeric Device-JS and corrected native prepared-DAG identity",
-    "integrated CUDA-JS-Tensor SPEC-0005 resolved SIMT baseline at main revision a2c9d4a022e016c5ec249b38cdc43dc398309a37",
-    "public CUDA-JS SPEC-0029 context-bound cuBLASLt adapter and SPEC-0031 prepared matmul node"
+  "exact_dependencies": [
+    "cuda-js@0.1.0-alpha.16 protected-main revision 4971302cfb48431c0843126a59d5884d84a81641",
+    "CUDA-JS SPEC-0013 restricted Device-JS",
+    "CUDA-JS SPEC-0028 typed leaf-library composition",
+    "CUDA-JS SPEC-0030 dense numeric Device-JS",
+    "CUDA-JS-Tensor SPEC-0004 dense TensorProgram mathematics"
+  ],
+  "implemented": [
+    "TENSOR-DEVICE-ITEM-014 / SPEC-0009 item-parallel callable profile",
+    "static shared-versus-item input and item-axis independence proof",
+    "finite typed item/input/output/workspace ABI",
+    "dtype-partitioned item-isolated material and fixed-tree scratch workspace",
+    "public compileTensorDeviceProgram and TensorDeviceProgram.importAs",
+    "portable, packed-package and exact installed native import/call/output/cleanup evidence"
   ],
   "deferred": [
-    "TENSOR-DEVICE-DENSE-014 until a real caller selects exact participation and CUDA-JS accepts the minimum generic parallel helpers",
-    "TENSOR-BATCHED-GEMM-015 until CUDA-JS exposes a strided-batched matmul plan/prepared-node child",
-    "TENSOR-PRECISION-GEMM-016 until CUDA-JS exposes closed typed matmul plan/prepared-node children",
-    "TENSOR-ARENA-018 pending accepted SPEC-0008 over the now-accepted post-fusion material schedule",
+    "TENSOR-ARENA-018 result-owned host-planned material arena under issue #17",
+    "TENSOR-BATCHED-GEMM-015 until CUDA-JS exposes a strided-batched matmul child",
+    "TENSOR-PRECISION-GEMM-016 until CUDA-JS exposes closed typed matmul children",
+    "block/warp-cooperative intra-item execution until a selected profile and minimum generic CUDA-JS helpers justify it",
+    "cuBLASDx/CUTLASS and Tensor Core provider profiles until exact compatibility and performance evidence",
     "the_restaurant implementation or repository mutation",
-    "multi-device tensors, P2P, collectives and sharding",
+    "multi-device tensor identity, P2P, collectives and sharding",
     "autodiff, NN layers, optimizers, losses, checkpoints and training policy",
     "publication to npm",
-    "native or performance support claims"
+    "performance recommendation or production-stability claims"
   ]
 }

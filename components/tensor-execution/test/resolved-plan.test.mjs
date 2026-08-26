@@ -11,7 +11,7 @@ function fakeRuntime() {
   const allocations = [];
   return {
     allocations,
-    async describe() { return { package: { name: 'cuda-js', version: '0.1.0-alpha.15', publicApiSchema: 1 }, state: 'open', profile: 'tensor-simt-test', device: null }; },
+    async describe() { return { package: { name: 'cuda-js', version: '0.1.0-alpha.16', publicApiSchema: 1 }, state: 'open', profile: 'tensor-simt-test', device: null }; },
     async allocateDevice({ byteLength }) {
       const memory = {
         kind: 'device-memory', state: 'open', byteLength, id: ++sequence, views: [],

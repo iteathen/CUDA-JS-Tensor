@@ -5,7 +5,6 @@ import { TensorPlan, TensorProgram } from '../../../components/public-api/index.
 import {
   frameArenaReuse,
   frameBatchedMatmul,
-  frameDeviceCallableDense,
   framePrecisionMatmul,
 } from '../src/index.mjs';
 import { TENSOR_IMPLEMENTATION_FRAME_CONTRACT } from '../src/frame-contract.mjs';
@@ -18,7 +17,6 @@ test('all frames reject non-plans and return deterministic deeply immutable anal
   const functions = [
     frameBatchedMatmul,
     framePrecisionMatmul,
-    frameDeviceCallableDense,
     frameArenaReuse,
   ];
   for (const frame of functions) {
@@ -157,75 +155,6 @@ test('precision frame distinguishes SIMT support from a structurally empty propo
   assert.equal(candidate.coveredByCurrentSIMTSemantics, true);
   assert.equal(candidate.supportedByCurrentCublasLtProfile, false);
   assert.equal(candidate.structurallyEligibleForProposedProfile, false);
-});
-
-test('device-callable analysis finds maximal dense regions and exact external boundaries', () => {
-  const tensorPlan = plan((graph) => {
-    const left = graph.input('left', { dtype: 'f32', capacityShape: [2, 3] });
-    const right = graph.input('right', { dtype: 'f32', capacityShape: [3, 4] });
-    const dense = graph.matmul(left, right);
-    const activated = graph.unary('abs', dense);
-    return graph.reduce('sum', activated, { axes: [1] });
-  });
-  const regions = frameDeviceCallableDense(tensorPlan).candidates;
-  assert.equal(regions.length, 1);
-  assert.equal(regions[0].candidateSize, 3);
-  assert.equal(regions[0].matmulCount, 1);
-  assert.deepEqual(regions[0].nodes.map(({ op }) => op), ['matmul', 'unary', 'reduce']);
-  assert.deepEqual(regions[0].boundaryInputs, ['input:left', 'input:right']);
-  assert.deepEqual(regions[0].boundaryOutputs, ['node:2']);
-});
-
-test('device-callable analysis excludes elementwise-only regions', () => {
-  const tensorPlan = plan((graph) => {
-    const input = graph.input('input', { dtype: 'f32', capacityShape: [4] });
-    const root = graph.unary('abs', input);
-    return { left: graph.unary('sqrt', root), right: graph.unary('neg', root) };
-  });
-  assert.deepEqual(frameDeviceCallableDense(tensorPlan).candidates, []);
-});
-
-test('device-callable analysis finds the complete connected matmul region across fan-out and join', () => {
-  const tensorPlan = plan((graph) => {
-    const left = graph.input('left', { dtype: 'f32', capacityShape: [2, 3] });
-    const right = graph.input('right', { dtype: 'f32', capacityShape: [3, 4] });
-    const dense = graph.matmul(left, right);
-    const positive = graph.unary('abs', dense);
-    const negative = graph.unary('neg', dense);
-    return graph.binary('add', positive, negative);
-  });
-  const regions = frameDeviceCallableDense(tensorPlan).candidates;
-  assert.equal(regions.length, 1);
-  assert.equal(regions[0].candidateSize, 4);
-  assert.equal(regions[0].matmulCount, 1);
-  assert.deepEqual(regions[0].nodes.map(({ id }) => id), ['node:0', 'node:1', 'node:2', 'node:3']);
-  assert.deepEqual(regions[0].boundaryInputs, ['input:left', 'input:right']);
-  assert.deepEqual(regions[0].boundaryOutputs, ['node:3']);
-});
-
-test('device-callable analysis retains a standalone matmul as an explicit candidate', () => {
-  const tensorPlan = plan((graph) => graph.matmul(
-    graph.input('left', { dtype: 'f32', capacityShape: [2, 3] }),
-    graph.input('right', { dtype: 'f32', capacityShape: [3, 4] }),
-  ));
-  const candidate = frameDeviceCallableDense(tensorPlan).candidates[0];
-  assert.equal(candidate.candidateSize, 1);
-  assert.equal(candidate.matmulCount, 1);
-  assert.deepEqual(candidate.boundaryInputs, ['input:left', 'input:right']);
-  assert.deepEqual(candidate.boundaryOutputs, ['node:0']);
-});
-
-test('device-callable analysis exposes every observable output inside one connected region', () => {
-  const tensorPlan = plan((graph) => {
-    const dense = graph.matmul(
-      graph.input('left', { dtype: 'f32', capacityShape: [2, 3] }),
-      graph.input('right', { dtype: 'f32', capacityShape: [3, 4] }),
-    );
-    const activated = graph.unary('abs', dense);
-    return { dense, activated };
-  });
-  const candidate = frameDeviceCallableDense(tensorPlan).candidates[0];
-  assert.deepEqual(candidate.boundaryOutputs, ['node:0', 'node:1']);
 });
 
 test('arena first-fit reuses only non-overlapping lifetimes and reports exact savings', () => {

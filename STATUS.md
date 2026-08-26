@@ -1,31 +1,30 @@
 # Status
 
 ```text
-repository:                 public protected foundation established
+repository:                 public protected pre-release
 package name:               cuda-js-tensor (reserved by intent, unpublished)
-package version:            0.1.0-alpha.5 (publication-guarded)
-phase:                      exact fusion production LEGO implemented; result-owned arena child next
-production implementation: value + immutable program/static plan + complete SIMT + optional exact fusion + bounded optional cuBLASLt
-native qualification:       exact installed-package Windows CUDA 13.3/compute_75/GTX 1660 Ti alpha.5 candidate passes
+package version:            0.1.0-alpha.6 (publication-guarded)
+phase:                      first device-callable correctness profile implemented
+host-planned execution:     complete dense SIMT + optional exact fusion + bounded optional cuBLASLt
+device-callable execution:  item-parallel dense Tensor program through public CUDA-JS leaf libraries
+native qualification:       exact installed-package Windows CUDA 13.3/compute_75/GTX 1660 Ti candidate passes
 performance claims:         none
-exact CUDA-JS pair:         0.1.0-alpha.15 at af29b95e0707
-current target:             SPEC-0008 result-owned material arena, then TENSOR-ARENA-018
+exact CUDA-JS pair:         0.1.0-alpha.16 at 4971302cfb48
+current target:             protected integration and CUDA-MCGS readiness reconciliation
 ```
 
-The first product is a universal tensor library with convenience layered over complete contracts. Dense operations are the first bounded slice, not evidence that every future tensor or consumer is dense.
+SPEC-0009 closes the host-progress gap that previously prevented CUDA-JS-Tensor from participating in CUDA-MCGS active-search evaluation. `compileTensorDeviceProgram(...)` proves one static item axis, exact shared versus item-varying inputs, item-preserving dense operations, finite typed parameters, explicit item-major outputs and dtype-partitioned per-item workspace. It returns one copied CUDA-JS SPEC-0028 leaf library. A caller-owned Device-JS participant invokes one item; many items can run in parallel without Tensor owning a scheduler, queue, launch, request incarnation, scatter or publication protocol.
 
-The CUDA-JS prerequisites for the implemented surface and the next Tensor-owned arena slice are integrated upstream: public typed device views, typed device-callable library composition, prepared operation DAGs, context-bound CUDA library adapters and SPEC-0031 mixed kernel/cuBLASLt prepared nodes. CUDA-JS-Tensor consumes the exact public package revision only; no private import or native workaround is authorized here. Future typed/strided-batched cuBLASLt profiles and efficient collective device-callable dense execution still require bounded CUDA-JS children.
+The exact installed-package native fixture passes through public exports on Node 26.7.0 and the recorded Windows CUDA 13.3/compute_75/GTX 1660 Ti profile. In addition to the retained SIMT, cuBLASLt and fusion coverage, it compiles and imports a Tensor leaf library into an unrelated Device-JS kernel. Eight GPU threads invoke a four-item program: four valid items independently match expected matmul/bias/fixed-tree-reduction outputs, four excess indices return the no-write status, and terminal CUDA-JS accounting reaches zero live/orphaned resources. This is correctness/lifecycle evidence only.
 
-The [production LEGO readiness assessment](docs/plans/2026-08-26-tensor-production-lego-readiness-assessment.md) classifies the retained analysis frames by owner. Exact elementwise fusion is now implemented under accepted SPEC-0007 and its superseded experiment frame is deleted. A result-owned per-run material arena is next because it consumes the realized post-fusion allocation schedule. Batched/precision acceleration remains upstream-blocked, and device-callable dense execution is deferred until a real caller selects a useful participation class plus the minimum generic CUDA-JS parallel helpers.
+CUDA-MCGS remains responsible for evaluator/model meaning, resident input/artifact allocation, ready-item selection, device-owned batching, request/result incarnations, scatter, publication, cancellation, cache/root validity, search policy and multi-GPU coordination. One Tensor session/device remains the v1 owner; independent sessions naturally support replicated per-GPU consumers. Cross-device tensor identity, P2P, collectives and sharding remain later contracts.
 
-Static-program assessment exposed one additional generic upstream prerequisite before the complete SIMT baseline. CUDA-JS SPEC-0030 now supplies f64/f16/bf16 pointer/local arithmetic, exact casts and special-value math; alpha.14 also corrects native prepared-DAG identity projection. SPEC-0005 therefore owns the Tensor-only resolution, lowering, binding, result and cleanup semantics without a private/native workaround.
+The complete host-planned SIMT path remains available. `simt`, `fusion: 'none'` and PTX library output remain documented safe defaults. Exact fusion, cuBLASLt and item-callable execution are independently removable Legos. The first callable profile is item-parallel, not block/warp-cooperative, and makes no speedup or Tensor Core claim. Cooperative intra-item participation, cuBLASDx/CUTLASS, workspace reuse and performance recommendation require separate exact evidence.
 
-`the_restaurant` integration is deferred. Its future plan is retained in [`docs/integrations/the_restaurant.md`](docs/integrations/the_restaurant.md); this repository does not currently depend on or modify it.
+The existing result-owned arena issue #17 remains a useful host-planned optimization but is no longer the CUDA-MCGS readiness critical path. Batched/precision cuBLASLt profiles remain upstream-blocked host-planned accelerators. The superseded device-callable analysis frame has been deleted after its useful boundary cases moved into accepted SPEC-0009 production tests.
 
-The alpha.5 exact installed-package native fixture passes through public exports on Node 26.7.0 and the recorded Windows CUDA 13.3/compute_75/GTX 1660 Ti profile. It retains the complete SIMT and mixed cuBLASLt replays, independently compares fused and unfused three-operation output against `[-2, -3, -4, -5]`, verifies three semantic kernels become one fused kernel, checks a fused f32-to-f64 dtype transition plus NaN/signed-zero/infinity behavior, records exact provider/compiler identity and closes with zero live/orphaned CUDA-JS resources. It remains correctness/lifecycle evidence only—not performance, tensor-core, broader device/platform, multi-GPU or production-stability evidence.
+`the_restaurant` integration remains deferred. Its future plan is retained in [`docs/integrations/the_restaurant.md`](docs/integrations/the_restaurant.md); this work does not modify that repository.
 
-TENSOR-CUBLASLT-013 integrated through protected PR #10 at `main@8910309a0aff9b8da4fc281949068d8d1fcaa6ea`; issue #8 is closed. Author-side review covered the complete exact head. Independent review was waived under the project owner's sole-maintainer direction and is not represented as independent evidence.
+Public issues and discussions are enabled. Protected `main` requires a current `verify` check, pull-request integration, linear history, resolved conversations and admin enforcement; force pushes and deletion are disabled. Independent review is waived only under the project owner's sole-maintainer direction and is never represented as independent evidence.
 
-TENSOR-FUSION-017 integrated through protected PR #16 at `main@821b1cbe1c32835559cb669248771310718b2f05`; issue #14 is closed. Author-side review covered exact source head `d75b48435e1570d1dfb4a4b8202d49f15d2f9a7d`, whose tree is identical to the squash merge. Independent review was waived under the project owner's sole-maintainer direction and is not represented as independent evidence. No performance qualification or default promotion is claimed.
-
-Public issues and discussions are enabled. Protected `main` requires a current `verify` check, pull-request integration, linear history, resolved conversations and admin enforcement; force pushes and deletion are disabled. GitHub Actions are limited to GitHub-owned actions with read-only workflow permissions, and repository security scanning, push protection, vulnerability alerts, automated security fixes and private reporting are enabled.
+Earlier protected integrations remain part of the repository record: TENSOR-CUBLASLT-013 entered through PR #10 at `main@8910309a0aff9b8da4fc281949068d8d1fcaa6ea`, and TENSOR-FUSION-017 entered through PR #16 at `main@821b1cbe1c32835559cb669248771310718b2f05`. GitHub Actions remain limited to GitHub-owned actions with read-only workflow permissions; repository security scanning, push protection, vulnerability alerts, automated security fixes and private reporting remain enabled.
