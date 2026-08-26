@@ -12,9 +12,12 @@ const required = [
   'docs/specs/SPEC-0000-tensor-contract-map.md', 'docs/specs/SPEC-0001-tensor-session-spec-and-value-model.md',
   'docs/specs/SPEC-0002-tensor-program-plan-and-dense-operations.md',
   'docs/specs/SPEC-0003-accelerated-dense-backend-profiles.md',
+  'docs/specs/SPEC-0004-first-dense-program-semantics.md',
   'docs/plans/2026-08-26-foundation-plan.md', 'docs/integrations/the_restaurant.md', 'next_step.yaml',
   'components/README.md', 'components/tensor-value/README.md', 'components/tensor-value/component.yaml',
   'components/tensor-value/index.mjs', 'components/tensor-value/index.d.ts', 'components/tensor-value/internal.mjs',
+  'components/tensor-program/README.md', 'components/tensor-program/component.yaml', 'components/tensor-program/index.mjs', 'components/tensor-program/index.d.ts',
+  'components/public-api/README.md', 'components/public-api/component.yaml', 'components/public-api/index.mjs', 'components/public-api/index.d.ts',
   'scripts/smoke-tensor-value-native.mjs',
 ];
 
@@ -22,16 +25,18 @@ for (const file of required) assert(existsSync(path.join(root, file)), `Missing 
 
 const packageJson = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8'));
 assert.equal(packageJson.name, 'cuda-js-tensor');
-assert.equal(packageJson.version, '0.1.0-alpha.1');
+assert.equal(packageJson.version, '0.1.0-alpha.2');
 assert.equal(packageJson.private, true, 'Package must remain publication-guarded during foundation work.');
 assert.equal(packageJson.license, 'AGPL-3.0-or-later');
 assert.equal(packageJson.dependencies?.['cuda-js'], 'https://codeload.github.com/iteathen/CUDA-JS/tar.gz/2da65ff2e4287450171c477031dd380a21fa095f');
-assert.equal(packageJson.exports?.['.']?.import, './components/tensor-value/index.mjs');
+assert.equal(packageJson.exports?.['.']?.import, './components/public-api/index.mjs');
 JSON.parse(readFileSync(path.join(root, 'next_step.yaml'), 'utf8'));
 
 const component = JSON.parse(readFileSync(path.join(root, 'components/tensor-value/component.yaml'), 'utf8'));
 assert.equal(component.component.id, 'tensor.value');
 assert.equal(component.component.owner, 'tensor.session/tensor.spec/tensor.value');
+assert.equal(JSON.parse(readFileSync(path.join(root, 'components/tensor-program/component.yaml'), 'utf8')).component.id, 'tensor.program-plan');
+assert.equal(JSON.parse(readFileSync(path.join(root, 'components/public-api/component.yaml'), 'utf8')).component.id, 'tensor.public-api');
 
 const ignored = new Set(['.git', 'build', 'node_modules']);
 const files = [];

@@ -11,6 +11,8 @@
 
 `ResolvedTensorPlan` binds one plan to one session/device/CUDA-JS compatibility identity, exact backend choices, generated program identities, resource/workspace limits, precision/tolerance contract, and cleanup graph. Resolution occurs before execution and is immutable. Re-resolution creates a new identity.
 
+SPEC-0004 implements the pure `TensorProgram` and static `TensorPlan` portion first. It explicitly leaves `ResolvedTensorPlan` to `TENSOR-SIMT-012`, because generated program identities, backend workspace, prepared execution resources and cleanup cannot be known truthfully before a concrete executor exists. A static plan exposes those facts as unresolved and is not executable.
+
 ## First operations
 
 The first dense slice includes:

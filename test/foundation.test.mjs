@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
+import { CUDA_JS_TENSOR_COMPATIBILITY, TensorPlan, TensorProgram } from 'cuda-js-tensor';
 
 const root = new URL('../', import.meta.url);
 
@@ -10,7 +11,10 @@ test('foundation package is publication-guarded and depends only on the exact pu
   assert.equal(packageJson.private, true);
   assert.deepEqual(Object.keys(packageJson.dependencies), ['cuda-js']);
   assert.equal(packageJson.dependencies['cuda-js'], 'https://codeload.github.com/iteathen/CUDA-JS/tar.gz/2da65ff2e4287450171c477031dd380a21fa095f');
-  assert.equal(packageJson.exports['.'].import, './components/tensor-value/index.mjs');
+  assert.equal(packageJson.exports['.'].import, './components/public-api/index.mjs');
+  assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.package.version, packageJson.version);
+  assert.equal(typeof TensorProgram.create, 'function');
+  assert.equal(typeof TensorPlan.create, 'function');
 });
 
 test('deferred training-system plan authorizes no current repository mutation', async () => {

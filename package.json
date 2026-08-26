@@ -1,6 +1,6 @@
 {
   "name": "cuda-js-tensor",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "Consumer-neutral tensor planning and accelerated tensor execution for CUDA-JS",
   "type": "module",
   "private": true,
@@ -13,14 +13,15 @@
     "format": "node scripts/format-text.mjs",
     "test": "node --test",
     "test:tensor-value": "node --test components/tensor-value/test/*.test.mjs",
+    "test:tensor-program": "node --test components/tensor-program/test/*.test.mjs",
     "test:package": "node --test test/package-consumer.test.mjs",
     "smoke:native:tensor-value": "node --experimental-ffi scripts/smoke-tensor-value-native.mjs",
     "verify": "node scripts/verify.mjs && node --test"
   },
   "exports": {
     ".": {
-      "types": "./components/tensor-value/index.d.ts",
-      "import": "./components/tensor-value/index.mjs"
+      "types": "./components/public-api/index.d.ts",
+      "import": "./components/public-api/index.mjs"
     }
   },
   "files": [
@@ -32,6 +33,12 @@
     "components/tensor-value/*.md",
     "components/tensor-value/*.yaml",
     "components/tensor-value/src/",
+    "components/tensor-program/*.mjs",
+    "components/tensor-program/*.d.ts",
+    "components/tensor-program/*.md",
+    "components/tensor-program/*.yaml",
+    "components/tensor-program/src/",
+    "components/public-api/",
     "scripts/smoke-tensor-value-native.mjs"
   ],
   "dependencies": {

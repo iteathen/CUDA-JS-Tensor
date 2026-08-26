@@ -48,7 +48,7 @@ Row-major contiguous storage, output allocation, and safe accumulator choices ma
 
 ## Implemented portable profile
 
-`cuda-js-tensor@0.1.0-alpha.1` implements `TensorSpec.create(...)`, `TensorSession.open(...)`, root allocation, bounded child views, exact session accounting, cross-session rejection, owned/borrowed runtime close, and package-internal planner inspection over public CUDA-JS typed views.
+`cuda-js-tensor@0.1.0-alpha.2` retains the `TensorSpec.create(...)`, `TensorSession.open(...)`, root allocation, bounded child views, exact session accounting, cross-session rejection, owned/borrowed runtime close, and package-internal planner inspection implemented in the alpha.1 value slice.
 
 The documented session defaults are `f32`, `read-write`, row-major storage, 128 MiB per physical allocation, 256 MiB of session-owned allocation capacity, and 1,024 live tensor capabilities. V1 required alignment equals dtype width because the public CUDA-JS view contract provides no stronger portable identity. Empty tensors use a minimal dtype-width physical allocation while retaining a zero-element logical/view range; the physical allocation is inspectable and counted.
 
