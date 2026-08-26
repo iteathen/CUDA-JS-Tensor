@@ -1,11 +1,13 @@
 # SPEC-0003: Accelerated dense backend profiles
 
-**Status:** Accepted architecture; tensor backends not implemented
+**Status:** Accepted architecture; complete SIMT implementation profile selected by SPEC-0005
 **Date:** 2026-08-26
 
 ## Complete baseline
 
 Every first-slice operation has a maintained JavaScript/Device-JS SIMT realization or an explicit unsupported disposition. Generated CUDA implementation is private and deterministic. Production `.cu` and `.ptx` files are forbidden.
+
+SPEC-0005 is the first concrete realization: one session-bound generated Device-JS program, one semantic prepared DAG, explicit fixed-tree workspace and no second scheduler. Optional accelerator adapters remain separate successors and may never remove this fallback.
 
 ## Host-planned accelerated profile
 

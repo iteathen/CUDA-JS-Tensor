@@ -42,13 +42,15 @@ Views are child capabilities. A parent allocation cannot close while a live view
 
 The first implemented value profile admits changed child views from a contiguous parent when the child's exact byte envelope stays inside the parent. A strided parent admits only an identical child specification until a bounded exact reachable-element-subset contract is accepted. Envelope overlap alone is not treated as proof for two arbitrary strided sets.
 
+`Tensor.write(bytes)` and `Tensor.read()` copy exactly the logical byte sequence of a contiguous non-broadcast tensor and enforce its access role. They snapshot bytes in both directions, perform no implicit dtype conversion, and treat empty logical tensors as explicit zero-byte transfers. Strided host gather/scatter is outside v1 and rejects rather than guessing an order.
+
 ## Defaults
 
 Row-major contiguous storage, output allocation, and safe accumulator choices may be inferred. Every inferred fact appears in the resolved plan. Defaults never infer neural/model meaning, cross-device movement, unsafe in-place writes, reduced precision, or a performance claim.
 
 ## Implemented portable profile
 
-`cuda-js-tensor@0.1.0-alpha.2` retains the `TensorSpec.create(...)`, `TensorSession.open(...)`, root allocation, bounded child views, exact session accounting, cross-session rejection, owned/borrowed runtime close, and package-internal planner inspection implemented in the alpha.1 value slice.
+`cuda-js-tensor@0.1.0-alpha.3` retains the `TensorSpec.create(...)`, `TensorSession.open(...)`, root allocation, bounded child views, exact session accounting, cross-session rejection, owned/borrowed runtime close, and package-internal planner inspection implemented in the earlier value slices, and adds the exact copied-byte transfer port needed by public execution consumers.
 
 The documented session defaults are `f32`, `read-write`, row-major storage, 128 MiB per physical allocation, 256 MiB of session-owned allocation capacity, and 1,024 live tensor capabilities. V1 required alignment equals dtype width because the public CUDA-JS view contract provides no stronger portable identity. Empty tensors use a minimal dtype-width physical allocation while retaining a zero-element logical/view range; the physical allocation is inspectable and counted.
 

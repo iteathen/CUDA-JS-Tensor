@@ -1,1 +1,1 @@
-export { inspectTensorForSession } from './src/tensor-session.mjs';
+export { inspectTensorForSession, inspectTensorSessionForExecution, reserveTensorSessionExecution } from './src/tensor-session.mjs';
