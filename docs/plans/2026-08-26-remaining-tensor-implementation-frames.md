@@ -33,4 +33,3 @@ Performance recommendation is a later evidence gate across completed profiles, n
 No chunk is accepted, executable, exported, tested, natively qualified, performance-qualified, or eligible for a support claim in this task. The frame is useful only while it prevents reconstruction and keeps boundaries visible. A chunk is complete only after accepted authority, production implementation, risk-appropriate focused/full/native evidence, exact-head review, protected integration, and removal or archival of its superseded experiment scaffold.
 
 This task intentionally runs no tests at the project owner's request. That narrows the claim to source framing and remote preservation only; it cannot satisfy the repository's implementation gate.
-

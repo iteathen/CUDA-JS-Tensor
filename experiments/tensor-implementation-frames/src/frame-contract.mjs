@@ -38,4 +38,3 @@ export function frameRecord({ kind, plan, scope, candidates, blockers, completio
     .digest('hex')}`;
   return deepFreeze({ ...canonical, compatibilityIdentity });
 }
-

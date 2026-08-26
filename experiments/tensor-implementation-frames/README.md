@@ -15,4 +15,3 @@ The files are numbered only for quick scanning; the accepted plan and upstream d
 Performance-policy promotion is not represented as executable code because evidence, rather than another runtime manager, must decide it. Multi-device composition is also omitted: one tensor session remains one device, and a future multi-session owner requires separate accepted semantics. `the_restaurant`, neural layers, training, sparse tensors, convolution, collectives, and package publication remain outside this experiment.
 
 No tests or support qualification accompany this owner-requested quick frame. A future chunk must begin with its stated blockers, accept the owning specification and public CUDA-JS dependency, add focused tests, then pass the full repository/native/performance gates appropriate to its claim.
-
