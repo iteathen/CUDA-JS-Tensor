@@ -10,12 +10,12 @@
 | `tensor.ops.elementwise` | Typed elementwise, view and cast semantics | SPEC-0002/SPEC-0004; portable/package inference implementation |
 | `tensor.ops.reduction` | Axes, identity, accumulation, order/determinism and output shape | SPEC-0002/SPEC-0004; portable/package inference implementation |
 | `tensor.ops.matmul` | Rank-2/rank-3 dense matrix multiplication semantics | SPEC-0002/SPEC-0004; portable/package inference implementation |
-| `tensor.resolved-plan` | Session/backend/program/workspace/provider/compiled/prepared compatibility identity | SPEC-0005/SPEC-0006; alpha.4 integrated at `8910309a` |
-| `tensor.execution-result` | Per-run material/output-view/workspace ownership and terminal cleanup | SPEC-0005/SPEC-0006; alpha.4 integrated at `8910309a` |
-| `tensor.backend.simt` | Complete generated Device-JS baseline and default/fallback | SPEC-0003/SPEC-0005/SPEC-0006; alpha.4 integrated at `8910309a` over CUDA-JS SPEC-0030/SPEC-0020 |
+| `tensor.resolved-plan` | Session/backend/fusion/program/workspace/provider/compiled/prepared compatibility identity | SPEC-0005/SPEC-0006/SPEC-0007; alpha.5 integrated at `821b1cbe` |
+| `tensor.execution-result` | Per-run realized-material/output-view/workspace ownership and terminal cleanup | SPEC-0005/SPEC-0006/SPEC-0007; alpha.5 integrated at `821b1cbe` |
+| `tensor.backend.simt` | Complete generated Device-JS baseline and default/fallback | SPEC-0003/SPEC-0005/SPEC-0006/SPEC-0007; alpha.5 integrated at `821b1cbe` over CUDA-JS SPEC-0030/SPEC-0020 |
 | `tensor.backend.cublaslt` | Optional rank-2 contiguous f32 matmul selection, fallback, identity and workspace policy | SPEC-0003/SPEC-0006 over CUDA-JS SPEC-0029/SPEC-0031 at `af29b95e`; alpha.4 integrated at `8910309a` |
-| `tensor.backend.fusion` | Optional exact elementwise chain selection, generated-kernel substitution and unobservable-intermediate deletion | Implemented SPEC-0007/TENSOR-FUSION-017 in `components/tensor-execution`; complete unfused path remains the default |
-| `tensor.memory.arena` | Optional per-run alias-closed material suballocation, range identity and child-before-parent cleanup | Planned SPEC-0008/TENSOR-ARENA-018 after fusion; current CUDA-JS SPEC-0021 mechanisms sufficient; no production implementation |
+| `tensor.backend.fusion` | Optional exact elementwise chain selection, generated-kernel substitution and unobservable-intermediate deletion | SPEC-0007/TENSOR-FUSION-017 integrated at `821b1cbe`; complete unfused path remains the default |
+| `tensor.memory.arena` | Optional per-run alias-closed material suballocation, range identity and child-before-parent cleanup | Planned SPEC-0008/TENSOR-ARENA-018 ([issue #17](https://github.com/iteathen/CUDA-JS-Tensor/issues/17)) after fusion; current CUDA-JS SPEC-0021 mechanisms sufficient; no production implementation |
 | `tensor.backend.cublaslt-batched` | Optional rank-3 f32 batched matmul selection and Tensor broadcast mapping | TENSOR-BATCHED-GEMM-015; blocked on public CUDA-JS strided-batched plan/prepared-node child |
 | `tensor.backend.cublaslt-precision` | Optional f16/bf16/f64 matmul selection and exact Tensor precision mapping | TENSOR-PRECISION-GEMM-016; blocked on public CUDA-JS typed plan/prepared-node children |
 | `tensor.backend.device-callable` | Device-callable dense subgraph ABI, participation, workspace and Tensor publication semantics | SPEC-0003/TENSOR-DEVICE-DENSE-014; CUDA-JS SPEC-0028 composition exists, but efficient collective participation helpers and the Tensor profile remain pending |
