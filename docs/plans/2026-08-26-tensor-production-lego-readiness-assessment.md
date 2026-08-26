@@ -16,7 +16,7 @@ They cannot be promoted as one batch. The frames cross three different owners:
 2. CUDA-JS-owned native library mechanisms: typed and strided-batched cuBLASLt plans/prepared nodes.
 3. CUDA-JS-owned device-language mechanisms plus Tensor-owned participation semantics: efficient device-callable dense regions.
 
-`TENSOR-FUSION-017` and `TENSOR-ARENA-018` are dependency-ready for child specification work using current public CUDA-JS. Fusion is first because it changes the material schedule consumed by arena planning. The other three profiles remain blocked on explicitly bounded CUDA-JS capabilities; CUDA-JS-Tensor must not substitute host loops, serial device functions, private imports, generated CUDA escape paths, or provider-specific state.
+`TENSOR-FUSION-017` completed as the alpha.5 candidate under accepted SPEC-0007 using current public CUDA-JS. `TENSOR-ARENA-018` is now dependency-ready over the accepted realized material schedule. The other three profiles remain blocked on explicitly bounded CUDA-JS capabilities; CUDA-JS-Tensor must not substitute host loops, serial device functions, private imports, generated CUDA escape paths, or provider-specific state.
 
 ## Strongest adversarial case
 
@@ -41,7 +41,7 @@ The selected path keeps one owner per invariant and retains complete deletion:
 
 ## Per-frame disposition
 
-### `TENSOR-FUSION-017` — select next
+### `TENSOR-FUSION-017` — implemented under SPEC-0007
 
 Current CUDA-JS already provides deterministic Device-JS generation with `fmad: false`, dense scalar semantics, finite prepared kernels and exact access records. No new upstream mechanism is required for a first exact profile.
 
@@ -96,7 +96,7 @@ selected real device caller + minimum CUDA-JS trusted parallel helpers
   -> TENSOR-DEVICE-DENSE-014 production implementation
 ```
 
-Fusion and arena are the immediate integration spine. The two CUDA-JS dependency lanes may proceed independently but do not block them. Device-callable dense stays later because choosing participation without the caller shape would hard-code a speculative scheduler into a universal library.
+Fusion is the completed first integration-spine child; arena is the immediate next child. The two CUDA-JS dependency lanes may proceed independently but do not block arena. Device-callable dense stays later because choosing participation without the caller shape would hard-code a speculative scheduler into a universal library.
 
 ## Acceptance, falsifiers and cleanup
 

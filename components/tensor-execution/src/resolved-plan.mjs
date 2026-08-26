@@ -4,9 +4,10 @@ import { inspectTensorForSession, inspectTensorSessionForExecution, reserveTenso
 import { createBackendProfileRequest, realizeBackendProfile, TENSOR_BACKEND_POLICIES } from './backend-profile.mjs';
 import { createCudaJsTensorBackend } from './cuda-js-adapter.mjs';
 import { deepFreeze, exactRecord, fail, failureSummary, identity, plainObject, RESOLVED_TENSOR_PLAN_CONTRACT, TENSOR_EXECUTION_RESULT_CONTRACT, TENSOR_SIMT_LIMITS } from './contract.mjs';
+import { TENSOR_FUSION_POLICIES } from './fusion-profile.mjs';
 import { lowerSimtPlan } from './lowering.mjs';
 
-const RESOLVE_FIELDS = new Set(['backend', 'blockSize', 'maxWorkspaceBytes']);
+const RESOLVE_FIELDS = new Set(['backend', 'blockSize', 'maxWorkspaceBytes', 'fusion']);
 const BLOCK_SIZES = new Set([32, 64, 128, 256, 512, 1024]);
 const RESOLVED_TOKEN = Symbol('ResolvedTensorPlan');
 const RESULT_TOKEN = Symbol('TensorExecutionResult');
@@ -24,7 +25,9 @@ function normalizeOptions(value) {
   if (!Number.isSafeInteger(maxWorkspaceBytes) || maxWorkspaceBytes < 1 || maxWorkspaceBytes > TENSOR_SIMT_LIMITS.maxWorkspaceBytes) {
     fail('TENSOR_SIMT_WORKSPACE_LIMIT_INVALID', 'validation', 'maxWorkspaceBytes must be a positive safe integer within the first SIMT profile.', { maximum: TENSOR_SIMT_LIMITS.maxWorkspaceBytes });
   }
-  return Object.freeze({ backend, blockSize, maxWorkspaceBytes });
+  const fusion = options.fusion ?? 'none';
+  if (!TENSOR_FUSION_POLICIES.includes(fusion)) fail('TENSOR_FUSION_POLICY_UNSUPPORTED', 'unsupported', 'fusion must select an accepted finite tensor fusion policy.', { fusion, accepted: TENSOR_FUSION_POLICIES });
+  return Object.freeze({ backend, blockSize, maxWorkspaceBytes, fusion });
 }
 
 function staticPlan(value) {
@@ -33,18 +36,18 @@ function staticPlan(value) {
   fail('TENSOR_RESOLVE_PLAN_INVALID', 'validation', 'ResolvedTensorPlan requires a TensorPlan or TensorProgram.');
 }
 
-function ensurePlanFitsSession(plan, lowering, sessionInspection, acceleratorWorkspaces = []) {
+function ensurePlanFitsSession(lowering, sessionInspection, acceleratorWorkspaces = []) {
   const acceleratorWorkspaceBytes = acceleratorWorkspaces.reduce((total, workspace) => total + workspace.byteLength, 0);
-  const required = plan.totalDistinctBytes + lowering.totalWorkspaceBytes + acceleratorWorkspaceBytes;
+  const required = lowering.materialBytes + lowering.totalWorkspaceBytes + acceleratorWorkspaceBytes;
   if (!Number.isSafeInteger(required) || required > sessionInspection.limits.maxSessionBytes) {
     fail('TENSOR_RESOLVE_SESSION_BYTE_LIMIT', 'pressure', 'The resolved plan cannot fit the session byte limit even with no other live tensors.', { required, maximum: sessionInspection.limits.maxSessionBytes });
   }
-  const requiredLiveTensors = plan.allocations.length + lowering.workspaces.length + acceleratorWorkspaces.length;
+  const requiredLiveTensors = lowering.materials.length + lowering.workspaces.length + acceleratorWorkspaces.length;
   if (requiredLiveTensors > sessionInspection.limits.maxLiveTensors) {
     fail('TENSOR_RESOLVE_SESSION_TENSOR_LIMIT', 'pressure', 'The resolved plan cannot fit the session live-tensor limit even with no other live tensors.', { required: requiredLiveTensors, maximum: sessionInspection.limits.maxLiveTensors });
   }
-  for (const allocation of plan.allocations) {
-    if (allocation.byteLength > sessionInspection.limits.maxTensorBytes) fail('TENSOR_RESOLVE_TENSOR_BYTE_LIMIT', 'pressure', 'A planned tensor exceeds the session per-tensor limit.', { value: allocation.value, required: allocation.byteLength, maximum: sessionInspection.limits.maxTensorBytes });
+  for (const material of lowering.materials) {
+    if (material.byteLength > sessionInspection.limits.maxTensorBytes) fail('TENSOR_RESOLVE_TENSOR_BYTE_LIMIT', 'pressure', 'A planned tensor exceeds the session per-tensor limit.', { value: material.valueId, required: material.byteLength, maximum: sessionInspection.limits.maxTensorBytes });
   }
   for (const workspace of lowering.workspaces) {
     if (workspace.byteLength > sessionInspection.limits.maxTensorBytes) fail('TENSOR_RESOLVE_TENSOR_BYTE_LIMIT', 'pressure', 'A planned workspace exceeds the session per-tensor limit.', { value: workspace.id, required: workspace.byteLength, maximum: sessionInspection.limits.maxTensorBytes });
@@ -180,6 +183,9 @@ export class ResolvedTensorPlan {
   get plan() { return resolvedData(this, 'ResolvedTensorPlan.plan').plan; }
   get backend() { return resolvedData(this, 'ResolvedTensorPlan.backend').profile.backend; }
   get backendPolicy() { return resolvedData(this, 'ResolvedTensorPlan.backendPolicy').options.backend; }
+  get fusionPolicy() { return resolvedData(this, 'ResolvedTensorPlan.fusionPolicy').options.fusion; }
+  get fusionRegionCount() { return resolvedData(this, 'ResolvedTensorPlan.fusionRegionCount').lowering.fusionProfile.regions.length; }
+  get fusedNodeCount() { return resolvedData(this, 'ResolvedTensorPlan.fusedNodeCount').lowering.fusionProfile.fusedNodeCount; }
   get compatibilityIdentity() { return resolvedData(this, 'ResolvedTensorPlan.compatibilityIdentity').compatibilityIdentity; }
   get kernelCount() { return resolvedData(this, 'ResolvedTensorPlan.kernelCount').profile.simtNodeCount; }
   get cublasLtNodeCount() { return resolvedData(this, 'ResolvedTensorPlan.cublasLtNodeCount').profile.cublasLtNodeCount; }
@@ -209,11 +215,10 @@ export class ResolvedTensorPlan {
     const workspaces = [];
     const outputViews = [];
     try {
-      for (const node of data.plan.program.nodes) {
-        if (node.materialization !== 'materialize') continue;
-        const tensor = await data.session.allocate(node.outputSpec);
+      for (const material of data.lowering.materials) {
+        const tensor = await data.session.allocate(material.spec);
         materials.push(tensor);
-        baseTensors.set(node.id, tensor);
+        baseTensors.set(material.valueId, tensor);
       }
       const workspaceById = new Map();
       for (const workspace of data.workspaces) {
@@ -300,20 +305,20 @@ export async function resolveTensorPlanWithAdapter(session, planOrProgram, optio
   try {
     const sessionInspection = inspectTensorSessionForExecution(session);
     const lowering = lowerSimtPlan(plan, normalized);
-    ensurePlanFitsSession(plan, lowering, sessionInspection);
+    ensurePlanFitsSession(lowering, sessionInspection);
     const profileRequest = createBackendProfileRequest(plan, lowering, normalized);
     const resourceLimits = Object.freeze({
       acceleratorWorkspaceBytes: Math.max(0, Math.min(
         normalized.maxWorkspaceBytes - lowering.totalWorkspaceBytes,
-        sessionInspection.limits.maxSessionBytes - plan.totalDistinctBytes - lowering.totalWorkspaceBytes,
+        sessionInspection.limits.maxSessionBytes - lowering.materialBytes - lowering.totalWorkspaceBytes,
       )),
       maxAcceleratorWorkspaceBytesPerPlan: sessionInspection.limits.maxTensorBytes,
-      maxAcceleratorWorkspaceCount: Math.max(0, sessionInspection.limits.maxLiveTensors - plan.allocations.length - lowering.workspaces.length),
+      maxAcceleratorWorkspaceCount: Math.max(0, sessionInspection.limits.maxLiveTensors - lowering.materials.length - lowering.workspaces.length),
     });
     backendAdapter = await adapterFactory(sessionInspection.runtime, lowering, profileRequest, Object.freeze({ ...normalized, ...resourceLimits }));
     const profile = backendAdapter.profile ?? realizeBackendProfile(profileRequest, lowering, []);
     const acceleratorWorkspaces = backendAdapter.workspaces ?? Object.freeze([]);
-    ensurePlanFitsSession(plan, lowering, sessionInspection, acceleratorWorkspaces);
+    ensurePlanFitsSession(lowering, sessionInspection, acceleratorWorkspaces);
     const bindingRecords = backendAdapter.bindingRecords ?? lowering.bindings;
     const workspaces = Object.freeze([...lowering.workspaces, ...acceleratorWorkspaces]);
     const workspaceBytes = backendAdapter.workspaceBytes ?? lowering.totalWorkspaceBytes;
@@ -323,12 +328,19 @@ export async function resolveTensorPlanWithAdapter(session, planOrProgram, optio
       sessionCompatibilityIdentity: sessionInspection.compatibilityIdentity,
       backend: profile.backend,
       backendPolicy: normalized.backend,
+      fusionPolicy: normalized.fusion,
       options: { ...normalized },
       resourceLimits: { ...resourceLimits },
       loweringIdentity: lowering.compatibilityIdentity,
+      fusionProfileIdentity: lowering.fusionProfile.compatibilityIdentity,
+      fusionProfile: lowering.fusionProfile.canonical,
       backendProfileIdentity: profile.compatibilityIdentity,
       backendProfile: profile.canonical,
       kernelCount: profile.simtNodeCount,
+      fusionRegionCount: lowering.fusionProfile.regions.length,
+      fusedNodeCount: lowering.fusionProfile.fusedNodeCount,
+      materialCount: lowering.materials.length,
+      materialBytes: lowering.materialBytes,
       cublasLtNodeCount: profile.cublasLtNodeCount,
       bindingCount: bindingRecords.length,
       workspaceBytes,

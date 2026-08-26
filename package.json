@@ -1,6 +1,6 @@
 {
   "name": "cuda-js-tensor",
-  "version": "0.1.0-alpha.4",
+  "version": "0.1.0-alpha.5",
   "description": "Consumer-neutral tensor planning and accelerated tensor execution for CUDA-JS",
   "type": "module",
   "private": true,

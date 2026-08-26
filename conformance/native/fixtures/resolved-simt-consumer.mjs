@@ -55,6 +55,9 @@ async function execute(session, program, inputBytes, { replays = 1, resolveOptio
     return {
       backend: resolved.backend,
       backendPolicy: resolved.backendPolicy,
+      fusionPolicy: resolved.fusionPolicy,
+      fusionRegionCount: resolved.fusionRegionCount,
+      fusedNodeCount: resolved.fusedNodeCount,
       kernelCount: resolved.kernelCount,
       cublasLtNodeCount: resolved.cublasLtNodeCount,
       bindingCount: resolved.bindingCount,
@@ -71,7 +74,7 @@ async function execute(session, program, inputBytes, { replays = 1, resolveOptio
 }
 
 assert.equal(process.version, 'v26.7.0');
-assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.package.version, '0.1.0-alpha.4');
+assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.package.version, '0.1.0-alpha.5');
 assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version, '0.1.0-alpha.15');
 
 const runtime = await openCudaRuntime({
@@ -171,6 +174,46 @@ try {
   const castRun = await execute(session, casts, { values: numericBytes('f64', [Number.NaN, Infinity, -Infinity, 3.9, -3.9]) });
   assert.deepEqual(numericValues('i32', castRun.observations[0].outputs.output), [0, 2_147_483_647, -2_147_483_648, 3, -3]);
   summary.cast = numericValues('i32', castRun.observations[0].outputs.output);
+
+  const fusion = TensorProgram.define((graph) => {
+    const values = graph.input('values', { dtype: 'f32', capacityShape: [4], access: 'read-write' });
+    return graph.unary('neg', graph.unary('sqrt', graph.unary('abs', values)));
+  });
+  const fusionInputs = { values: numericBytes('f32', [-4, 9, -16, 25]) };
+  const unfusedRun = await execute(session, fusion, fusionInputs, { resolveOptions: { fusion: 'none' } });
+  const fusedRun = await execute(session, fusion, fusionInputs, { replays: 2, resolveOptions: { fusion: 'exact-elementwise' } });
+  const expectedFusion = [-2, -3, -4, -5];
+  assert.deepEqual(numericValues('f32', unfusedRun.observations[0].outputs.output), expectedFusion);
+  for (const replay of fusedRun.observations) assert.deepEqual(numericValues('f32', replay.outputs.output), expectedFusion);
+  assert.equal(unfusedRun.fusionPolicy, 'none');
+  assert.equal(unfusedRun.kernelCount, 3);
+  assert.equal(fusedRun.fusionPolicy, 'exact-elementwise');
+  assert.equal(fusedRun.fusionRegionCount, 1);
+  assert.equal(fusedRun.fusedNodeCount, 3);
+  assert.equal(fusedRun.kernelCount, 1);
+  const typedFusion = TensorProgram.define((graph) => graph.unary('sqrt', graph.cast(
+    graph.input('values', { dtype: 'f32', capacityShape: [2], access: 'read-write' }),
+    'f64',
+  )));
+  const typedFusionRun = await execute(session, typedFusion, { values: numericBytes('f32', [4, 9]) }, { resolveOptions: { fusion: 'exact-elementwise' } });
+  assert.deepEqual(numericValues('f64', typedFusionRun.observations[0].outputs.output), [2, 3]);
+  assert.equal(typedFusionRun.fusedNodeCount, 2);
+  const specialFusion = TensorProgram.define((graph) => graph.unary('neg', graph.unary('abs',
+    graph.input('values', { dtype: 'f32', capacityShape: [4], access: 'read-write' }),
+  )));
+  const specialFusionRun = await execute(session, specialFusion, { values: numericBytes('f32', [-0, Number.NaN, -Infinity, 4]) }, { resolveOptions: { fusion: 'exact-elementwise' } });
+  const specialOutput = numericValues('f32', specialFusionRun.observations[0].outputs.output);
+  assert(Object.is(specialOutput[0], -0));
+  assert(Number.isNaN(specialOutput[1]));
+  assert.deepEqual(specialOutput.slice(2), [-Infinity, -4]);
+  summary.fusion = {
+    fusedKernels: fusedRun.kernelCount,
+    unfusedKernels: unfusedRun.kernelCount,
+    fusedNodes: fusedRun.fusedNodeCount,
+    output: numericValues('f32', fusedRun.observations[0].outputs.output),
+    typedOutput: numericValues('f64', typedFusionRun.observations[0].outputs.output),
+    specialValues: { negativeZero: Object.is(specialOutput[0], -0), nan: Number.isNaN(specialOutput[1]), tail: specialOutput.slice(2) },
+  };
 
   const half = TensorProgram.define((graph) => {
     const left = graph.input('left', { dtype: 'f16', capacityShape: [4], access: 'read-write' });
