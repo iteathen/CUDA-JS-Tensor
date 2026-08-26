@@ -4,12 +4,12 @@
 repository:                 public protected foundation established
 package name:               cuda-js-tensor (reserved by intent, unpublished)
 package version:            0.1.0-alpha.4 (publication-guarded)
-phase:                      optional host-planned cuBLASLt implementation/evidence active
+phase:                      optional host-planned cuBLASLt integrated; next profile assessment pending
 production implementation: value + immutable program/static plan + complete SIMT + bounded optional cuBLASLt
 native qualification:       exact installed-package Windows CUDA 13.3/compute_75/GTX 1660 Ti alpha.4 candidate passes
 performance claims:         none
 exact CUDA-JS pair:         0.1.0-alpha.15 at af29b95e0707
-current target:             TENSOR-CUBLASLT-013 exact-head review and protected integration under issue #8
+current target:             TENSOR-DEVICE-DENSE-014 assessment before any device-callable implementation
 ```
 
 The first product is a universal tensor library with convenience layered over complete contracts. Dense operations are the first bounded slice, not evidence that every future tensor or consumer is dense.
@@ -20,6 +20,8 @@ Static-program assessment exposed one additional generic upstream prerequisite b
 
 `the_restaurant` integration is deferred. Its future plan is retained in [`docs/integrations/the_restaurant.md`](docs/integrations/the_restaurant.md); this repository does not currently depend on or modify it.
 
-The alpha.4 candidate exact installed-package native fixture passes through public exports on Node 26.7.0 and the recorded Windows CUDA 13.3/compute_75/GTX 1660 Ti profile. It retains the complete 10-kernel SIMT replay, adds a three-node kernel-to-cuBLASLt-to-kernel plan replayed twice, independently checks strict double-transpose cuBLASLt output `[58, 64, 139, 154]`, records exact cuBLASLt 13.5.1 provider identity and closes with zero live/orphaned CUDA-JS resources. It remains correctness/lifecycle evidence only—not performance, tensor-core, broader device/platform, multi-GPU or production-stability evidence.
+The integrated alpha.4 exact installed-package native fixture passes through public exports on Node 26.7.0 and the recorded Windows CUDA 13.3/compute_75/GTX 1660 Ti profile. It retains the complete 10-kernel SIMT replay, adds a three-node kernel-to-cuBLASLt-to-kernel plan replayed twice, independently checks strict double-transpose cuBLASLt output `[58, 64, 139, 154]`, records exact cuBLASLt 13.5.1 provider identity and closes with zero live/orphaned CUDA-JS resources. It remains correctness/lifecycle evidence only—not performance, tensor-core, broader device/platform, multi-GPU or production-stability evidence.
+
+TENSOR-CUBLASLT-013 integrated through protected PR #10 at `main@8910309a0aff9b8da4fc281949068d8d1fcaa6ea`; issue #8 is closed. Author-side review covered the complete exact head. Independent review was waived under the project owner's sole-maintainer direction and is not represented as independent evidence.
 
 Public issues and discussions are enabled. Protected `main` requires a current `verify` check, pull-request integration, linear history, resolved conversations and admin enforcement; force pushes and deletion are disabled. GitHub Actions are limited to GitHub-owned actions with read-only workflow permissions, and repository security scanning, push protection, vulnerability alerts, automated security fixes and private reporting are enabled.

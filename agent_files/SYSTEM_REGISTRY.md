@@ -10,10 +10,10 @@
 | `tensor.ops.elementwise` | Typed elementwise, view and cast semantics | SPEC-0002/SPEC-0004; portable/package inference implementation |
 | `tensor.ops.reduction` | Axes, identity, accumulation, order/determinism and output shape | SPEC-0002/SPEC-0004; portable/package inference implementation |
 | `tensor.ops.matmul` | Rank-2/rank-3 dense matrix multiplication semantics | SPEC-0002/SPEC-0004; portable/package inference implementation |
-| `tensor.resolved-plan` | Session/backend/program/workspace/provider/compiled/prepared compatibility identity | SPEC-0005/SPEC-0006; alpha.4 implementation active |
-| `tensor.execution-result` | Per-run material/output-view/workspace ownership and terminal cleanup | SPEC-0005/SPEC-0006; alpha.4 implementation active |
-| `tensor.backend.simt` | Complete generated Device-JS baseline and default/fallback | SPEC-0003/SPEC-0005/SPEC-0006; alpha.4 compatibility over CUDA-JS SPEC-0030/SPEC-0020 |
-| `tensor.backend.cublaslt` | Optional rank-2 contiguous f32 matmul selection, fallback, identity and workspace policy | SPEC-0003/SPEC-0006 over CUDA-JS SPEC-0029/SPEC-0031 at `af29b95e`; alpha.4 implementation active |
+| `tensor.resolved-plan` | Session/backend/program/workspace/provider/compiled/prepared compatibility identity | SPEC-0005/SPEC-0006; alpha.4 integrated at `8910309a` |
+| `tensor.execution-result` | Per-run material/output-view/workspace ownership and terminal cleanup | SPEC-0005/SPEC-0006; alpha.4 integrated at `8910309a` |
+| `tensor.backend.simt` | Complete generated Device-JS baseline and default/fallback | SPEC-0003/SPEC-0005/SPEC-0006; alpha.4 integrated at `8910309a` over CUDA-JS SPEC-0030/SPEC-0020 |
+| `tensor.backend.cublaslt` | Optional rank-2 contiguous f32 matmul selection, fallback, identity and workspace policy | SPEC-0003/SPEC-0006 over CUDA-JS SPEC-0029/SPEC-0031 at `af29b95e`; alpha.4 integrated at `8910309a` |
 | `tensor.backend.device-callable` | Device-callable dense subgraph adapter | SPEC-0003; CUDA-JS SPEC-0028 prerequisite available at `af29b95e`; tensor profile pending |
 | `tensor.conformance` | Backend equivalence, failure, lifecycle, package and native evidence | SPEC-0000 through SPEC-0006 |
 

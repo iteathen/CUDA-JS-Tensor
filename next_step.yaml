@@ -1,13 +1,13 @@
 {
   "schema_version": 2,
   "updated": "2026-08-26",
-  "status": "cublaslt_validated_pending_review_integration",
-  "objective": "Add optional host-planned dense acceleration over the complete generated SIMT baseline without weakening tensor semantics, lifecycle truth, fallback completeness or CUDA-JS ownership.",
+  "status": "cublaslt_integrated_next_profile_assessment_pending",
+  "objective": "Assess the next optional compact dense execution profile without weakening the complete SIMT baseline, the integrated host-planned path, dependency direction or evidence standards.",
   "current_focus": {
-    "id": "TENSOR-CUBLASLT-013",
-    "issue": 8,
-    "next_action": "Freeze and review the validated SPEC-0006 candidate, integrate it through protected main with an expected-head guard, reconcile issue/status evidence and dispose the task worktree and branches.",
-    "exit": "One protected CUDA-JS-Tensor revision contains the accepted optional realization, complete SIMT fallback, exact identity/failure/lifecycle evidence, updated public documentation and clean local/remote disposition."
+    "id": "TENSOR-DEVICE-DENSE-014",
+    "issue": null,
+    "next_action": "Reassess the second-instance value and exact public CUDA-JS SPEC-0028 provider/resource/participation boundary before opening an implementation issue or accepting a child specification.",
+    "exit": "A bounded assessment either defines a consumer-neutral device-callable dense-subgraph profile with concrete value and exact gates, or defers it without adding speculative machinery."
   },
   "dependencies": [
     "cuda-js@0.1.0-alpha.15 protected-main revision af29b95e0707b36b88ee4e234c25a9e7f7ed3a1d (SPEC-0031 implementation entered at 20f831cc51766aee726313f7f78819b576d56307)",
