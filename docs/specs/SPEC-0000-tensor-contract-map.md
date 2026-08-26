@@ -30,9 +30,9 @@ TensorSession
 
 ## Upstream dependency gates
 
-- public typed CUDA-JS device views and dtype identity;
-- typed device-callable function/library composition with resource and participation contracts;
-- prepared finite operation DAGs;
-- context-bound CUDA library adapters and a first cuBLASLt profile.
+- public typed CUDA-JS device views and dtype identity — implemented by CUDA-JS SPEC-0021;
+- typed device-callable function/library composition with resource and participation contracts — implemented by CUDA-JS SPEC-0028 for typed leaf libraries and explicit imports;
+- prepared finite operation DAGs — implemented by CUDA-JS SPEC-0020 as semantic single-stream replay;
+- context-bound CUDA library adapters and a first cuBLASLt profile — implemented by CUDA-JS SPEC-0023/SPEC-0029.
 
-Until these are accepted and implemented, this repository may implement portable value/program semantics but cannot invent substitute native ownership.
+All four prerequisites are present in the exact protected-main CUDA-JS revision `2da65ff2e4287450171c477031dd380a21fa095f` (`cuda-js@0.1.0-alpha.12`). This resolves mechanism availability only. Each CUDA-JS-Tensor component still requires its own semantic, lifecycle, native and performance evidence, and no substitute native ownership is permitted.

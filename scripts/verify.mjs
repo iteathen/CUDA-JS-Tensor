@@ -13,16 +13,25 @@ const required = [
   'docs/specs/SPEC-0002-tensor-program-plan-and-dense-operations.md',
   'docs/specs/SPEC-0003-accelerated-dense-backend-profiles.md',
   'docs/plans/2026-08-26-foundation-plan.md', 'docs/integrations/the_restaurant.md', 'next_step.yaml',
+  'components/README.md', 'components/tensor-value/README.md', 'components/tensor-value/component.yaml',
+  'components/tensor-value/index.mjs', 'components/tensor-value/index.d.ts', 'components/tensor-value/internal.mjs',
+  'scripts/smoke-tensor-value-native.mjs',
 ];
 
 for (const file of required) assert(existsSync(path.join(root, file)), `Missing required artifact: ${file}`);
 
 const packageJson = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8'));
 assert.equal(packageJson.name, 'cuda-js-tensor');
-assert.equal(packageJson.version, '0.1.0-alpha.0');
+assert.equal(packageJson.version, '0.1.0-alpha.1');
 assert.equal(packageJson.private, true, 'Package must remain publication-guarded during foundation work.');
 assert.equal(packageJson.license, 'AGPL-3.0-or-later');
+assert.equal(packageJson.dependencies?.['cuda-js'], 'https://codeload.github.com/iteathen/CUDA-JS/tar.gz/2da65ff2e4287450171c477031dd380a21fa095f');
+assert.equal(packageJson.exports?.['.']?.import, './components/tensor-value/index.mjs');
 JSON.parse(readFileSync(path.join(root, 'next_step.yaml'), 'utf8'));
+
+const component = JSON.parse(readFileSync(path.join(root, 'components/tensor-value/component.yaml'), 'utf8'));
+assert.equal(component.component.id, 'tensor.value');
+assert.equal(component.component.owner, 'tensor.session/tensor.spec/tensor.value');
 
 const ignored = new Set(['.git', 'build', 'node_modules']);
 const files = [];
@@ -46,4 +55,4 @@ for (const file of files.filter((entry) => /\.(?:md|mjs|json|yaml|yml)$/i.test(e
   assert(text.endsWith('\n') && !text.endsWith('\n\n'), `Expected exactly one final newline in ${file}`);
 }
 
-console.log(`CUDA-JS-Tensor foundation verification passed: ${files.length} maintained files, no native production source, package and authority identities aligned.`);
+console.log(`CUDA-JS-Tensor repository verification passed: ${files.length} maintained files, no native production source, package and authority identities aligned.`);

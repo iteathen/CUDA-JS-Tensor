@@ -1,9 +1,10 @@
 {
   "name": "cuda-js-tensor",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0-alpha.1",
   "description": "Consumer-neutral tensor planning and accelerated tensor execution for CUDA-JS",
   "type": "module",
   "private": true,
+  "sideEffects": false,
   "license": "AGPL-3.0-or-later",
   "engines": {
     "node": ">=26.1.0"
@@ -11,7 +12,30 @@
   "scripts": {
     "format": "node scripts/format-text.mjs",
     "test": "node --test",
+    "test:tensor-value": "node --test components/tensor-value/test/*.test.mjs",
+    "test:package": "node --test test/package-consumer.test.mjs",
+    "smoke:native:tensor-value": "node --experimental-ffi scripts/smoke-tensor-value-native.mjs",
     "verify": "node scripts/verify.mjs && node --test"
+  },
+  "exports": {
+    ".": {
+      "types": "./components/tensor-value/index.d.ts",
+      "import": "./components/tensor-value/index.mjs"
+    }
+  },
+  "files": [
+    "LICENSE",
+    "LICENSING.md",
+    "README.md",
+    "components/tensor-value/*.mjs",
+    "components/tensor-value/*.d.ts",
+    "components/tensor-value/*.md",
+    "components/tensor-value/*.yaml",
+    "components/tensor-value/src/",
+    "scripts/smoke-tensor-value-native.mjs"
+  ],
+  "dependencies": {
+    "cuda-js": "https://codeload.github.com/iteathen/CUDA-JS/tar.gz/2da65ff2e4287450171c477031dd380a21fa095f"
   },
   "repository": {
     "type": "git",

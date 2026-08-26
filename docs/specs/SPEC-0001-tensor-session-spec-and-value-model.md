@@ -14,7 +14,7 @@ TensorSession.open(cudaRuntime)
 TensorSession.open({ runtime: cudaRuntime, limits, defaults })
 ```
 
-The no-argument form opens one default CUDA-JS runtime with conservative documented limits. A selector chooses one runtime/device before tensor allocation. An injected runtime remains caller-created but transfers tensor-child lifecycle authority to the session only as explicitly declared by the canonical record; ownership mode is inspectable.
+The no-argument form opens one compiler-enabled CUDA-JS runtime with conservative documented limits so the complete SIMT baseline can remain available in the same session epoch. A selector chooses one runtime/device before tensor allocation. An injected runtime is borrowed by default; `{ runtime, runtimeOwnership: "owned" }` explicitly transfers runtime-close authority. Ownership and compiler mode are inspectable in the canonical open record; later plan resolution rejects a borrowed compiler-disabled runtime when its selected backend requires compilation.
 
 V1 contains exactly one runtime/device epoch. A tensor is usable only by its issuing live session. Closing a session closes plans, programs, views and allocations in dependency order, then closes an owned runtime. A borrowed runtime is not closed, but all tensor-owned resources must be terminal before session close succeeds.
 
@@ -40,6 +40,16 @@ The active extent changes only the logical axis-0 length inside the fixed capaci
 
 Views are child capabilities. A parent allocation cannot close while a live view or operation lease exists. Exact overlap is computed from finite byte regions and stride semantics; planners must reject alias patterns a selected backend cannot preserve.
 
+The first implemented value profile admits changed child views from a contiguous parent when the child's exact byte envelope stays inside the parent. A strided parent admits only an identical child specification until a bounded exact reachable-element-subset contract is accepted. Envelope overlap alone is not treated as proof for two arbitrary strided sets.
+
 ## Defaults
 
 Row-major contiguous storage, output allocation, and safe accumulator choices may be inferred. Every inferred fact appears in the resolved plan. Defaults never infer neural/model meaning, cross-device movement, unsafe in-place writes, reduced precision, or a performance claim.
+
+## Implemented portable profile
+
+`cuda-js-tensor@0.1.0-alpha.1` implements `TensorSpec.create(...)`, `TensorSession.open(...)`, root allocation, bounded child views, exact session accounting, cross-session rejection, owned/borrowed runtime close, and package-internal planner inspection over public CUDA-JS typed views.
+
+The documented session defaults are `f32`, `read-write`, row-major storage, 128 MiB per physical allocation, 256 MiB of session-owned allocation capacity, and 1,024 live tensor capabilities. V1 required alignment equals dtype width because the public CUDA-JS view contract provides no stronger portable identity. Empty tensors use a minimal dtype-width physical allocation while retaining a zero-element logical/view range; the physical allocation is inspectable and counted.
+
+Portable mock and installed-package tests prove normalization, bounds, ownership and orchestration only. No CUDA-JS-Tensor native or performance claim follows.

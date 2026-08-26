@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "component": {
+    "id": "tensor.value",
+    "name": "Tensor session and value foundation",
+    "status": "public-portable-alpha",
+    "product_area": "components",
+    "path": "components/tensor-value",
+    "purpose": "Own bounded tensor specifications, one-runtime sessions, opaque allocation/view capabilities, exact accounting, and dependency-ordered cleanup over public CUDA-JS contracts.",
+    "public_contracts": ["index.mjs", "index.d.ts"],
+    "internal_contracts": ["internal.mjs"],
+    "allowed_dependencies": ["node-standard-library", "public-cuda-js-0.1.0-alpha.12"],
+    "forbidden_dependencies": ["cuda-js-internals", "native-cuda", "generated-cuda", "tensor-program-policy", "neural-policy", "mcgs-policy"],
+    "validation": ["npm run test:tensor-value", "npm run test:package", "npm run verify"],
+    "owner": "tensor.session/tensor.spec/tensor.value",
+    "lifecycle": "A session owns every tensor child and closes child views before root views and allocations; an owned runtime closes last, while a borrowed runtime remains caller-owned.",
+    "design": {
+      "owned_invariant": "Every live tensor belongs to exactly one live session/runtime epoch, stays within explicit shape/byte/session bounds, and exposes no native or CUDA-JS private capability.",
+      "public_ports": ["TensorSession", "TensorSpec", "Tensor", "TensorError", "CUDA_JS_TENSOR_COMPATIBILITY"],
+      "internal_ports": ["inspectTensorForSession"],
+      "injected_dependencies": ["public CudaRuntime"],
+      "adapter_boundaries": ["cuda-js runtime facade", "future tensor plan component"],
+      "simplest_sufficient_total_system": "One immutable specification value, one session ledger, and one opaque tensor capability graph over CUDA-JS allocation/view children."
+    }
+  }
+}
