@@ -1,6 +1,6 @@
 # CUDA-MCGS tensor readiness assessment and parent plan
 
-**Status:** Implementation and exact available evidence complete; protected integration and consumer read-back pending
+**Status:** Completed; protected integration and exact CUDA-MCGS consumer read-back recorded
 
 **Parent objective:** Make CUDA-JS-Tensor usable by CUDA-MCGS's device-resident evaluator path without importing search, evaluator, neural-network, scheduler, or product meaning into Tensor.
 
@@ -8,15 +8,17 @@
 
 **Exact Tensor input:** `main@cd7245a3ea647e821a2edd4cdbb915e6ee060e15`
 
+**Exact integrated Tensor output:** `cuda-js-tensor@0.1.0-alpha.6` at protected `main@9ecc1d78bca989ec456c897dec215e82ce4cd311`, through PR #20 from reviewed source head `6c2b3570f0f326cdceb30e6540435ff3e5df92a9`
+
 **Exact CUDA-JS input:** assessment began on `cuda-js@0.1.0-alpha.15` / `main@af29b95e0707b36b88ee4e234c25a9e7f7ed3a1d`; final candidate consumes selected-target-correct `cuda-js@0.1.0-alpha.16` / protected `main@4971302cfb48431c0843126a59d5884d84a81641`
 
-**Exact consumer input:** CUDA-MCGS research branch `codex/tensor-mcgs-research@667fd655edb462d4f5c23cc1b5d3e4761e9086d1`, especially ADR-0024, ADR-0025, the tensor-math assessment, and proposal SPEC-0009. These documents state the owner's intended evaluator direction but are not represented here as integrated CUDA-MCGS protected-`main` production authority.
+**Exact consumer read-back:** CUDA-MCGS research branch `codex/tensor-mcgs-research@ade6e0bcbef4289e538f0ac02b5bfb9ee8568abc`, especially ADR-0024 and `docs/development/2026-08-26-cuda-js-tensor-device-callable-readiness.md`. These documents record the exact public dependency and preserve CUDA-MCGS's current `REF-ROOT-CONTROL-01` target; they are not represented here as integrated CUDA-MCGS protected-`main` production authority.
 
 ## Decision
 
 At the frozen input revision, CUDA-JS-Tensor was ready for host-planned finite Tensor programs but not CUDA-MCGS's active-search evaluator path. `ResolvedTensorPlan.run()` required host submission, while CUDA-MCGS requires evaluator batching, execution, result production, and publication to advance after ignition without a host gather/launch/poll/relaunch loop.
 
-**Implementation update:** SPEC-0009 and `TENSOR-DEVICE-ITEM-014` now implement the selected missing LEGO as the alpha.6 candidate. Portable/package validation and exact installed-package Windows native import/call/output/cleanup evidence pass. The original readiness finding remains the reason for the work; the host-progress gap is closed in code pending protected integration and exact merged-revision reconciliation.
+**Implementation update:** SPEC-0009 and `TENSOR-DEVICE-ITEM-014` implement the selected missing LEGO in integrated alpha.6. Portable/package validation and exact installed-package Windows native import/call/output/cleanup evidence pass. The host-progress mechanism gap is closed in protected public code; remaining CUDA-MCGS work is consumer-owned semantic/native integration and evidence, not another generic Tensor prerequisite.
 
 The smallest sufficient missing Tensor LEGO is an **item-parallel device-callable Tensor program**:
 
