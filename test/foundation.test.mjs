@@ -4,12 +4,13 @@ import test from 'node:test';
 
 const root = new URL('../', import.meta.url);
 
-test('foundation package is publication-guarded and owns no CUDA-JS or consumer dependency yet', async () => {
+test('foundation package is publication-guarded and depends only on the exact public CUDA-JS revision', async () => {
   const packageJson = JSON.parse(await readFile(new URL('package.json', root), 'utf8'));
   assert.equal(packageJson.name, 'cuda-js-tensor');
   assert.equal(packageJson.private, true);
-  assert.equal(packageJson.dependencies, undefined);
-  assert.equal(packageJson.exports, undefined);
+  assert.deepEqual(Object.keys(packageJson.dependencies), ['cuda-js']);
+  assert.equal(packageJson.dependencies['cuda-js'], 'https://codeload.github.com/iteathen/CUDA-JS/tar.gz/2da65ff2e4287450171c477031dd380a21fa095f');
+  assert.equal(packageJson.exports['.'].import, './components/tensor-value/index.mjs');
 });
 
 test('deferred training-system plan authorizes no current repository mutation', async () => {

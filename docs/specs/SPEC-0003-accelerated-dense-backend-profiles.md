@@ -1,6 +1,6 @@
 # SPEC-0003: Accelerated dense backend profiles
 
-**Status:** Accepted architecture; implementation dependency-gated
+**Status:** Accepted architecture; tensor backends not implemented
 **Date:** 2026-08-26
 
 ## Complete baseline
@@ -9,11 +9,11 @@ Every first-slice operation has a maintained JavaScript/Device-JS SIMT realizati
 
 ## Host-planned accelerated profile
 
-The first accelerated host profile maps eligible matrix multiplication nodes to a future public CUDA-JS cuBLASLt adapter. Algorithm selection, heuristic result, workspace, alignment, precision, epilogue, stream/operation dependency and cleanup are resolved through bounded public records. Heuristics are reusable plan material, not repeated hidden hot-path decisions.
+The first accelerated host profile maps eligible matrix multiplication nodes to the public CUDA-JS SPEC-0029 cuBLASLt adapter. Algorithm selection, heuristic result, workspace, alignment, precision, epilogue, stream/operation dependency and cleanup are resolved through bounded public records. Heuristics are reusable plan material, not repeated hidden hot-path decisions.
 
 ## Device-callable profile
 
-Eligible compact dense subgraphs may use a future public typed CUDA-JS device-callable library contract. cuBLASDx is the primary candidate because it provides selected BLAS operations inside CUDA kernels. It is not presumed usable until exact toolkit/license/architecture/dtype/shape/shared-memory/participation and linking gates pass.
+Eligible compact dense subgraphs may use public CUDA-JS SPEC-0028 typed leaf-library composition. cuBLASDx is the primary candidate because it provides selected BLAS operations inside CUDA kernels. It is not presumed usable until an exact CUDA-JS provider profile plus toolkit/license/architecture/dtype/shape/shared-memory/participation and linking gates pass.
 
 CUTLASS is a fallback source-composed candidate when cuBLASDx cannot satisfy the exact contract. It requires an accepted versioned header/library profile and generated specialization through CUDA-JS; CUDA-JS-Tensor does not vendor it casually or add native compilation.
 

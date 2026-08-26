@@ -1,6 +1,6 @@
 # CUDA-JS-Tensor
 
-CUDA-JS-Tensor is a planned consumer-neutral tensor library for CUDA-JS. It will provide an easy canonical facade and complete expert contracts for finite tensor shapes, views, operation DAGs, resolved execution plans, generated SIMT kernels, and qualified accelerated dense-math adapters.
+CUDA-JS-Tensor is a consumer-neutral tensor library for CUDA-JS. Its first portable value slice provides an easy canonical facade and complete expert contracts for finite tensor shapes, views, session ownership and resource bounds. Operation DAGs, resolved execution plans, generated SIMT kernels, and qualified accelerated dense-math adapters remain the next bounded slices.
 
 The design deliberately separates layers:
 
@@ -16,7 +16,7 @@ The project is not a neural-network framework, training system, CUDA binding, or
 
 ## Current status
 
-Public pre-release, specification-first foundation. The repository and npm name are selected, but no package has been published and no native or performance support claim exists.
+Public pre-release. `cuda-js-tensor@0.1.0-alpha.1` implements the portable/package `TensorSession`, `TensorSpec`, and opaque `Tensor` value foundation over the exact public `cuda-js@0.1.0-alpha.12` compatibility revision. The package remains publication-guarded; no npm publication, native qualification, dense execution, or performance support claim exists.
 
 The first dense slice targets:
 
@@ -26,7 +26,7 @@ The first dense slice targets:
 - allocation, copy, cast, views, elementwise operations, reductions, matrix multiplication, and batched matrix multiplication;
 - immutable `TensorProgram`, `TensorPlan`, and `ResolvedTensorPlan`;
 - a complete generated Device-JS SIMT baseline;
-- host-planned cuBLASLt and device-callable dense-subgraph adapters only through future accepted public CUDA-JS capabilities.
+- host-planned cuBLASLt and device-callable dense-subgraph adapters only through the exact accepted public CUDA-JS capabilities and separate tensor qualification.
 
 See [`docs/PROJECT_CHARTER.md`](docs/PROJECT_CHARTER.md), [`docs/architecture/TARGET_ARCHITECTURE.md`](docs/architecture/TARGET_ARCHITECTURE.md), and [`docs/plans/2026-08-26-foundation-plan.md`](docs/plans/2026-08-26-foundation-plan.md).
 

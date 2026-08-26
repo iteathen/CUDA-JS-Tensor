@@ -1,18 +1,17 @@
 {
   "schema_version": 1,
   "updated": "2026-08-26",
-  "status": "upstream_prerequisites_planned",
-  "objective": "Establish and protect the public CUDA-JS-Tensor authority, then specify the four generic public CUDA-JS prerequisites before native tensor implementation.",
+  "status": "tensor_value_implemented_portable",
+  "objective": "Build the universal dense tensor foundation over one exact public CUDA-JS compatibility pair without consumer or native ownership leakage.",
   "current_focus": {
-    "id": "CJS-TENSOR-VIEW-001",
-    "next_action": "Open and assess the public typed device-view and dtype facade as the first dependency-specific CUDA-JS work packet, without deep imports or native workarounds.",
-    "exit": "An accepted consumer-neutral CUDA-JS specification and dependency-ready plan define installed-package typed-view creation, use, ownership and terminal cleanup."
+    "id": "TENSOR-PROGRAM-011",
+    "next_action": "Assess and implement immutable TensorProgram, TensorPlan, and ResolvedTensorPlan semantics over the completed value component, keeping execution adapters outside the planner.",
+    "exit": "Dense shape/broadcast inference, exact alias/lifetime/workspace accounting, immutable compatibility identity, failures, deletion and package tests pass without backend-dependent mathematics."
   },
   "dependencies": [
-    "public CUDA-JS typed device views and dtype registry",
-    "public typed device-callable library composition",
-    "public prepared finite operation DAG",
-    "public context-bound CUDA library adapters with cuBLASLt profile"
+    "cuda-js@0.1.0-alpha.12 protected-main revision 2da65ff2e4287450171c477031dd380a21fa095f",
+    "implemented TensorSession/TensorSpec/Tensor portable package surface",
+    "accepted SPEC-0002 dense program and plan semantics"
   ],
   "deferred": [
     "the_restaurant implementation or repository mutation",

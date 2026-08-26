@@ -18,11 +18,11 @@
 | ID | Owner/output | Depends on | Acceptance / falsifier |
 |---|---|---|---|
 | `TENSOR-BOOT-000` | Public repo, authority, specs, validation, protections | Project-owner direction | Remote main and settings read back; no production claim. |
-| `CJS-TENSOR-VIEW-001` | Upstream public typed device-view/dtype facade | Accepted CUDA-JS SPEC-0021 reassessment | Installed consumer can create/use/close a typed view without deep import. |
-| `CJS-DEVICE-LIB-002` | Upstream typed device-callable import/library composition | RDC/LTO and resource/participation contracts | Two unrelated consumers compose typed device functions; lifecycle and divergence fail closed. |
-| `CJS-PREPARED-DAG-003` | Upstream prepared finite operation DAG baseline | Accepted operation/transfer lifecycle | Immutable finite DAG preserves dependencies, errors and terminal cleanup. |
-| `CJS-LIB-ADAPTER-004` | Upstream context-bound library framework and cuBLASLt profile | Public typed views + operations | Generic lifecycle first; exact independent GEMM oracle; no tensor semantics in CUDA-JS. |
-| `TENSOR-VALUE-010` | Portable TensorSession/TensorSpec/Tensor value model | `CJS-TENSOR-VIEW-001` for native path | Zero/one/many shapes, views, limits, ownership, overload equivalence and deletion pass. |
+| `CJS-TENSOR-VIEW-001` | Upstream public typed device-view/dtype facade | Accepted CUDA-JS SPEC-0021 reassessment | Completed in CUDA-JS SPEC-0021; exact dependency revision recorded. |
+| `CJS-DEVICE-LIB-002` | Upstream typed device-callable import/library composition | RDC/LTO and resource/participation contracts | Completed in CUDA-JS SPEC-0028; tensor provider profile remains separate. |
+| `CJS-PREPARED-DAG-003` | Upstream prepared finite operation DAG baseline | Accepted operation/transfer lifecycle | Completed in CUDA-JS SPEC-0020 as semantic single-stream replay. |
+| `CJS-LIB-ADAPTER-004` | Upstream context-bound library framework and cuBLASLt profile | Public typed views + operations | Completed in CUDA-JS SPEC-0023/SPEC-0029 with exact independent GEMM oracle. |
+| `TENSOR-VALUE-010` | Portable TensorSession/TensorSpec/Tensor value model | `CJS-TENSOR-VIEW-001` for native path | Implemented portable/package profile; zero/one/many shapes, views, limits, ownership, overload equivalence, deletion and cleanup pass. Native promotion remains unclaimed. |
 | `TENSOR-PROGRAM-011` | TensorProgram/TensorPlan/ResolvedTensorPlan | `TENSOR-VALUE-010`; DAG port may remain injected mock | Dense inference, alias/lifetime/workspace, identity and failure tests pass. |
 | `TENSOR-SIMT-012` | Generated Device-JS dense baseline | public views/compiler/operations | Independent portable/native mathematical cases and cleanup pass; no maintained native source. |
 | `TENSOR-CUBLASLT-013` | Host accelerated matmul adapter | `CJS-LIB-ADAPTER-004`, `TENSOR-PROGRAM-011` | Exact/tolerance oracle and representative benefit including all overhead. |
@@ -34,8 +34,8 @@ Only one shared CUDA-JS contract changes at a time. Downstream evidence is inval
 ## Sequencing
 
 1. Bootstrap and protect the repository.
-2. Open separate CUDA-JS issues/specification packets for the four generic prerequisites.
-3. Implement portable value/program semantics while native dependencies remain injected or blocked.
+2. Integrate the four generic CUDA-JS prerequisites and record one exact compatibility pair. Completed at CUDA-JS `2da65ff2` / `0.1.0-alpha.12`.
+3. Implement portable value/program semantics over public CUDA-JS only. `TENSOR-VALUE-010` is the first implemented slice; `TENSOR-PROGRAM-011` follows.
 4. Implement the generated SIMT path after public typed views are usable.
 5. Add cuBLASLt, then device-callable dense adapters only after exact public CUDA-JS mechanisms and license/profile review.
 6. Qualify and publish only the exact achieved surface.
