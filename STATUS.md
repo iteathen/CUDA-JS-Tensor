@@ -4,17 +4,19 @@
 repository:                 public protected foundation established
 package name:               cuda-js-tensor (reserved by intent, unpublished)
 package version:            0.1.0-alpha.4 (publication-guarded)
-phase:                      optional host-planned cuBLASLt integrated; next profile assessment pending
+phase:                      production LEGO readiness assessed; exact fusion child specification next
 production implementation: value + immutable program/static plan + complete SIMT + bounded optional cuBLASLt
 native qualification:       exact installed-package Windows CUDA 13.3/compute_75/GTX 1660 Ti alpha.4 candidate passes
 performance claims:         none
 exact CUDA-JS pair:         0.1.0-alpha.15 at af29b95e0707
-current target:             TENSOR-DEVICE-DENSE-014 assessment before any device-callable implementation
+current target:             SPEC-0007 exact elementwise fusion, then TENSOR-FUSION-017 (#14)
 ```
 
 The first product is a universal tensor library with convenience layered over complete contracts. Dense operations are the first bounded slice, not evidence that every future tensor or consumer is dense.
 
-The required CUDA-JS prerequisites are integrated upstream: public typed device views, typed device-callable library composition, prepared operation DAGs, context-bound CUDA library adapters and SPEC-0031 mixed kernel/cuBLASLt prepared nodes. CUDA-JS-Tensor consumes the exact public package revision only; no private import or native workaround is authorized here.
+The CUDA-JS prerequisites for the implemented surface and the next Tensor-owned fusion/arena slices are integrated upstream: public typed device views, typed device-callable library composition, prepared operation DAGs, context-bound CUDA library adapters and SPEC-0031 mixed kernel/cuBLASLt prepared nodes. CUDA-JS-Tensor consumes the exact public package revision only; no private import or native workaround is authorized here. Future typed/strided-batched cuBLASLt profiles and efficient collective device-callable dense execution still require bounded CUDA-JS children.
+
+The [production LEGO readiness assessment](docs/plans/2026-08-26-tensor-production-lego-readiness-assessment.md) classifies the five retained analysis frames by owner. Exact elementwise fusion is the next specification target; a result-owned per-run material arena follows because it must consume the post-fusion allocation schedule. Batched/precision acceleration remains upstream-blocked, and device-callable dense execution is deferred until a real caller selects a useful participation class plus the minimum generic CUDA-JS parallel helpers. No frame was promoted by this assessment.
 
 Static-program assessment exposed one additional generic upstream prerequisite before the complete SIMT baseline. CUDA-JS SPEC-0030 now supplies f64/f16/bf16 pointer/local arithmetic, exact casts and special-value math; alpha.14 also corrects native prepared-DAG identity projection. SPEC-0005 therefore owns the Tensor-only resolution, lowering, binding, result and cleanup semantics without a private/native workaround.
 

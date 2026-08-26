@@ -27,7 +27,11 @@
 | `TENSOR-PROGRAM-011` | Immutable TensorProgram and finite static TensorPlan | `TENSOR-VALUE-010` | Implemented portable/package profile: first dense inference, declared alias/lifetime/distinct-allocation identity and failure tests pass; execution facts remain explicitly unresolved. |
 | `TENSOR-SIMT-012` | ResolvedTensorPlan plus generated Device-JS dense baseline | public views/compiler/operations, `TENSOR-PROGRAM-011`, and achieved `CJS-DEVICE-NUMERIC-005` profile | Integrated through PR #7 at `main@a2c9d4a0`; alpha.3 passes exact session/backend/program/workspace/cleanup binding, full portable/package validation and an independent installed-package Windows native mathematical/replay/lifecycle fixture. |
 | `TENSOR-CUBLASLT-013` | Host accelerated matmul adapter ([closed issue #8](https://github.com/iteathen/CUDA-JS-Tensor/issues/8)); SPEC-0006 | CUDA-JS SPEC-0031 at alpha.15, `TENSOR-PROGRAM-011`, `TENSOR-SIMT-012` | Integrated through protected PR #10 at `main@8910309a`; exact native oracle, mixed prepared replay and terminal cleanup pass. SIMT stays the default pending separate performance evidence. |
-| `TENSOR-DEVICE-DENSE-014` | Device-callable compact dense subgraph | `CJS-DEVICE-LIB-002`, `TENSOR-SIMT-012` | Exact eligibility/resource/participation gates and end-to-end evidence; otherwise fallback. |
+| `TENSOR-FUSION-017` | Optional exact generated elementwise-chain fusion ([issue #14](https://github.com/iteathen/CUDA-JS-Tensor/issues/14)) | `TENSOR-SIMT-012`, accepted SPEC-0007 | Exact rounding/observability/access/failure identity; complete unfused deletion. Selected as the next child-specification lane. |
+| `TENSOR-ARENA-018` | Optional result-owned material arena | accepted post-fusion material schedule, CUDA-JS SPEC-0021 | Alias-closed range/rollback/child cleanup; complete distinct-allocation deletion. Follows fusion. |
+| `TENSOR-BATCHED-GEMM-015` | Optional rank-3 f32 cuBLASLt profile | future CUDA-JS strided-batched plan/node child ([CUDA-JS #75](https://github.com/iteathen/CUDA-JS/issues/75)) | One bounded provider plan, no rank-2 host loop; currently blocked upstream. |
+| `TENSOR-PRECISION-GEMM-016` | Optional f16/bf16/f64 cuBLASLt profiles | future CUDA-JS typed plan/node children ([CUDA-JS #75](https://github.com/iteathen/CUDA-JS/issues/75)) | Exact input/compute/scale/output semantics; currently blocked upstream. |
+| `TENSOR-DEVICE-DENSE-014` | Device-callable compact dense subgraph | `CJS-DEVICE-LIB-002`, selected CUDA-JS parallel helpers, `TENSOR-SIMT-012` | Exact useful collective participation/resource/publication gates; deferred rather than implemented as a serial device function. |
 | `TENSOR-RELEASE-020` | Package consumers, examples, compatibility and release evidence | accepted preceding slices | Clean tarball, unrelated consumers, exact support claims, no private dependency. |
 
 Only one shared CUDA-JS contract changes at a time. Downstream evidence is invalidated when its exact upstream package/revision or contract changes.
@@ -39,7 +43,9 @@ Only one shared CUDA-JS contract changes at a time. Downstream evidence is inval
 3. Implement portable value/program semantics over public CUDA-JS only. `TENSOR-VALUE-010`, `TENSOR-PROGRAM-011` and resolved generated SIMT execution under `TENSOR-SIMT-012` are integrated.
 4. Implement the consumer-neutral CUDA-JS dense numeric Device-JS profile exposed by program-semantics assessment, then the generated SIMT path. Both are integrated; SPEC-0005 governs the Tensor resolution/lowering/result boundary without generated native-source workarounds.
 5. Add the bounded SPEC-0006 host-planned cuBLASLt realization over public CUDA-JS alpha.15. Preserve the complete SIMT default until performance qualification; device-callable dense adapters remain later work.
-6. Qualify and publish only the exact achieved surface.
+6. Specify and implement exact elementwise fusion, then result-owned arena reuse over the post-fusion material schedule.
+7. Extend accelerated batched/precision and device-callable profiles only after their bounded CUDA-JS dependencies are accepted.
+8. Qualify and publish only the exact achieved surface.
 
 ## Backpressure and split rules
 

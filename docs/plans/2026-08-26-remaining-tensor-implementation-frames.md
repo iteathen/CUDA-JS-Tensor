@@ -22,9 +22,9 @@ This frame does not change the implemented alpha.4 support surface. Complete SIM
 
 ## Integration order
 
-`TENSOR-DEVICE-DENSE-014` remains the current assessment target because CUDA-JS SPEC-0028 exists, but its concrete second-instance value and Tensor-owned ABI are not yet accepted. The assessment may still defer it.
+The bounded [production LEGO readiness assessment](2026-08-26-tensor-production-lego-readiness-assessment.md) supersedes the provisional device-callable-first order. CUDA-JS SPEC-0028 supplies leaf-library composition but not the efficient collective participation primitives required by a useful dense region, so `TENSOR-DEVICE-DENSE-014` is deferred rather than implemented as a serial device function.
 
-The other chunks are independent candidates rather than a forced sequence. Start one only when its public CUDA-JS dependency and child specification are ready. Each chunk must replace—not wrap—the corresponding experimental frame, retain the complete SIMT path, and delete its experiment file when its unique continuation value has moved into accepted source and tests.
+`TENSOR-FUSION-017` is the next child-specification target, followed by `TENSOR-ARENA-018` over the resulting post-fusion material schedule. Both can consume current public CUDA-JS. `TENSOR-BATCHED-GEMM-015` and `TENSOR-PRECISION-GEMM-016` remain blocked on a consumer-neutral CUDA-JS typed/strided-batched matmul family. Each chunk must replace—not wrap—the corresponding experimental frame, retain the complete SIMT path, and delete its experiment file when its unique continuation value has moved into accepted source and tests.
 
 Performance recommendation is a later evidence gate across completed profiles, not a sixth runtime policy manager. Multi-device tensor composition remains a separate future owner above one-device sessions and is not framed here. Convolution, sparse/ragged tensors, collectives, neural/training layers, package publication, and `the_restaurant` integration remain outside this frame.
 
