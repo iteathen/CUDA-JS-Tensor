@@ -1,10 +1,15 @@
-import { frameRecord } from './frame-contract.mjs';
+import { assertTensorPlan, frameRecord } from './frame-contract.mjs';
 
 const FUTURE_DTYPES = new Set(['f16', 'bf16', 'f64']);
-const CUDA_JS_VISIBLE_DTYPES = new Set(['f16', 'bf16', 'f32', 'f64']);
 
 function supportedRank(node) {
   return [2, 3].includes(node.outputSpec.rank) ? node.outputSpec.rank : null;
+}
+
+function contractionExtent(node, left) {
+  if (![2, 3].includes(left.rank)) return null;
+  const shape = left.capacityShape;
+  return node.options.transposeA ? shape.at(-2) : shape.at(-1);
 }
 
 function matmulReasons(node, left, right, rank) {
@@ -16,12 +21,12 @@ function matmulReasons(node, left, right, rank) {
   if (left.activeAxis0 || right.activeAxis0 || node.outputSpec.activeAxis0) reasons.push('active-extent');
   if (left.byteOffset || right.byteOffset || node.outputSpec.byteOffset) reasons.push('derived-offset');
   if (node.outputSpec.logicalElementCount === 0) reasons.push('empty-output');
+  if (contractionExtent(node, left) === 0) reasons.push('empty-contraction');
   return Object.freeze([...new Set(reasons)]);
 }
 
 function classify(node, left, right, rank) {
   const reasons = matmulReasons(node, left, right, rank);
-  const supportedByContract = CUDA_JS_VISIBLE_DTYPES.has(node.outputSpec.dtype) && rank !== null && reasons.includes('rank-mismatch') === false;
   return Object.freeze({
     semanticNode: node.id,
     rank,
@@ -30,16 +35,18 @@ function classify(node, left, right, rank) {
     accumulatorDtype: node.options.accumulatorDtype,
     outputDtype: node.outputSpec.dtype,
     contiguous: [left, right, node.outputSpec].every((spec) => spec.layout === 'row-major-contiguous'),
-    supportedByCurrentBackend: reasons.length === 0 && node.options.accumulatorDtype === 'f32' && node.outputSpec.dtype === 'f32',
+    coveredByCurrentSIMTSemantics: true,
+    supportedByCurrentCublasLtProfile: false,
     reasons,
     implementationGap: FUTURE_DTYPES.has(left.dtype)
       ? `Need public CUDA-JS typed matmul support for ${left.dtype} input/output with ${node.options.accumulatorDtype} accumulation.`
       : null,
-    contractReady: supportedByContract && reasons.length === 0,
+    structurallyEligibleForProposedProfile: reasons.length === 0,
   });
 }
 
 export function framePrecisionMatmul(plan) {
+  assertTensorPlan(plan, 'framePrecisionMatmul');
   const candidates = [];
   for (const node of plan.program.nodes) {
     if (node.op !== 'matmul') continue;

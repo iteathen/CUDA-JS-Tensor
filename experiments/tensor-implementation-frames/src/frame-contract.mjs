@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-import { TensorPlan } from '../../../components/tensor-program/index.mjs';
+import { TensorPlan } from '../../../components/public-api/index.mjs';
 
 // These records are deterministic analysis snapshots. They do not make support
 // claims, but they are fully executable analysis with an explicit identity.

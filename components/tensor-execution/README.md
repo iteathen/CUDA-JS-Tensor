@@ -28,4 +28,4 @@ The resolved plan owns compiler/module/function/fixed-library-plan/prepared reso
 
 The SIMT path is complete for SPEC-0004's first dense catalog. SPEC-0006 may replace only eligible rank-2 contiguous f32 matmul kernels at their existing DAG position. `simt` remains the convenience default; `prefer-cublaslt` records exact fallbacks and `cublaslt` rejects any ineligible/non-admitted matmul. There is no maintained CUDA/PTX source, private CUDA-JS import, hidden host callback loop, fusion, arena reuse, automatic performance policy or speedup claim here.
 
-Incomplete future implementation frames live outside this production component in [`../../experiments/tensor-implementation-frames/`](../../experiments/tensor-implementation-frames/). They are not imported, exported, executable, tested, or evidence of support.
+Executable, tested analysis frames for possible future work live outside this production component in [`../../experiments/tensor-implementation-frames/`](../../experiments/tensor-implementation-frames/). They are not imported, exported, consulted by resolution, or evidence of production support.

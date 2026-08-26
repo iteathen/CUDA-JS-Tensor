@@ -1,13 +1,13 @@
-import { frameRecord } from './frame-contract.mjs';
+import { assertTensorPlan, frameRecord } from './frame-contract.mjs';
 
 const FUSIBLE_OPS = new Set(['cast', 'unary', 'binary']);
 
 function buildConsumerMap(program) {
   const byInput = new Map();
   for (const node of program.nodes) {
-    for (const inputId of node.inputIds) {
-      if (!byInput.has(inputId)) byInput.set(inputId, []);
-      byInput.get(inputId).push(node.id);
+    for (const inputId of new Set(node.inputIds)) {
+      if (!byInput.has(inputId)) byInput.set(inputId, new Set());
+      byInput.get(inputId).add(node.id);
     }
   }
   return byInput;
@@ -33,11 +33,11 @@ function chainsFromProgram(program) {
 
     let cursor = node;
     while (!outputs.has(cursor.id)) {
-      const downstream = uses.get(cursor.id) ?? [];
+      const downstream = [...(uses.get(cursor.id) ?? [])];
       if (downstream.length !== 1) break;
       const next = byId.get(downstream[0]);
       if (!next || used.has(next.id) || next.materialization !== 'materialize' || !FUSIBLE_OPS.has(next.op)) break;
-      if (next.inputIds.filter((inputId) => inputId === cursor.id).length !== 1) break;
+      if (!next.inputIds.includes(cursor.id)) break;
       nodes.push(next);
       used.add(next.id);
       cursor = next;
@@ -54,13 +54,13 @@ function chainsFromProgram(program) {
     const regionIds = new Set(nodes.map((entry) => entry.id));
     for (const entry of nodes) {
       for (const inputId of entry.inputIds) if (!regionIds.has(inputId)) boundaryInputCount.add(inputId);
-      const downstream = uses.get(entry.id) ?? [];
+      const downstream = [...(uses.get(entry.id) ?? [])];
       if (outputs.has(entry.id) || downstream.some((id) => !regionIds.has(id))) boundaryOutputCount.add(entry.id);
     }
 
     chains.push(Object.freeze({
-      output: nodes.at(-1).id,
-      input: nodes[0].id,
+      firstNode: nodes[0].id,
+      lastNode: nodes.at(-1).id,
       candidateSize: nodes.length,
       hasBinary,
       nodes: Object.freeze(nodes.map((entry) => Object.freeze({
@@ -77,6 +77,7 @@ function chainsFromProgram(program) {
 }
 
 export function frameElementwiseFusion(plan) {
+  assertTensorPlan(plan, 'frameElementwiseFusion');
   const chains = chainsFromProgram(plan.program);
   return frameRecord({
     kind: 'elementwise-fusion',
