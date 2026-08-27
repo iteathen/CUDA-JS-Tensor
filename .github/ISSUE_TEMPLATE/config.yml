@@ -1,5 +1,8 @@
-blank_issues_enabled: true
+blank_issues_enabled: false
 contact_links:
+  - name: Security vulnerability
+    url: https://github.com/iteathen/CUDA-JS-Tensor/security/advisories/new
+    about: Report suspected vulnerabilities privately. Do not open a public issue.
   - name: Design discussion
     url: https://github.com/iteathen/CUDA-JS-Tensor/discussions
     about: Discuss early designs and use cases before opening a specification issue.
