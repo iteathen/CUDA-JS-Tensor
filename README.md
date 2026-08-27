@@ -1,6 +1,12 @@
 # CUDA-JS-Tensor
 
+[![Verify](https://github.com/iteathen/CUDA-JS-Tensor/actions/workflows/verify.yml/badge.svg)](https://github.com/iteathen/CUDA-JS-Tensor/actions/workflows/verify.yml)
+[![License: AGPL-3.0-or-later](https://img.shields.io/badge/license-AGPL--3.0--or--later-blue)](LICENSE)
+
 CUDA-JS-Tensor is a consumer-neutral tensor library for CUDA-JS. Its public alpha layers an easy canonical facade over complete expert contracts for finite tensor values, immutable operation DAGs, session-bound resolved plans, complete generated SIMT execution, item-parallel device-callable programs and optional bounded dense acceleration.
+
+> [!IMPORTANT]
+> CUDA-JS-Tensor is a pre-release project. `cuda-js-tensor@0.1.0-alpha.6` identifies the integrated package candidate; it is not published to the npm registry and is not a production-support claim. Native qualification is limited to the exact profile recorded below.
 
 The design deliberately separates layers:
 
@@ -39,4 +45,6 @@ Node 26.1.0 or later is the initial testing substrate. Read [`AGENTS.md`](AGENTS
 npm run verify
 ```
 
-CUDA-JS-Tensor is licensed under AGPL-3.0-or-later. Separate commercial terms may be available; see [`LICENSING.md`](LICENSING.md).
+Contributions should begin with [`CONTRIBUTING.md`](CONTRIBUTING.md), the current [`STATUS.md`](STATUS.md), [`next_step.yaml`](next_step.yaml), and an owning [issue](https://github.com/iteathen/CUDA-JS-Tensor/issues). Use [Discussions](https://github.com/iteathen/CUDA-JS-Tensor/discussions) for early design questions. Report vulnerabilities privately according to [`SECURITY.md`](SECURITY.md), never through a public issue.
+
+CUDA-JS-Tensor source is licensed under AGPL-3.0-or-later. Separate commercial terms may be available; see [`LICENSING.md`](LICENSING.md).
