@@ -50,6 +50,13 @@ README and other public entry points lead with executable truth, not architectur
 - Before 1.0, compatibility shims without an actual external/deployed/persisted beneficiary are normally removed rather than memorialized as permanent API surface.
 - Do not let README prose become a second status/specification database. Link `STATUS.md`, `next_step.yaml`, and the owning specs for detailed state.
 
+## AI-assisted development accountability
+
+- AI-generated code, prose, analysis, and model review are working material, never authority, an independent oracle, or validation evidence.
+- The contributor or maintainer remains accountable for understanding the change and for every correctness, lifecycle, provenance, security, compatibility, and qualification claim.
+- Apply the same tests, review, exact evidence, provenance, and cleanup gates regardless of how much of the change was agent-produced.
+- Keep AI disclosure brief and factual in `CONTRIBUTING.md`; do not generate defensive AI-process documents or treat model agreement as proof.
+
 ## Non-negotiable invariants
 
 - Apply domain truth -> LEGO ownership -> SOLID responsibility -> CUPID quality -> simplest sufficient total system -> measured validation.
