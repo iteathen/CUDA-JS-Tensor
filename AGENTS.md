@@ -17,6 +17,28 @@ Production implementation begins only for an accepted owned boundary with depend
 5. Agent rules, registry, validation policy, and charter.
 6. Architecture, research, plans, and status material.
 
+## Portfolio readiness gate
+
+Before selecting, expanding, reviewing, or closing meaningful work, ask: **what is the highest-risk unproven boundary currently preventing the next real composed capability?**
+
+Unless accepted CUDA-JS-Tensor authority or the actual dependency graph requires a different order, prioritize:
+
+1. security/correctness boundary defects;
+2. missing foundational tensor or upstream CUDA-JS capability required by a dependency-ready consumer;
+3. missing qualification/evidence/infrastructure for an implemented required capability;
+4. missing thin vertical tensor composition proof through public CUDA-JS and CUDA-JS-Tensor contracts;
+5. measured performance/concurrency bottlenecks required by a real consumer;
+6. convenience or operation/API-surface expansion;
+7. community/presentation polish.
+
+Keep architectural disposition, implementation status, qualification/support status, and priority separate. Missing GPU/host/CI evidence is an evidence or qualification-infrastructure gap unless code is independently falsified; do not invent a tensor/runtime fix for absent evidence. Qualification infrastructure is product infrastructure when a support or acceleration claim depends on it.
+
+Cross-repository dependencies are public capability edges. CUDA-JS-Tensor states the consumer requirement and acceptance criteria; CUDA-JS owns consumer-neutral runtime/compiler/memory/execution mechanisms and their qualification. A desire to add native code, deep-import CUDA-JS internals, or build an awkward local escape path is a capability-ownership diagnostic and must be classified before implementation.
+
+Specifications protect real ownership and semantic boundaries; they are not an end state. Once a boundary is sufficiently specified, prefer the thinnest meaningful executable tensor slice through the intended public contracts over additional speculative layering. Do not add operation breadth, acceleration machinery, concurrency, or optimization merely because it may eventually be useful; require a dependency-ready consumer or measured bottleneck.
+
+PR/closure evidence must state which blocker class changed, the exact evidence supporting that transition, what remains unproven, and which downstream composed capability is newly unblocked.
+
 ## Non-negotiable invariants
 
 - Apply domain truth -> LEGO ownership -> SOLID responsibility -> CUPID quality -> simplest sufficient total system -> measured validation.
