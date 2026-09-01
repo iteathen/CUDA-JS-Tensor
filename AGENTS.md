@@ -39,6 +39,24 @@ Specifications protect real ownership and semantic boundaries; they are not an e
 
 PR/closure evidence must state which blocker class changed, the exact evidence supporting that transition, what remains unproven, and which downstream composed capability is newly unblocked.
 
+## Public surface gate
+
+README and other public entry points lead with executable truth, not architecture maturity.
+
+- Show current code/package state, a direct verification command, and unsupported/unqualified limits before architecture or roadmap prose.
+- State current limits directly; move “not the architectural ceiling” rationale and future capability defenses into the owning ADR/specification.
+- Keep native/platform/performance claims adjacent to the exact evidence that supports them.
+- New operation breadth, acceleration, concurrency, process, compatibility, or migration machinery must name a present consumer, persisted/deployed dependency, concrete recovery need, or measured bottleneck.
+- Before 1.0, compatibility shims without an actual external/deployed/persisted beneficiary are normally removed rather than memorialized as permanent API surface.
+- Do not let README prose become a second status/specification database. Link `STATUS.md`, `next_step.yaml`, and the owning specs for detailed state.
+
+## AI-assisted development accountability
+
+- AI-generated code, prose, analysis, and model review are working material, never authority, an independent oracle, or validation evidence.
+- The contributor or maintainer remains accountable for understanding the change and for every correctness, lifecycle, provenance, security, compatibility, and qualification claim.
+- Apply the same tests, review, exact evidence, provenance, and cleanup gates regardless of how much of the change was agent-produced.
+- Keep AI disclosure brief and factual in `CONTRIBUTING.md`; do not generate defensive AI-process documents or treat model agreement as proof.
+
 ## Non-negotiable invariants
 
 - Apply domain truth -> LEGO ownership -> SOLID responsibility -> CUPID quality -> simplest sufficient total system -> measured validation.
