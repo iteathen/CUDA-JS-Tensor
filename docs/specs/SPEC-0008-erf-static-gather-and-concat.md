@@ -11,7 +11,7 @@
 
 Define the smallest backend-neutral TensorProgram semantic extension proven necessary by the first frozen real downstream model:
 
-1. add `erf` to the existing `unary` operator family;
+1. add `erf` to the existing `unary` operator family for the first proven `f32`/`f64` profile;
 2. add one bounded **static indexed gather** operation whose complete index set is canonical program metadata and therefore range-checkable before execution;
 3. add one finite ordered `concat` operation over an explicit axis.
 
@@ -25,7 +25,7 @@ The strongest credible failure is satisfying one consumer by smuggling its shape
 
 The selected first profile is therefore conservative:
 
-- `erf` is ordinary materialized unary mathematics owned by Tensor semantics but requires a separately accepted public Device-JS helper from CUDA-JS #157 for the complete SIMT realization;
+- `erf` is ordinary materialized `f32`/`f64` mathematics owned by Tensor semantics but requires a separately accepted public Device-JS helper from CUDA-JS #157 for the complete SIMT realization;
 - `gather` carries a finite static `indices` list in the canonical TensorProgram node, so every index is validated against capacity before execution and no runtime out-of-range protocol is invented;
 - `concat` is a finite materializing operation with exact dtype/rank/shape and active-extent rules;
 - no in-place variant, runtime index tensor, scatter, dynamic concatenation, padding convention or consumer-specific fused form is admitted.
@@ -50,11 +50,13 @@ Unknown fields, wrong arity, unsupported dtypes, invalid axes, invalid static in
 
 ### Type and shape
 
-`erf` admits floating dtypes only:
+The first accepted candidate profile admits:
 
 ```text
-f16 bf16 f32 f64
+f32 f64
 ```
+
+`f16` and `bf16` deliberately remain unsupported by this candidate. Current CUDA documentation distinguishes native float/double error functions from extended floating-point emulation through float conversion; the real consumer evidence is `f32`. Lower-precision `erf` therefore requires its own later semantic/provider evidence rather than inheriting an accidental widen/round convention.
 
 The output has the same dtype, capacity shape and active-axis identity as the input, but is a new materialized contiguous value.
 
@@ -68,7 +70,7 @@ erf(x) = (2 / sqrt(pi)) * integral_0^x exp(-t^2) dt
 
 The operation is semantic, not an implementation recipe. A backend may use an accepted provider helper, but may not substitute a different function merely because it is faster or easier to lower.
 
-The mathematical result is rounded to the declared output dtype under the same per-operation floating result rule already owned by SPEC-0004. No fast-math reassociation or consumer-selected approximation is implied.
+The mathematical result is rounded to the declared `f32` or `f64` output dtype under the same per-operation floating result rule already owned by SPEC-0004. No fast-math reassociation or consumer-selected approximation is implied.
 
 Special values are:
 
@@ -223,8 +225,8 @@ The accepted implementation must define the exact additive program contract/vers
 
 ### `erf`
 
-- integer/bool input rejects;
-- output shape/dtype/active extent are preserved exactly;
+- `f16`, `bf16`, integer and boolean input reject in this first profile;
+- output shape/dtype/active extent are preserved exactly for `f32`/`f64`;
 - NaN, infinities and signed zeros match the declared semantics;
 - a backend/tanh approximation cannot satisfy `erf` equivalence;
 - absence of an accepted public CUDA-JS realization cannot be bypassed by private source/native code.
@@ -261,7 +263,7 @@ The accepted implementation must define the exact additive program contract/vers
 
 ## Consumer evidence — non-normative
 
-UCI-Arena-Vector PR #16 freezes LatticeKnight-4M against protected `cuda-js-tensor@0.1.0-alpha.6@44376e151ab854c81d65df79db1717478ae8ce5b` and reports exactly these missing capabilities:
+UCI-Arena-Vector PR #16 freezes an `f32` LatticeKnight-4M correctness profile against protected `cuda-js-tensor@0.1.0-alpha.6@44376e151ab854c81d65df79db1717478ae8ce5b` and reports exactly these missing capabilities:
 
 ```text
 concat
@@ -280,11 +282,12 @@ This candidate may become implementation authority only after independent review
 3. the pressure limits are explicit profile limits rather than hidden semantic restrictions;
 4. active-extent behavior is complete and conservative;
 5. public CUDA-JS #157 is an explicit `erf` implementation dependency rather than a private workaround;
-6. the additive TensorProgram contract/version transition is explicit;
-7. required conformance/failure/deletion/cleanup evidence is specified before production code.
+6. the first `erf` dtype profile is limited to the actually proven `f32`/`f64` provider/consumer semantics, with lower precision deferred;
+7. the additive TensorProgram contract/version transition is explicit;
+8. required conformance/failure/deletion/cleanup evidence is specified before production code.
 
 Until that acceptance, production TensorProgram code must continue rejecting `erf`, `gather` and `concat` exactly as it does today.
 
 ## Non-goals
 
-Runtime index tensors, scatter/update, masks, negative indices, wrap/clamp indexing, dynamic gather failure protocols, dynamic axis-0 concat, stack, split, arbitrary advanced indexing, in-place variants, fused GELU, model-specific activation names, policy heads, chess mappings, generated CUDA source exposure, native Tensor code, private CUDA-JS imports, performance claims or accelerator-specific semantics.
+Runtime index tensors, scatter/update, masks, negative indices, wrap/clamp indexing, dynamic gather failure protocols, dynamic axis-0 concat, stack, split, arbitrary advanced indexing, in-place variants, fused GELU, `f16`/`bf16` `erf`, model-specific activation names, policy heads, chess mappings, generated CUDA source exposure, native Tensor code, private CUDA-JS imports, performance claims or accelerator-specific semantics.
