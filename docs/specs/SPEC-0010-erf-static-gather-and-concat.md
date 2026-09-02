@@ -1,11 +1,11 @@
 # SPEC-0010: Consumer-backed erf, static gather and concat semantics
 
-**Status:** Candidate for review — no implementation authority
+**Status:** Accepted
 **Date:** 2026-09-01
 **Parent:** SPEC-0004
 **Issue:** #32
 **Consumer evidence:** `iteathen/UCI-Arena-Vector#3`, `iteathen/CUDA-JS-Tensor#32`, frozen external model provenance below
-**Upstream mechanism dependency:** `iteathen/CUDA-JS#157` / candidate PR #158 for public Device-JS `erf`
+**Upstream mechanism dependency:** `iteathen/CUDA-JS#157` / accepted `SPEC-0030-erf-v1`; public Device-JS `erf` implementation remains open
 
 ## Outcome
 
@@ -15,15 +15,15 @@ Define the smallest backend-neutral TensorProgram semantic extension proven nece
 2. add one bounded **static indexed gather** operation whose complete index set is canonical program metadata and therefore range-checkable before execution;
 3. add one finite ordered `concat` operation over an explicit axis.
 
-This candidate adds no model, neural-network, chess, policy-head, underpromotion, Restaurant or CUDA mechanism meaning to CUDA-JS-Tensor. The downstream model is evidence that these generic operations are needed; it is not specification authority for their semantics.
+This specification adds no model, neural-network, chess, policy-head, underpromotion, Restaurant or CUDA mechanism meaning to CUDA-JS-Tensor. The downstream model is evidence that these generic operations are needed; it is not specification authority for their semantics.
 
-The earlier UCI-Arena-Vector PR #16 verifier experiment is **not active authority**: it is closed, unmerged, and its task branch has been reset to protected Vector `main`. This candidate relies only on the investigation results explicitly retained after that rollback—the frozen external model identity/provenance and the three generic Tensor capability gaps recorded in issue #32. No abandoned Vector verifier contract, branch head, unattached blob or speculative v2 design is an input to this specification.
+The earlier UCI-Arena-Vector PR #16 verifier experiment is **not active authority**: it is closed, unmerged, and its task branch has been reset to protected Vector `main`. This specification relies only on the investigation results explicitly retained after that rollback—the frozen external model identity/provenance and the three generic Tensor capability gaps recorded in issue #32. No abandoned Vector verifier contract, branch head, unattached blob or speculative v2 design is an input to this specification.
 
-This document is deliberately **not accepted implementation authority**. SPEC-0004 remains the accepted operation catalog until this candidate is independently reviewed and accepted through the repository's normal specification process.
+SPEC-0010 mathematical authority was accepted through the repository-owner-authorized exact-head review and acceptance transport recorded in PRs #33 and #34. That acceptance authorizes the bounded TensorProgram/TensorPlan mathematics, static planning and ordinary resolved-SIMT implementation defined here, subject to the explicit dependency and evidence gates below. It does **not** widen SPEC-0009 device-callable admission for `gather` or `concat`, and it does not promote native/provider support. Ordinary and device-callable `unary:erf` realization still require the public CUDA-JS helper implementation owned by CUDA-JS #157.
 
-This candidate owns only the `tensor.program` / `tensor.plan` mathematical and static-planning extension plus its ordinary resolved-SIMT obligations. It does **not** widen accepted SPEC-0009 device-callable operation admission by implication. SPEC-0009 remains the sole owner of item-axis independence, device-function ABI, per-item output/workspace isolation and operation-specific item propagation. `gather` and `concat` therefore remain unsupported in the device-callable profile until a separate accepted SPEC-0009 child/addendum defines those semantics.
+This specification owns only the `tensor.program` / `tensor.plan` mathematical and static-planning extension plus its ordinary resolved-SIMT obligations. It does **not** widen accepted SPEC-0009 device-callable operation admission by implication. SPEC-0009 remains the sole owner of item-axis independence, device-function ABI, per-item output/workspace isolation and operation-specific item propagation. `gather` and `concat` therefore remain unsupported in the device-callable profile until a separate accepted SPEC-0009 child/addendum defines those semantics.
 
-`SPEC-0008` is already reserved by the existing `tensor.memory.arena` owner / TENSOR-ARENA-018 issue #17. This candidate therefore uses the next unclaimed specification identity, `SPEC-0010`, rather than displacing that separate lifecycle/resource owner.
+`SPEC-0008` is already reserved by the existing `tensor.memory.arena` owner / TENSOR-ARENA-018 issue #17. SPEC-0010 therefore uses the next unclaimed specification identity rather than displacing that separate lifecycle/resource owner.
 
 ## Design disposition
 
@@ -31,7 +31,7 @@ The strongest credible failure is satisfying one consumer by smuggling its shape
 
 The selected first profile is therefore conservative:
 
-- `erf` is ordinary materialized `f32`/`f64` mathematics owned by Tensor semantics but requires a separately accepted public Device-JS helper from CUDA-JS #157 for the complete SIMT realization;
+- `erf` is ordinary materialized `f32`/`f64` mathematics owned by Tensor semantics but requires the separately owned public Device-JS helper from CUDA-JS #157 for the complete SIMT realization;
 - `gather` carries a finite static `indices` list in the canonical TensorProgram node, so every index is validated against capacity before execution and no runtime out-of-range protocol is invented;
 - `concat` is a finite materializing operation with exact dtype/rank/shape and active-extent rules;
 - no in-place variant, runtime index tensor, scatter, dynamic concatenation, padding convention or consumer-specific fused form is admitted;
@@ -41,9 +41,9 @@ These operations are one coherent **TensorProgram operation-catalog authority ex
 
 This keeps LEGO ownership intact: Tensor owns tensor mathematics/indexing; SPEC-0009 separately owns device-callable item semantics; CUDA-JS owns generic Device-JS numeric mechanism; consumers own model/application meaning.
 
-## Candidate operation catalog extension
+## Accepted operation catalog extension
 
-If accepted, SPEC-0004's functional operation model gains only the following additions:
+Under SPEC-0010, SPEC-0004's functional operation model gains only the following additions:
 
 | `op` | Inputs | Required `options` / defaults | Result |
 |---|---:|---|---|
@@ -57,7 +57,7 @@ Unknown fields, wrong arity, unsupported dtypes, invalid axes, invalid static in
 
 ## Additive TensorProgram contract identity
 
-Acceptance must not silently widen the already integrated `SPEC-0004-tensor-program-v1` language or mutate canonical bytes for programs that do not use this extension.
+This additive acceptance does not silently widen the already integrated `SPEC-0004-tensor-program-v1` language or mutate canonical bytes for programs that do not use this extension.
 
 A program containing no SPEC-0010 operation retains exactly:
 
@@ -89,13 +89,13 @@ The existing compatibility hash owner remains TensorProgram. The changed canonic
 
 ### Type and shape
 
-The first candidate profile admits:
+The first accepted profile admits:
 
 ```text
 f32 f64
 ```
 
-`f16` and `bf16` deliberately remain unsupported by this candidate. Current CUDA documentation distinguishes ordinary float/double error functions from extended floating-point emulation through float conversion; the retained real-consumer evidence is `f32`. Lower-precision `erf` therefore requires its own later semantic/provider evidence rather than inheriting an accidental widen/round convention.
+`f16` and `bf16` deliberately remain unsupported by this first accepted profile. Current CUDA documentation distinguishes ordinary float/double error functions from extended floating-point emulation through float conversion; the retained real-consumer evidence is `f32`. Lower-precision `erf` therefore requires its own later semantic/provider evidence rather than inheriting an accidental widen/round convention.
 
 The output has the same dtype, capacity shape and active-axis identity as the input, but is a new materialized contiguous value.
 
@@ -109,7 +109,7 @@ erf(x) = (2 / sqrt(pi)) * integral_0^x exp(-t^2) dt
 
 The operation identity is semantic, not an implementation recipe. A backend may use an accepted provider helper, but may not substitute a tanh/GELU approximation or a different function merely because it is faster or easier to lower.
 
-The result is represented in the declared `f32` or `f64` output dtype under the existing Tensor floating-result ownership. Tensor does not create a second provider-accuracy contract. Finite realization consumes the exact public CUDA-JS `SPEC-0030-erf-v1` semantics and compatibility profile selected by the resolved backend. The corrected CUDA-JS #158 candidate binds finite rounding behavior to its exact admitted provider/toolkit/header/target profile and treats NVIDIA's reported 2-ULP table values as observed characterization rather than guaranteed provider-wide bounds. Tensor must consume that public contract as-is and may not restate a stronger correctly-rounded, bit-identical or global-ULP promise.
+The result is represented in the declared `f32` or `f64` output dtype under the existing Tensor floating-result ownership. Tensor does not create a second provider-accuracy contract. Finite realization consumes the exact public CUDA-JS `SPEC-0030-erf-v1` semantics and compatibility profile selected by the resolved backend. Accepted CUDA-JS `SPEC-0030-erf-v1` binds finite rounding behavior to its exact admitted provider/toolkit/header/target profile and treats NVIDIA's reported 2-ULP table values as observed characterization rather than guaranteed provider-wide bounds. Tensor consumes that public contract as-is and may not restate a stronger correctly-rounded, bit-identical or global-ULP promise.
 
 If future CUDA-JS authority adds a separately guaranteed numerical-error profile, Tensor may select that exact public profile through its normal resolved compatibility identity; this specification does not invent such a guarantee.
 
@@ -125,11 +125,11 @@ Special values are exact Tensor semantic requirements:
 
 ### Upstream realization gate
 
-Current accepted CUDA-JS SPEC-0030 exposes `sqrt`, `log`, `exp`, `abs`, classification and min/max helpers but does not expose `erf`. CUDA-JS issue #157 and candidate PR #158 own the consumer-neutral Device-JS numeric mechanism.
+CUDA-JS `SPEC-0030-erf-v1` public semantics are accepted, while CUDA-JS issue #157 still owns implementation and portable/native evidence for the actual public Device-JS helper.
 
-Acceptance of this Tensor spec would authorize TensorProgram/TensorPlan semantics only. **Production ordinary SIMT implementation of `unary:erf` remains blocked until a compatible public CUDA-JS `erf` contract is independently accepted and available.** CUDA-JS-Tensor must not deep-import CUDA-JS source, expose CUDA intrinsic/header names, embed private CUDA source or add native/FFI code to bypass that gate.
+SPEC-0010 acceptance authorizes TensorProgram/TensorPlan semantics and ordinary implementation only within available public dependencies. **Production ordinary SIMT realization of `unary:erf` remains blocked until the compatible public CUDA-JS `erf` helper implementation is available.** CUDA-JS-Tensor must not deep-import CUDA-JS source, expose CUDA intrinsic/header names, embed private CUDA source or add native/FFI code to bypass that gate.
 
-SPEC-0009 already owns item propagation for the existing `unary` operation family, so `unary:erf` does not require a new item-axis rule merely because the operator token is new. Device-callable support nevertheless remains an implementation/evidence claim: its generator must explicitly admit/lower `erf` through the accepted public CUDA-JS helper and pass the existing SPEC-0009 isolation/ABI/workspace evidence before support is claimed.
+SPEC-0009 already owns item propagation for the existing `unary` operation family, so `unary:erf` does not require a new item-axis rule merely because the operator token is new. Device-callable support nevertheless remains an implementation/evidence claim: its generator must explicitly admit/lower `erf` through the implemented public CUDA-JS helper and pass the existing SPEC-0009 isolation/ABI/workspace evidence before support is claimed.
 
 ## Static indexed `gather`
 
@@ -152,7 +152,7 @@ The first profile is:
 
 `indices` is copied into canonical JSON-safe program metadata. It is an ordered finite array of nonnegative safe integers. Because the list is static metadata rather than a runtime tensor, it has no public tensor dtype. Empty `indices` is valid and produces a zero-sized gathered axis. Duplicates are valid and repeat the selected source element in the corresponding output position.
 
-The first candidate semantic pressure limit is:
+The first accepted semantic pressure limit is:
 
 ```text
 maxStaticGatherIndices = 65536
@@ -242,7 +242,7 @@ Mixed active/inactive inputs reject even when their current logical lengths happ
 
 ## TensorPlan and backend obligations
 
-If accepted, the three operations integrate into the existing SPEC-0004 planning boundary:
+Under accepted SPEC-0010, the three operations integrate into the existing SPEC-0004 planning boundary:
 
 - `erf`, `gather` and `concat` are material nodes with exact definitions, last use, distinct allocation and alignment facts;
 - no hidden semantic workspace is authorized by their TensorProgram records;
@@ -252,28 +252,28 @@ If accepted, the three operations integrate into the existing SPEC-0004 planning
 
 Static gather and concat do not currently prove a need for a **new public CUDA-JS semantic primitive**: the current public pointer/index/arithmetic/control-flow surface is sufficient for the retained 22-index ordinary-SIMT consumer case. Production implementation must still prove its exact generated realization against current Device-JS source/AST and SPEC-0005 execution bounds. If a broader declared TensorProgram pressure case requires resolved static lookup storage or another lifecycle/resource fact, that fact must be separately made explicit under the existing Tensor execution owner before support is claimed; it may not appear as hidden per-run state or a host-decision loop.
 
-`erf` additionally requires the public CUDA-JS #157/#158 mechanism described above.
+`erf` additionally requires the public CUDA-JS #157 helper implementation described above.
 
 ### Device-callable boundary remains SPEC-0009-owned
 
-Accepted SPEC-0009 explicitly owns item-axis independence, item-major outputs, dtype-partitioned per-item workspace, device-function ABI and operation-specific item propagation. Its current implementation enumerates the admitted operation families. This SPEC-0010 candidate does not change that owner.
+Accepted SPEC-0009 explicitly owns item-axis independence, item-major outputs, dtype-partitioned per-item workspace, device-function ABI and operation-specific item propagation. Its current implementation enumerates the admitted operation families. SPEC-0010 does not change that owner.
 
-- `unary:erf` may use SPEC-0009's existing `unary` item-propagation rule after the public CUDA-JS helper is accepted, but support still requires explicit generator implementation and SPEC-0009 conformance evidence.
+- `unary:erf` may use SPEC-0009's existing `unary` item-propagation rule after the public CUDA-JS helper is implemented, but support still requires explicit generator implementation and SPEC-0009 conformance evidence.
 - `gather` and `concat` are new operation families and remain rejected by the current device-callable compiler. Their item-axis behavior, shared/item input admissibility, no-cross-item-write proof, workspace/output ABI effects and rejection cases require a separate accepted SPEC-0009 child/addendum before device-callable support.
 - Until that child exists, a TensorProgram containing `gather` or `concat` may be semantically valid under accepted SPEC-0010 and still fail device-callable compilation as an explicitly unsupported profile. That is an ownership boundary, not a request for a host workaround or private lowering.
 
-This candidate introduces no scheduler, queue, host callback, runtime allocation-growth policy or native resource owner.
+SPEC-0010 introduces no scheduler, queue, host callback, runtime allocation-growth policy or native resource owner.
 
 ## Canonical compatibility and deletion
 
-If accepted:
+Under accepted SPEC-0010:
 
 - the new operation/operator records participate in TensorProgram canonical identity under the exact additive contract above;
 - programs not using SPEC-0010 operations retain their previous canonical contract/limits/identity and behavior byte-for-byte;
 - rehydration re-runs semantic selection and rejects a forged base/extension contract mismatch;
 - deleting the first consumer must leave only generic Tensor/CUDA-JS tests and no model/application vocabulary in production owners.
 
-## Falsifiers required before acceptance
+## Required implementation and conformance falsifiers
 
 ### `erf`
 
@@ -282,7 +282,7 @@ If accepted:
 - NaN, infinities and signed zeros match the declared semantics;
 - finite results consume the exact selected public CUDA-JS `erf` compatibility profile without upgrading provider characterization into a Tensor-owned global ULP or bit-exact promise;
 - a tanh/GELU substitute cannot satisfy `erf` equivalence;
-- absence of an accepted public CUDA-JS realization cannot be bypassed by private source/native code.
+- absence of the implemented public CUDA-JS realization cannot be bypassed by private source/native code.
 
 ### `gather`
 
@@ -337,23 +337,23 @@ The policy mapping requires 22 static source/destination edge positions, which i
 
 Closing the SPEC-0010 mathematical operation catalog is necessary but **not sufficient** for the first real model's device-callable coverage. The latter also requires the separately owned SPEC-0009 `gather`/`concat` item-semantics extension described above.
 
-## Acceptance gate
+## Acceptance record and remaining implementation gates
 
-This candidate may become implementation authority only after independent review confirms:
+Repository-owner-authorized exact-head review and the acceptance transport in PRs #33 and #34 accepted SPEC-0010 after confirming:
 
 1. the three records are one coherent TensorProgram operation-catalog extension while preserving their existing semantic sub-owners;
 2. the static gather choice avoids unnecessary runtime failure/synchronization authority;
 3. the semantic metadata pressure limits and narrower resolved-backend pressure limits are not conflated;
 4. active-extent behavior is complete and conservative;
-5. public CUDA-JS #157/#158 is an explicit `erf` implementation dependency rather than a private workaround;
+5. public CUDA-JS #157 is an explicit `erf` implementation dependency rather than a private workaround;
 6. the first `erf` dtype profile is limited to the actually proven `f32`/`f64` provider/consumer semantics, and Tensor consumes CUDA-JS accuracy authority without restating a stronger guarantee;
 7. the additive TensorProgram contract/version transition is exact and preserves legacy canonical bytes;
 8. SPEC-0008 remains owned by the separate result-arena work rather than being displaced by this request;
-9. accepted SPEC-0009 remains the sole device-callable item/ABI/workspace owner and this candidate does not silently admit new `gather`/`concat` item semantics;
+9. accepted SPEC-0009 remains the sole device-callable item/ABI/workspace owner and SPEC-0010 does not silently admit new `gather`/`concat` item semantics;
 10. abandoned Vector PR #16 construction is not treated as active authority;
 11. required conformance/failure/deletion/cleanup evidence is specified before production code.
 
-Until that acceptance, production TensorProgram code must continue rejecting `erf`, `gather` and `concat` exactly as it does today. Even after SPEC-0010 acceptance and ordinary implementation, SPEC-0009 device-callable compilation must continue rejecting `gather`/`concat` until its separate item-semantics child is accepted and implemented.
+Accepted SPEC-0010 authorizes ordinary TensorProgram/TensorPlan/SIMT implementation of `gather` and `concat` and Tensor-owned `erf` semantics/planning. Ordinary `unary:erf` lowering remains blocked until the public CUDA-JS helper implementation owned by #157 is integrated. SPEC-0009 device-callable compilation must continue rejecting `gather`/`concat` until its separate item-semantics child is accepted and implemented.
 
 ## Non-goals
 
