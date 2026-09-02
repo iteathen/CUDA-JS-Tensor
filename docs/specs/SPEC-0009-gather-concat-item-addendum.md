@@ -10,7 +10,7 @@
 
 **Issue:** #37
 
-**Mathematical dependency:** accepted SPEC-0010 static `gather` / ordered `concat`; protected accepted-state wording is being reconciled separately by PR #36
+**Mathematical dependency:** SPEC-0010 static `gather` / ordered `concat` semantics were repository-owner authorized and transported through PR #34, while protected `main` still contains contradictory candidate-only status wording. PR #36 is the separate unintegrated authority-state correction. This proposal cannot authorize production implementation while that protected-state contradiction remains unresolved.
 
 ## Outcome
 
