@@ -4,18 +4,20 @@
 **Date:** 2026-09-01
 **Parent:** SPEC-0004
 **Issue:** #32
-**Consumer evidence:** `iteathen/UCI-Arena-Vector#3`, PR #16
+**Consumer evidence:** `iteathen/UCI-Arena-Vector#3`, `iteathen/CUDA-JS-Tensor#32`, frozen external model provenance below
 **Upstream mechanism dependency:** `iteathen/CUDA-JS#157` / candidate PR #158 for public Device-JS `erf`
 
 ## Outcome
 
-Define the smallest backend-neutral TensorProgram semantic extension proven necessary by the first frozen real downstream model:
+Define the smallest backend-neutral TensorProgram semantic extension proven necessary by the retained first-real-model coverage assessment:
 
 1. add `erf` to the existing `unary` operator family for the first proven `f32`/`f64` profile;
 2. add one bounded **static indexed gather** operation whose complete index set is canonical program metadata and therefore range-checkable before execution;
 3. add one finite ordered `concat` operation over an explicit axis.
 
 This candidate adds no model, neural-network, chess, policy-head, underpromotion, Restaurant or CUDA mechanism meaning to CUDA-JS-Tensor. The downstream model is evidence that these generic operations are needed; it is not specification authority for their semantics.
+
+The earlier UCI-Arena-Vector PR #16 verifier experiment is **not active authority**: it is closed, unmerged, and its task branch has been reset to protected Vector `main`. This candidate relies only on the investigation results explicitly retained after that rollback—the frozen external model identity/provenance and the three generic Tensor capability gaps recorded in issue #32. No abandoned Vector verifier contract, branch head, unattached blob or speculative v2 design is an input to this specification.
 
 This document is deliberately **not accepted implementation authority**. SPEC-0004 remains the accepted operation catalog until this candidate is independently reviewed and accepted through the repository's normal specification process.
 
@@ -90,7 +92,7 @@ The first candidate profile admits:
 f32 f64
 ```
 
-`f16` and `bf16` deliberately remain unsupported by this candidate. Current CUDA documentation distinguishes native float/double error functions from extended floating-point emulation through float conversion; the real consumer evidence is `f32`. Lower-precision `erf` therefore requires its own later semantic/provider evidence rather than inheriting an accidental widen/round convention.
+`f16` and `bf16` deliberately remain unsupported by this candidate. Current CUDA documentation distinguishes native float/double error functions from extended floating-point emulation through float conversion; the retained real-consumer evidence is `f32`. Lower-precision `erf` therefore requires its own later semantic/provider evidence rather than inheriting an accidental widen/round convention.
 
 The output has the same dtype, capacity shape and active-axis identity as the input, but is a new materialized contiguous value.
 
@@ -241,7 +243,7 @@ If accepted, the three operations integrate into the existing SPEC-0004 planning
 - an extension program that exceeds existing Device-JS/SIMT source, AST, binding, kernel, workspace or logical-work limits rejects during resolution with the owning pressure truth rather than changing semantics or introducing host progress;
 - unsupported optional accelerated shapes/dtypes fall back to the admitted SIMT path or reject according to accepted backend authority; they may not compute different mathematics.
 
-Static gather and concat do not currently prove a need for a **new public CUDA-JS semantic primitive**: the current public pointer/index/arithmetic/control-flow surface is sufficient for the 22-index first consumer case. Production implementation must still prove its exact generated realization against current Device-JS source/AST and SPEC-0005 execution bounds. If a broader declared TensorProgram pressure case requires resolved static lookup storage or another lifecycle/resource fact, that fact must be separately made explicit under the existing Tensor execution owner before support is claimed; it may not appear as hidden per-run state or a host-decision loop.
+Static gather and concat do not currently prove a need for a **new public CUDA-JS semantic primitive**: the current public pointer/index/arithmetic/control-flow surface is sufficient for the retained 22-index consumer case. Production implementation must still prove its exact generated realization against current Device-JS source/AST and SPEC-0005 execution bounds. If a broader declared TensorProgram pressure case requires resolved static lookup storage or another lifecycle/resource fact, that fact must be separately made explicit under the existing Tensor execution owner before support is claimed; it may not appear as hidden per-run state or a host-decision loop.
 
 `erf` additionally requires the public CUDA-JS #157/#158 mechanism described above.
 
@@ -277,7 +279,7 @@ If accepted:
 - active-axis-0 gather rejects; non-axis-0 gather preserves active extent;
 - result is materialized and does not inherit source alias class;
 - canonical round-trip preserves index order and exact values;
-- the 22-index first-consumer realization fits the existing public Device-JS/SIMT path without private/native help or host progress;
+- the retained 22-index consumer realization fits the existing public Device-JS/SIMT path without private/native help or host progress;
 - broader valid metadata that exceeds a resolved backend bound fails as explicit pressure rather than being silently truncated, approximated or host-driven.
 
 ### `concat`
@@ -304,7 +306,9 @@ If accepted:
 
 ## Consumer evidence — non-normative
 
-UCI-Arena-Vector PR #16 freezes an `f32` LatticeKnight-4M correctness profile against protected `cuda-js-tensor@0.1.0-alpha.6@44376e151ab854c81d65df79db1717478ae8ce5b` and reports exactly these missing capabilities:
+The retained external model candidate is LatticeKnight-4M / `compact_chessformer_gab_v1` from `iteathen/the_restaurant@8c7d75672cee36aa2a39fbddf713041552770b22`. Its frozen package/checkpoint facts recorded by issue #32 include package Git blob `326ba7dd0584438a911baf5051e5f1bedd831274`, checkpoint SHA-256 `62dec13c22a4414db6b78ea9b6ca76bcf6f29a16a963c01d13d947d158b09c7e`, f32 input `[N,17,8,8]`, and policy/value outputs `[N,4162]` / `[N,1]`.
+
+The retained coverage assessment against protected `cuda-js-tensor@0.1.0-alpha.6@44376e151ab854c81d65df79db1717478ae8ce5b` identifies exactly:
 
 ```text
 concat
@@ -312,7 +316,7 @@ gather
 unary:erf
 ```
 
-The consumer uses 22 static model-owned index positions, which is why static preflightable gather is sufficient for the first generic profile. This paragraph explains the evidence trail only; no model shape, policy mapping or application semantics are part of this specification.
+The policy mapping requires 22 static source/destination edge positions, which is why static preflightable gather is sufficient for the first generic profile. These retained facts are provenance/falsification evidence only. The abandoned Vector PR #16 branch state, verifier-v2 design and unattached construction blobs are deliberately excluded from normative and evidence authority here.
 
 ## Acceptance gate
 
@@ -327,7 +331,8 @@ This candidate may become implementation authority only after independent review
 7. finite `erf` equivalence honors the exact admitted upstream tolerance rather than asserting unsupported correct rounding;
 8. the additive TensorProgram contract/version transition is exact and preserves legacy canonical bytes;
 9. SPEC-0008 remains owned by the separate result-arena work rather than being displaced by this request;
-10. required conformance/failure/deletion/cleanup evidence is specified before production code.
+10. abandoned Vector PR #16 construction is not treated as active authority;
+11. required conformance/failure/deletion/cleanup evidence is specified before production code.
 
 Until that acceptance, production TensorProgram code must continue rejecting `erf`, `gather` and `concat` exactly as it does today.
 
