@@ -15,6 +15,7 @@ const required = [
   'docs/specs/SPEC-0004-first-dense-program-semantics.md',
   'docs/specs/SPEC-0005-resolved-simt-execution.md',
   'docs/specs/SPEC-0006-host-planned-cublaslt-matmul.md',
+  'docs/specs/SPEC-0006-provider-boundary-addendum.md',
   'docs/specs/SPEC-0007-exact-elementwise-fusion.md',
   'docs/specs/SPEC-0009-item-parallel-device-callable-tensor-program.md',
   'docs/plans/2026-08-26-cuda-mcgs-readiness-assessment-and-plan.md',
@@ -37,7 +38,7 @@ assert.equal(packageJson.name, 'cuda-js-tensor');
 assert.equal(packageJson.version, '0.1.0-alpha.6');
 assert.equal(packageJson.private, true, 'Package must remain publication-guarded during foundation work.');
 assert.equal(packageJson.license, 'AGPL-3.0-or-later');
-assert.equal(packageJson.dependencies?.['cuda-js'], 'https://codeload.github.com/iteathen/CUDA-JS/tar.gz/4971302cfb48431c0843126a59d5884d84a81641');
+assert.equal(packageJson.dependencies?.['cuda-js'], 'https://codeload.github.com/iteathen/CUDA-JS/tar.gz/85d92d4a04385b0edbc7a19c2bce3d256642bf2f');
 assert.equal(packageJson.exports?.['.']?.import, './components/public-api/index.mjs');
 JSON.parse(readFileSync(path.join(root, 'next_step.yaml'), 'utf8'));
 
