@@ -1,21 +1,27 @@
 {
   "schema_version": 7,
   "updated": "2026-09-03",
-  "status": "cuda_boundary_refactor_reconciliation",
-  "objective": "Close the Tensor execution-ownership audit after the provider and physical CUDA boundary corrections, then hand the portfolio refactor to CUDA-MCGS #193 without reopening dispositioned lower abstractions.",
+  "status": "cuda_boundary_refactor_handed_off",
+  "objective": "Keep the protected-integrated Tensor/CUDA-JS ownership seam stable while the portfolio refactor continues in CUDA-MCGS #193. Route only demonstrated new generic Tensor deficiencies back here; do not reopen dispositioned CUDA-JS abstractions without contradictory evidence.",
   "current_focus": {
-    "id": "TENSOR-EXECUTION-OWNERSHIP-040",
-    "issue": 40,
-    "lower_decisions": [
-      "iteathen/CUDA-JS#178 completed: public provider capability facts",
-      "iteathen/CUDA-JS#179 completed: cuBLASLt-specific borrower lifecycle; no generic provider lease",
-      "iteathen/CUDA-JS#180 completed: existing preparation bricks retained; no PreparedExecutable transaction",
-      "iteathen/CUDA-JS#181 completed: explicit selected geometry retained; no logical-work resolver",
-      "iteathen/CUDA-JS#186 / PR #188 completed: public prepared-DAG, Device-JS and compiler-format compatibility limits"
-    ],
-    "next_action": "Reconcile issue #40 field-by-field against protected-integrated #44/#45 and CUDA-JS alpha.17. Close #40 only if every CUDA-facing Tensor fact has one explicit owner: Tensor mathematics/liveness/access/workspace/profile policy retained; lower provider lifetime/facts and CUDA validity/compatibility ceilings consumed through public CUDA-JS; compile/load/function/provider-plan/prepared-DAG composition retained as adapter translation; ptx|lto-ir retained as an expert compatibility input checked against the lower public format set. Then proceed to CUDA-MCGS #193. Do not reopen #180/#181 without new contradictory evidence.",
-    "exit": "Tensor #40 is closed with a complete ownership matrix and no copied lower provider/runtime/validity facts, leaving CUDA-MCGS #193 as the next executable portfolio refactor node."
+    "id": "CUDA-MCGS-EXECUTION-BOUNDARY-193",
+    "repository": "iteathen/CUDA-MCGS",
+    "issue": 193,
+    "tensor_source": "iteathen/CUDA-JS-Tensor main@be49a63fe0727664a6d27454bfa611ba9a33187f",
+    "cuda_js_source": "iteathen/CUDA-JS main@bc2700f2e5c654567c2e17bf8d67b882351b8681",
+    "next_action": "Audit the CUDA-MCGS execution-package/program-profile and future public CUDA-JS adapter boundary field-by-field. Preserve Search IR, search resource/progress/session/stage/channel meaning and selected search physical-profile policy in CUDA-MCGS; replace copied lower CUDA-JS schemas/limits/provider facts with public lower capability ownership; retain adapter translation where the existing CUDA-JS LEGO bricks are already sufficient. Record any future #122 semantic blocker only on #193 and do not touch #122 itself.",
+    "exit": "CUDA-MCGS #193 has one explicit owner/disposition for every CUDA-facing package/adapter field and no known lower-boundary inversion remains before its later adapter/native work."
   },
+  "completed_refactor": [
+    "Tensor #40 final execution-ownership audit closed on protected main be49a63fe0727664a6d27454bfa611ba9a33187f",
+    "Tensor #44 provider-boundary migration completed",
+    "Tensor #45 physical-boundary migration completed",
+    "CUDA-JS #178 provider capability facts completed",
+    "CUDA-JS #179 cuBLASLt-specific borrower lifecycle completed without a generic provider lease",
+    "CUDA-JS #180 completed with no new preparation transaction",
+    "CUDA-JS #181 completed with no logical-work resolver and explicit geometry preserved",
+    "CUDA-JS #186 / PR #188 exposes public prepared-DAG, Device-JS and compiler-format compatibility facts"
+  ],
   "exact_dependencies": [
     "cuda-js@0.1.0-alpha.17 protected-main revision bc2700f2e5c654567c2e17bf8d67b882351b8681",
     "CUDA-JS public preparedOperationDagLimits, deviceJsLimits and compilerOutputFormats compatibility facts",
@@ -29,38 +35,21 @@
     "CUDA-JS-Tensor SPEC-0006 cuBLASLt realization plus provider-boundary addendum",
     "CUDA-JS-Tensor SPEC-0009 item-parallel device-callable Tensor program"
   ],
-  "implemented": [
-    "TENSOR-CUDA-PROVIDER-044 removes Tensor-local provider singleton/refcount/error-code/alignment ownership and consumes CUDA-JS provider borrowers/capability facts",
-    "TENSOR-CUDA-PHYSICAL-045 consumes public lower prepared-DAG, Device-JS parameter and compiler-format facts while retaining Tensor-selected launch/profile policy and explicit public CUDA-JS preparation composition",
-    "Tensor public CUDA-JS compatibility identity and package dependency are aligned to alpha.17 bc2700f2e5c654567c2e17bf8d67b882351b8681",
-    "TENSOR-DEVICE-ITEM-014 / SPEC-0009 item-parallel callable profile integrated through protected PR #20",
-    "static shared-versus-item input and item-axis independence proof",
-    "finite typed item/input/output/workspace ABI",
-    "dtype-partitioned item-isolated material and fixed-tree scratch workspace",
-    "public compileTensorDeviceProgram and TensorDeviceProgram.importAs",
-    "portable and packed-package public-consumer evidence on the alpha.17 refactor pair"
+  "stable_tensor_ownership": [
+    "Tensor mathematics, dtype/shape/layout/stride/views, liveness/material/workspace meaning and numerical policy remain Tensor-owned",
+    "Tensor-selected blockSize and deterministic workItems-to-grid/block policy remain Tensor-owned while CUDA-JS validates explicit geometry",
+    "ptx|lto-ir remains a versioned expert Tensor compatibility choice checked against CUDA-JS public output-family capability",
+    "host execution composes existing public CUDA-JS compile/module/function/provider-plan/prepared-DAG bricks; no second generic runtime lifecycle exists here",
+    "native/provider lifecycle and lower compatibility/validity facts remain CUDA-JS-owned"
   ],
-  "priority_lanes": {
-    "P0": [
-      "Tensor #40 final execution-ownership reconciliation",
-      "CUDA-MCGS #193 execution-package/CUDA-JS adapter ownership audit after #40"
-    ],
-    "blocked_after_193": [
-      "CUDA-MCGS #125 remains blocked by #122 plus the #193/lower-boundary audit; do not implement while #122 is held"
-    ],
-    "parallel_not_displacing_refactor": [
-      "issue #22 CUDA-MCGS evaluator-consumer qualification when its downstream packet is ready",
-      "support CUDA-MCGS #124 only for Tensor-owned contract defects",
-      "support UCI Arena Vector #3 only through consumer-neutral Tensor contracts"
-    ],
-    "P2_non_blocking": [
-      "issue #17 result-owned material arena",
-      "TENSOR-BATCHED-GEMM-015 after a public CUDA-JS strided-batched matmul child",
-      "TENSOR-PRECISION-GEMM-016 after public closed typed matmul children",
-      "block/warp-cooperative intra-item execution after a measured selected profile",
-      "cuBLASDx/CUTLASS and Tensor Core provider profiles after exact compatibility and performance evidence"
-    ]
-  },
+  "blocked_after_193": [
+    "CUDA-MCGS #125 remains blocked by held #122 plus the #193/lower-boundary audit; do not implement while #122 is held"
+  ],
+  "parallel_not_displacing_refactor": [
+    "issue #22 CUDA-MCGS evaluator-consumer qualification when its downstream packet is ready",
+    "support CUDA-MCGS #124 only for Tensor-owned contract defects",
+    "support UCI Arena Vector #3 only through consumer-neutral Tensor contracts"
+  ],
   "qualification_limits": [
     "The alpha.17 physical-boundary refactor has portable/repository/packed-package evidence only until an exact native consumer is rerun on bc2700f2e5c654567c2e17bf8d67b882351b8681.",
     "Existing recorded Windows cuBLASLt and item-callable native evidence remains historical evidence for its recorded earlier compatible pair and is not silently promoted to alpha.17."
