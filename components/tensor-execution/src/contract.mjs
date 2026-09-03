@@ -5,8 +5,6 @@ import { TensorError } from '../../tensor-value/index.mjs';
 export const RESOLVED_TENSOR_PLAN_CONTRACT = 'SPEC-0006-resolved-dense-plan-v1+SPEC-0007-exact-elementwise-fusion-v1';
 export const TENSOR_EXECUTION_RESULT_CONTRACT = 'SPEC-0005-tensor-execution-result-v1';
 export const TENSOR_SIMT_LIMITS = Object.freeze({
-  maxKernels: 32,
-  maxBindings: 64,
   maxLogicalWorkItems: 0xffff_ffff,
   maxWorkspaceBytes: 64 * 1024 * 1024,
 });
