@@ -2,11 +2,11 @@ import { tensorDtypeWidth, TENSOR_DTYPES } from '../../tensor-value/index.mjs';
 import { TensorPlan } from '../../tensor-program/index.mjs';
 
 import { checkedAdd, checkedMultiply, deepFreeze, fail, identity, TENSOR_SIMT_LIMITS } from './contract.mjs';
+import { CUDA_JS_TENSOR_COMPATIBILITY, requireTensorDeviceLibraryOutput } from './cuda-js-compatibility.mjs';
 
 export const TENSOR_DEVICE_PROGRAM_CONTRACT = 'SPEC-0009-item-parallel-device-tensor-program-v1';
 export const TENSOR_DEVICE_PROGRAM_OUTPUTS = Object.freeze(['ptx', 'lto-ir']);
 export const TENSOR_DEVICE_PROGRAM_LIMITS = Object.freeze({
-  maxParameters: 64,
   maxItemCapacity: 0xffff_ffff,
   defaultMaxWorkspaceBytes: TENSOR_SIMT_LIMITS.maxWorkspaceBytes,
   maxWorkspaceBytes: Number.MAX_SAFE_INTEGER,
@@ -442,6 +442,7 @@ export function createDeviceItemProfile(plan, options) {
   const normalizedItemInputs = plan.program.inputs.filter((entry) => options.itemInputs.includes(entry.name)).map((entry) => entry.name);
   const output = options.output ?? 'ptx';
   if (!OUTPUT_SET.has(output)) fail('TENSOR_DEVICE_OUTPUT_INVALID', 'validation', 'output must be ptx or lto-ir.', { output });
+  requireTensorDeviceLibraryOutput(output);
   const maxWorkspaceBytes = options.maxWorkspaceBytes ?? TENSOR_DEVICE_PROGRAM_LIMITS.defaultMaxWorkspaceBytes;
   if (!Number.isSafeInteger(maxWorkspaceBytes) || maxWorkspaceBytes < 0 || maxWorkspaceBytes > TENSOR_DEVICE_PROGRAM_LIMITS.maxWorkspaceBytes) fail('TENSOR_DEVICE_WORKSPACE_LIMIT_INVALID', 'validation', 'maxWorkspaceBytes must be a nonnegative safe integer within the device-callable profile limit.', { maximum: TENSOR_DEVICE_PROGRAM_LIMITS.maxWorkspaceBytes });
 
@@ -476,7 +477,8 @@ export function createDeviceItemProfile(plan, options) {
     parameters.push(record);
     return record;
   });
-  if (parameters.length > TENSOR_DEVICE_PROGRAM_LIMITS.maxParameters) fail('TENSOR_DEVICE_PARAMETER_LIMIT', 'pressure', 'The device-callable ABI exceeds the public CUDA-JS function parameter limit.', { required: parameters.length, maximum: TENSOR_DEVICE_PROGRAM_LIMITS.maxParameters });
+  const parameterLimit = CUDA_JS_TENSOR_COMPATIBILITY.deviceJsLimits.parametersPerFunction;
+  if (parameters.length > parameterLimit) fail('TENSOR_DEVICE_PARAMETER_LIMIT', 'pressure', 'The device-callable ABI exceeds the public CUDA-JS function parameter limit.', { required: parameters.length, maximum: parameterLimit });
 
   const canonical = deepFreeze({
     contract: TENSOR_DEVICE_PROGRAM_CONTRACT,
@@ -485,6 +487,10 @@ export function createDeviceItemProfile(plan, options) {
     itemInputs: [...normalizedItemInputs],
     output,
     maxWorkspaceBytes,
+    cudaJsCompatibility: {
+      deviceJsLimits: { ...CUDA_JS_TENSOR_COMPATIBILITY.deviceJsLimits },
+      compilerOutputFormats: [...CUDA_JS_TENSOR_COMPATIBILITY.compilerOutputFormats],
+    },
     parameters: parameters.map((entry) => ({ parameterIndex: entry.parameterIndex, parameterName: entry.parameterName, role: entry.role, type: entry.type, dtype: entry.dtype, access: entry.access, itemVarying: entry.itemVarying, name: entry.name ?? null, valueId: entry.valueId ?? null, elementCount: entry.elementCount ?? null, byteLength: entry.byteLength ?? null })),
     workspace: workspace.map((entry) => ({ dtype: entry.dtype, parameterIndex: entry.parameterIndex, perItemElements: entry.perItemElements, elementCount: entry.elementCount, byteLength: entry.byteLength, alignmentBytes: entry.alignmentBytes, materials: entry.materials.map((material) => ({ id: material.id, offsetElements: material.offsetElements, elementCount: material.elementCount, reservedElements: material.reservedElements, alignmentBytes: material.alignmentBytes })), scratches: entry.scratches.map((scratch) => ({ id: scratch.id, offsetElements: scratch.offsetElements, elementCount: scratch.elementCount, reservedElements: scratch.reservedElements, padded: scratch.padded, reductionCount: scratch.reductionCount })) })),
     totalWorkspaceBytes: allocation.totalBytes,

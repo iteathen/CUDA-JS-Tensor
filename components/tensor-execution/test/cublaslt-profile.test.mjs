@@ -37,7 +37,7 @@ function fakePublicRuntime({
 
   const runtime = {
     observation,
-    async describe() { return { package: { name: 'cuda-js', version: '0.1.0-alpha.16', publicApiSchema: 1 }, state: 'open', profile: 'tensor-cublaslt-test', device: { architecture: { class: 'compute_75' } } }; },
+    async describe() { return { package: { name: 'cuda-js', version: '0.1.0-alpha.17', publicApiSchema: 1 }, state: 'open', profile: 'tensor-cublaslt-test', device: { architecture: { class: 'compute_75' } } }; },
     async allocateDevice({ byteLength }) {
       const views = [];
       const memory = stateful('device-memory', {

@@ -14,6 +14,7 @@ const required = [
   'docs/specs/SPEC-0003-accelerated-dense-backend-profiles.md',
   'docs/specs/SPEC-0004-first-dense-program-semantics.md',
   'docs/specs/SPEC-0005-resolved-simt-execution.md',
+  'docs/specs/SPEC-0005-physical-boundary-addendum.md',
   'docs/specs/SPEC-0006-host-planned-cublaslt-matmul.md',
   'docs/specs/SPEC-0006-provider-boundary-addendum.md',
   'docs/specs/SPEC-0007-exact-elementwise-fusion.md',
@@ -26,6 +27,7 @@ const required = [
   'components/tensor-value/index.mjs', 'components/tensor-value/index.d.ts', 'components/tensor-value/internal.mjs',
   'components/tensor-program/README.md', 'components/tensor-program/component.yaml', 'components/tensor-program/index.mjs', 'components/tensor-program/index.d.ts',
   'components/tensor-execution/README.md', 'components/tensor-execution/component.yaml', 'components/tensor-execution/index.mjs', 'components/tensor-execution/index.d.ts', 'components/tensor-execution/testing.mjs',
+  'components/tensor-execution/src/cuda-js-compatibility.mjs',
   'components/public-api/README.md', 'components/public-api/component.yaml', 'components/public-api/index.mjs', 'components/public-api/index.d.ts',
   'scripts/smoke-tensor-value-native.mjs',
   'scripts/run-tensor-execution-native.mjs',
@@ -38,9 +40,19 @@ assert.equal(packageJson.name, 'cuda-js-tensor');
 assert.equal(packageJson.version, '0.1.0-alpha.6');
 assert.equal(packageJson.private, true, 'Package must remain publication-guarded during foundation work.');
 assert.equal(packageJson.license, 'AGPL-3.0-or-later');
-assert.equal(packageJson.dependencies?.['cuda-js'], 'https://codeload.github.com/iteathen/CUDA-JS/tar.gz/85d92d4a04385b0edbc7a19c2bce3d256642bf2f');
+assert.equal(packageJson.dependencies?.['cuda-js'], 'https://codeload.github.com/iteathen/CUDA-JS/tar.gz/bc2700f2e5c654567c2e17bf8d67b882351b8681');
 assert.equal(packageJson.exports?.['.']?.import, './components/public-api/index.mjs');
 JSON.parse(readFileSync(path.join(root, 'next_step.yaml'), 'utf8'));
+
+const compatibilityAdapter = readFileSync(path.join(root, 'components/tensor-execution/src/cuda-js-compatibility.mjs'), 'utf8');
+assert(compatibilityAdapter.includes("from 'cuda-js/compatibility'"), 'Tensor physical compatibility must use the supported cuda-js/compatibility entry.');
+const physicalProduction = [
+  readFileSync(path.join(root, 'components/tensor-execution/src/contract.mjs'), 'utf8'),
+  readFileSync(path.join(root, 'components/tensor-execution/src/device-item-profile.mjs'), 'utf8'),
+].join('\n');
+for (const copiedLowerLimit of [/maxKernels\s*:\s*32\b/u, /maxBindings\s*:\s*64\b/u, /maxParameters\s*:\s*64\b/u]) {
+  assert(!copiedLowerLimit.test(physicalProduction), `Tensor production reintroduced a copied CUDA-JS compatibility limit: ${copiedLowerLimit}`);
+}
 
 const security = readFileSync(path.join(root, 'SECURITY.md'), 'utf8');
 assert(security.includes('https://github.com/iteathen/CUDA-JS-Tensor/security/advisories/new'),

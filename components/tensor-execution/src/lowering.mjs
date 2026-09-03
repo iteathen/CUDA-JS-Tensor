@@ -2,9 +2,11 @@ import { tensorDtypeWidth } from '../../tensor-value/index.mjs';
 import { TensorPlan } from '../../tensor-program/index.mjs';
 
 import { checkedAdd, checkedMultiply, deepFreeze, fail, identity, TENSOR_SIMT_LIMITS } from './contract.mjs';
+import { CUDA_JS_TENSOR_COMPATIBILITY } from './cuda-js-compatibility.mjs';
 import { createFusionProfile } from './fusion-profile.mjs';
 
 const FLOAT_DTYPES = new Set(['f16', 'bf16', 'f32', 'f64']);
+const PREPARED_DAG_LIMITS = CUDA_JS_TENSOR_COMPATIBILITY.preparedOperationDagLimits;
 
 function u64(value) { return `gpu.u64(${BigInt(value)}n)`; }
 
@@ -117,7 +119,7 @@ export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSO
   function addBinding(role, dtype, byteLength, valueId = null) {
     const name = `b${bindings.length}`;
     bindings.push(bindingRecord(name, role, dtype, byteLength, valueId));
-    if (bindings.length > TENSOR_SIMT_LIMITS.maxBindings) fail('TENSOR_SIMT_BINDING_LIMIT', 'pressure', 'Resolved SIMT execution exceeds the finite prepared-binding limit.', { maximum: TENSOR_SIMT_LIMITS.maxBindings });
+    if (bindings.length > PREPARED_DAG_LIMITS.bindings) fail('TENSOR_SIMT_BINDING_LIMIT', 'pressure', 'Resolved SIMT execution exceeds the finite prepared-binding limit.', { maximum: PREPARED_DAG_LIMITS.bindings });
     return name;
   }
 
@@ -148,7 +150,7 @@ export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSO
     if (!Number.isSafeInteger(workItems) || workItems < 1 || workItems > TENSOR_SIMT_LIMITS.maxLogicalWorkItems) {
       fail('TENSOR_SIMT_WORK_LIMIT', 'pressure', 'A generated SIMT kernel exceeds the finite logical-work limit.', { workItems, maximum: TENSOR_SIMT_LIMITS.maxLogicalWorkItems });
     }
-    if (kernels.length >= TENSOR_SIMT_LIMITS.maxKernels) fail('TENSOR_SIMT_KERNEL_LIMIT', 'pressure', 'Resolved SIMT execution exceeds the finite prepared-kernel limit.', { maximum: TENSOR_SIMT_LIMITS.maxKernels });
+    if (kernels.length >= PREPARED_DAG_LIMITS.nodes) fail('TENSOR_SIMT_KERNEL_LIMIT', 'pressure', 'Resolved SIMT execution exceeds the finite prepared-kernel limit.', { maximum: PREPARED_DAG_LIMITS.nodes });
     const functionName = `tensorKernel${kernels.length}`;
     const id = `kernel${kernels.length}`;
     const parameters = parameterRecords.map((parameter, index) => ({ name: `p${index}`, type: `ptr<${parameter.dtype}>` }));
@@ -403,7 +405,7 @@ export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSO
     contract: 'SPEC-0005-generated-simt-lowering-v1+SPEC-0007-exact-elementwise-fusion-v1',
     planIdentity: plan.compatibilityIdentity,
     blockSize,
-    limits: { ...TENSOR_SIMT_LIMITS, maxWorkspaceBytes },
+    limits: { ...TENSOR_SIMT_LIMITS, maxWorkspaceBytes, cudaJsPreparedOperationDagLimits: PREPARED_DAG_LIMITS },
     fusionProfileIdentity: fusionProfile.compatibilityIdentity,
     fusionProfile: fusionProfile.canonical,
     bindings: bindings.map((entry) => ({ ...entry })),

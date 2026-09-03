@@ -30,7 +30,7 @@ import { openCudaRuntimeForTesting } from 'cuda-js/testing';
 import { compileTensorDeviceProgram, CUDA_JS_TENSOR_COMPATIBILITY, resolveTensorPlan, TENSOR_BACKEND_POLICIES, TensorPlan, TensorProgram, TensorSession, TensorSpec } from 'cuda-js-tensor';
 let runtimeClosed = false;
 const runtime = {
-  async describe() { return { package: { name: 'cuda-js', version: '0.1.0-alpha.16', publicApiSchema: 1 }, state: 'open', profile: 'consumer-double', device: null }; },
+  async describe() { return { package: { name: 'cuda-js', version: '0.1.0-alpha.17', publicApiSchema: 1 }, state: 'open', profile: 'consumer-double', device: null }; },
   async allocateDevice({ byteLength }) {
     return {
       async view(options) { return { ...options, async status() { return { state: 'open' }; }, async close() { return { state: 'closed' }; } }; },
@@ -72,7 +72,7 @@ try {
   if (error.code !== 'ERR_PACKAGE_PATH_NOT_EXPORTED') throw error;
 }
 const terminal = await session.close();
-if (!terminal.graceful || !runtimeClosed || CUDA_JS_TENSOR_COMPATIBILITY.package.version !== '0.1.0-alpha.6' || CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version !== '0.1.0-alpha.16') throw new Error('terminal contract mismatch');
+if (!terminal.graceful || !runtimeClosed || CUDA_JS_TENSOR_COMPATIBILITY.package.version !== '0.1.0-alpha.6' || CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version !== '0.1.0-alpha.17') throw new Error('terminal contract mismatch');
 console.log('installed CUDA-JS-Tensor consumer passed');
 `);
     const output = run(process.execPath, [path.join(directory, 'consumer.mjs')], directory);
