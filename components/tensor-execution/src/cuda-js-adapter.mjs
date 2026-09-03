@@ -1,13 +1,15 @@
 import { compileDeviceProgram } from 'cuda-js';
 
-import { failureSummary, fail, identity, TENSOR_SIMT_LIMITS } from './contract.mjs';
+import { failureSummary, fail, identity } from './contract.mjs';
 import { realizeBackendProfile } from './backend-profile.mjs';
+import { CUDA_JS_TENSOR_COMPATIBILITY } from './cuda-js-compatibility.mjs';
 
 const TENSOR_PREFERENCE_FALLBACK_REASONS = new Map([
   ['TENSOR_CUBLASLT_BINDING_LIMIT', 'binding-limit'],
   ['TENSOR_CUBLASLT_WORKSPACE_COUNT_LIMIT', 'workspace-count-limit'],
 ]);
 const DEFAULT_PORTS = Object.freeze({ compileDeviceProgram });
+const PREPARED_DAG_LIMITS = CUDA_JS_TENSOR_COMPATIBILITY.preparedOperationDagLimits;
 
 function tensorCleanupFailure(code, message, primary, cleanup) {
   fail(code, 'cleanup-unproved', message, { primary: failureSummary(primary), cleanup }, { cause: primary });
@@ -150,8 +152,8 @@ export async function createCudaJsTensorBackend(runtime, lowering, request, opti
           if (needsBinding && workspaces.length >= options.maxAcceleratorWorkspaceCount) {
             fail('TENSOR_CUBLASLT_WORKSPACE_COUNT_LIMIT', 'pressure', 'Selected cuBLASLt workspace would exceed the resolved session tensor-count gate.', { maximum: options.maxAcceleratorWorkspaceCount });
           }
-          if (needsBinding && lowering.bindings.length + workspaces.length >= TENSOR_SIMT_LIMITS.maxBindings) {
-            fail('TENSOR_CUBLASLT_BINDING_LIMIT', 'pressure', 'Selected cuBLASLt workspace would exceed the prepared binding limit.', { maximum: TENSOR_SIMT_LIMITS.maxBindings });
+          if (needsBinding && lowering.bindings.length + workspaces.length >= PREPARED_DAG_LIMITS.bindings) {
+            fail('TENSOR_CUBLASLT_BINDING_LIMIT', 'pressure', 'Selected cuBLASLt workspace would exceed the prepared binding limit.', { maximum: PREPARED_DAG_LIMITS.bindings });
           }
           const workspace = needsBinding ? Object.freeze({
             id: `cublaslt-workspace:${candidate.semanticNode}`,
