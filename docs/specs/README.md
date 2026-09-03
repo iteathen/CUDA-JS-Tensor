@@ -6,6 +6,7 @@
 - [`SPEC-0003-accelerated-dense-backend-profiles.md`](SPEC-0003-accelerated-dense-backend-profiles.md) — complete SIMT baseline and optional qualified accelerators.
 - [`SPEC-0004-first-dense-program-semantics.md`](SPEC-0004-first-dense-program-semantics.md) — exact first operation catalog, immutable DAG semantics and static plan boundary.
 - [`SPEC-0005-resolved-simt-execution.md`](SPEC-0005-resolved-simt-execution.md) — session-bound resolved plan, complete generated SIMT lowering, prepared execution and result lifecycle.
+- [`SPEC-0005-physical-boundary-addendum.md`](SPEC-0005-physical-boundary-addendum.md) — accepted physical-boundary correction consuming public CUDA-JS prepared/Device-JS compatibility limits while preserving Tensor-owned block geometry, logical-work policy, artifact-family selection and public lower LEGO composition.
 - [`SPEC-0006-host-planned-cublaslt-matmul.md`](SPEC-0006-host-planned-cublaslt-matmul.md) — optional resolved rank-2 contiguous f32 cuBLASLt nodes composed with the complete SIMT fallback in one prepared DAG.
 - [`SPEC-0006-provider-boundary-addendum.md`](SPEC-0006-provider-boundary-addendum.md) — accepted prerelease correction consuming CUDA-JS-owned cuBLASLt borrowers, public `unsupported` fallback classification and public workspace alignment instead of Tensor-local provider lifecycle/facts.
 - [`SPEC-0007-exact-elementwise-fusion.md`](SPEC-0007-exact-elementwise-fusion.md) — optional exact cast/unary/binary kernel fusion with unobservable-intermediate material deletion and complete unfused fallback.
