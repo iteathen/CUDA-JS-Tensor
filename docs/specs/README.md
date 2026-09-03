@@ -7,6 +7,7 @@
 - [`SPEC-0004-first-dense-program-semantics.md`](SPEC-0004-first-dense-program-semantics.md) — exact first operation catalog, immutable DAG semantics and static plan boundary.
 - [`SPEC-0005-resolved-simt-execution.md`](SPEC-0005-resolved-simt-execution.md) — session-bound resolved plan, complete generated SIMT lowering, prepared execution and result lifecycle.
 - [`SPEC-0006-host-planned-cublaslt-matmul.md`](SPEC-0006-host-planned-cublaslt-matmul.md) — optional resolved rank-2 contiguous f32 cuBLASLt nodes composed with the complete SIMT fallback in one prepared DAG.
+- [`SPEC-0006-provider-boundary-addendum.md`](SPEC-0006-provider-boundary-addendum.md) — accepted prerelease correction consuming CUDA-JS-owned cuBLASLt borrowers, public `unsupported` fallback classification and public workspace alignment instead of Tensor-local provider lifecycle/facts.
 - [`SPEC-0007-exact-elementwise-fusion.md`](SPEC-0007-exact-elementwise-fusion.md) — optional exact cast/unary/binary kernel fusion with unobservable-intermediate material deletion and complete unfused fallback.
 - `SPEC-0008` remains reserved for the planned result-owned material arena tracked by TENSOR-ARENA-018 / issue #17; it has no accepted implementation authority yet.
 - [`SPEC-0009-item-parallel-device-callable-tensor-program.md`](SPEC-0009-item-parallel-device-callable-tensor-program.md) — one caller-owned device participant per independent item, with a finite typed callable ABI, item-isolated workspace and public CUDA-JS leaf-library composition.
