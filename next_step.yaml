@@ -1,36 +1,46 @@
 {
-  "schema_version": 6,
-  "updated": "2026-08-26",
-  "status": "cuda_mcgs_vector_consumer_qualification_active",
-  "objective": "Keep the integrated consumer-neutral device-callable Tensor correctness profile stable while qualifying it through CUDA-MCGS's evaluator connector and the first real external model consumer, UCI Arena Vector. Fix only Tensor-owned math/shape/dtype/item-independence/ABI/workspace/lifecycle gaps; keep search and product semantics downstream.",
+  "schema_version": 7,
+  "updated": "2026-09-03",
+  "status": "cuda_boundary_refactor_active",
+  "objective": "Complete the CUDA-JS/Tensor physical-boundary refactor before further semantic or accelerator expansion: consume lower provider truth/lifecycle from CUDA-JS, disposition preparation and launch ownership without speculative abstractions, then migrate Tensor physical lowering while preserving Tensor mathematics and semantic policy.",
   "current_focus": {
-    "id": "TENSOR-CUDA-MCGS-CONSUMER-022",
-    "issue": 22,
-    "upstream_connector": "iteathen/CUDA-MCGS#124",
-    "first_product_consumer": "iteathen/UCI-Arena-Vector#3",
-    "next_action": "Hold SPEC-0009 and its public package boundary stable while CUDA-MCGS #124 freezes the evaluator connector and Vector #3 supplies model-owned TensorProgram/input/output semantics. Run exact public-package compatibility/equivalence/cleanup evidence when that consumer packet is ready. If the consumer exposes a genuine generic Tensor deficiency, plan it here; route generic CUDA/provider mechanism gaps to CUDA-JS instead of adding product-local native code.",
-    "exit": "One frozen CUDA-MCGS evaluator connector and one external Vector model adapter consume the public device-callable Tensor profile with exact mathematical, target, finite-workspace, failure and cleanup evidence, while Tensor remains free of search/chess/model-head semantics and a non-Tensor evaluator remains possible downstream."
+    "id": "TENSOR-CUDA-PHYSICAL-045",
+    "issue": 45,
+    "lower_decisions": ["iteathen/CUDA-JS#180", "iteathen/CUDA-JS#181"],
+    "next_action": "Finish CUDA-JS #180 and #181 at the research/decision level. If existing compiler/module/function/prepared-DAG composition is sufficient, record that no new preparation transaction is justified. Retain explicit Tensor-selected launch geometry unless #181 demonstrates a bounded additive lower resolver with independent value. Then execute Tensor #45 by removing copied lower limits/facts while preserving Tensor mathematics, liveness, accesses, Device-JS generation and expert compatibility controls that remain materially owned here.",
+    "exit": "CUDA-JS #180/#181 have explicit evidence-backed dispositions and Tensor #45 is protected-integrated through the resulting public lower seam with no copied CUDA/provider lifecycle, validity or compatibility facts and no second generic runtime lifecycle."
   },
   "exact_dependencies": [
-    "cuda-js@0.1.0-alpha.16 protected-main revision 4971302cfb48431c0843126a59d5884d84a81641",
-    "CUDA-JS SPEC-0013 restricted Device-JS",
+    "cuda-js@0.1.0-alpha.16 protected-main revision 85d92d4a04385b0edbc7a19c2bce3d256642bf2f",
+    "CUDA-JS SPEC-0020 prepared operation DAG",
+    "CUDA-JS SPEC-0023 context-bound provider framework",
+    "CUDA-JS SPEC-0029 cuBLASLt f32 profile plus capability-projection and borrower-lifecycle addenda",
     "CUDA-JS SPEC-0028 typed leaf-library composition",
     "CUDA-JS SPEC-0030 dense numeric Device-JS",
     "CUDA-JS-Tensor SPEC-0004 dense TensorProgram mathematics",
+    "CUDA-JS-Tensor SPEC-0005 resolved SIMT execution",
+    "CUDA-JS-Tensor SPEC-0006 cuBLASLt realization plus provider-boundary addendum",
     "CUDA-JS-Tensor SPEC-0009 item-parallel device-callable Tensor program"
   ],
   "implemented": [
+    "TENSOR-CUDA-PROVIDER-044 removes Tensor-local SHARED_CUBLASLT/refcount/last-user-close ownership, consumes public lower unsupported classification and provider workspace alignment, and advances the exact CUDA-JS dependency to 85d92d4a04385b0edbc7a19c2bce3d256642bf2f",
     "TENSOR-DEVICE-ITEM-014 / SPEC-0009 item-parallel callable profile integrated through protected PR #20 at main 9ecc1d78bca989ec456c897dec215e82ce4cd311",
     "static shared-versus-item input and item-axis independence proof",
     "finite typed item/input/output/workspace ABI",
     "dtype-partitioned item-isolated material and fixed-tree scratch workspace",
     "public compileTensorDeviceProgram and TensorDeviceProgram.importAs",
-    "portable, packed-package and exact installed native import/call/output/cleanup evidence",
+    "portable, packed-package and recorded exact native import/call/output/cleanup evidence on the prior compatible pair",
     "exact CUDA-MCGS research-branch consumer read-back at ade6e0bcbef4289e538f0ac02b5bfb9ee8568abc without production lowering or target displacement"
   ],
   "priority_lanes": {
     "P0": [
-      "issue #22 CUDA-MCGS evaluator-consumer qualification",
+      "CUDA-JS #180 executable-preparation disposition",
+      "CUDA-JS #181 launch-resolution disposition",
+      "Tensor #45 physical-lowering migration",
+      "Tensor #40 final execution-ownership reconciliation after #45"
+    ],
+    "parallel_not_displacing_refactor": [
+      "issue #22 CUDA-MCGS evaluator-consumer qualification when its downstream packet is ready",
       "support CUDA-MCGS #124 only for Tensor-owned contract defects",
       "support UCI Arena Vector #3 only through consumer-neutral Tensor contracts"
     ],
@@ -42,7 +52,11 @@
       "cuBLASDx/CUTLASS and Tensor Core provider profiles after exact compatibility and performance evidence"
     ]
   },
-  "native_gap_rule": "A downstream desire to add native code is not a reason for Vector or CUDA-MCGS to bypass Tensor. If the missing meaning is generic dense math/tensor planning, classify it here. If it is generic CUDA compilation/provider/memory/execution, route it to CUDA-JS. Search, chess, model-head, Book Forge, timing and tablebase meaning remain downstream regardless of implementation pressure.",
+  "qualification_limits": [
+    "The provider-ownership refactor has portable/package evidence only until an exact native consumer is rerun against CUDA-JS 85d92d4a04385b0edbc7a19c2bce3d256642bf2f.",
+    "Existing recorded Windows cuBLASLt and item-callable native evidence remains historical evidence for its recorded earlier compatible pair and is not silently promoted to the new exact pair."
+  ],
+  "native_gap_rule": "A downstream desire to add native code is not a reason for Vector, CUDA-MCGS, CUDA-NN or Tensor to bypass the owner split. Generic Tensor math/planning gaps belong here; generic CUDA compilation/provider/memory/execution gaps route to CUDA-JS. Search, chess, model-head, Book Forge, timing and tablebase meaning remain downstream regardless of implementation pressure.",
   "deferred": [
     "the_restaurant implementation or repository mutation",
     "multi-device tensor identity, P2P, collectives and sharding",

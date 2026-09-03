@@ -3,60 +3,14 @@ import { compileDeviceProgram } from 'cuda-js';
 import { failureSummary, fail, identity, TENSOR_SIMT_LIMITS } from './contract.mjs';
 import { realizeBackendProfile } from './backend-profile.mjs';
 
-const PREFERENCE_FALLBACK_CODES = new Set([
-  'CUBLASLT_PROFILE_UNAVAILABLE',
-  'CUBLASLT_PROVIDER_UNAVAILABLE',
-  'CUBLASLT_ADAPTER_ALREADY_OPEN',
-  'CUBLASLT_ALGORITHM_UNAVAILABLE',
-  'TENSOR_CUBLASLT_BINDING_LIMIT',
-  'TENSOR_CUBLASLT_WORKSPACE_COUNT_LIMIT',
+const TENSOR_PREFERENCE_FALLBACK_REASONS = new Map([
+  ['TENSOR_CUBLASLT_BINDING_LIMIT', 'binding-limit'],
+  ['TENSOR_CUBLASLT_WORKSPACE_COUNT_LIMIT', 'workspace-count-limit'],
 ]);
-const SHARED_CUBLASLT = new WeakMap();
 const DEFAULT_PORTS = Object.freeze({ compileDeviceProgram });
 
 function tensorCleanupFailure(code, message, primary, cleanup) {
   fail(code, 'cleanup-unproved', message, { primary: failureSummary(primary), cleanup }, { cause: primary });
-}
-
-async function acquireSharedCublasLt(runtime) {
-  let record = SHARED_CUBLASLT.get(runtime);
-  if (record?.closingPromise) {
-    const report = await record.closingPromise;
-    if (!report.graceful) fail('TENSOR_CUBLASLT_ADAPTER_UNAVAILABLE', 'cleanup-unproved', 'A prior shared cuBLASLt adapter close was not proved.', { failures: report.failures });
-    record = null;
-  }
-  if (!record) {
-    record = { adapterPromise: null, adapter: null, leases: 0, closingPromise: null };
-    record.adapterPromise = runtime.openCublasLt();
-    SHARED_CUBLASLT.set(runtime, record);
-    try {
-      record.adapter = await record.adapterPromise;
-    } catch (error) {
-      SHARED_CUBLASLT.delete(runtime);
-      throw error;
-    }
-  } else if (!record.adapter) {
-    record.adapter = await record.adapterPromise;
-  }
-  record.leases += 1;
-  let released = false;
-  return Object.freeze({
-    adapter: record.adapter,
-    async release() {
-      if (released) return Object.freeze({ graceful: true, failures: Object.freeze([]), shared: record.leases > 0 });
-      released = true;
-      record.leases -= 1;
-      if (record.leases > 0) return Object.freeze({ graceful: true, failures: Object.freeze([]), shared: true });
-      record.closingPromise = (async () => {
-        const failures = [];
-        try { await record.adapter.close(); } catch (error) { failures.push(failureSummary(error)); }
-        const report = Object.freeze({ graceful: failures.length === 0, failures: Object.freeze(failures), shared: false });
-        if (report.graceful) SHARED_CUBLASLT.delete(runtime);
-        return report;
-      })();
-      return record.closingPromise;
-    },
-  });
 }
 
 async function closeResources(resources) {
@@ -75,24 +29,21 @@ async function closeResources(resources) {
     if (plan?.state !== 'open') continue;
     try { await plan.close(); } catch (error) { failures.push(failureSummary(error)); }
   }
-  if (resources.adapterLease) {
-    try {
-      const report = await resources.adapterLease.release();
-      failures.push(...report.failures);
-    } catch (error) { failures.push(failureSummary(error)); }
-    resources.adapterLease = null;
+  if (resources.adapter) {
+    const adapter = resources.adapter;
+    resources.adapter = null;
+    try { await adapter.close(); } catch (error) { failures.push(failureSummary(error)); }
   }
   return Object.freeze({ graceful: failures.length === 0, failures: Object.freeze(failures) });
 }
 
 function fallbackAllowed(request, error) {
-  return request.policy === 'prefer-cublaslt' && PREFERENCE_FALLBACK_CODES.has(error?.code);
+  return request.policy === 'prefer-cublaslt'
+    && (error?.category === 'unsupported' || TENSOR_PREFERENCE_FALLBACK_REASONS.has(error?.code));
 }
 
 function planFallbackReason(error) {
-  return error?.code === 'CUBLASLT_ALGORITHM_UNAVAILABLE'
-    ? `algorithm-unavailable:${error.code}`
-    : `resource-unavailable:${error?.code ?? 'UNKNOWN'}`;
+  return TENSOR_PREFERENCE_FALLBACK_REASONS.get(error?.code) ?? 'plan-unsupported';
 }
 
 function simtOutcome(entry, reasons = []) {
@@ -146,7 +97,7 @@ export async function createCudaJsTensorBackend(runtime, lowering, request, opti
   if (ports === null || typeof ports !== 'object' || Object.keys(ports).some((key) => key !== 'compileDeviceProgram') || typeof ports.compileDeviceProgram !== 'function') {
     fail('TENSOR_BACKEND_PORTS_INVALID', 'validation', 'Tensor backend ports require exactly one compileDeviceProgram function.');
   }
-  const resources = { module: null, functions: [], dag: null, plans: [], adapterLease: null };
+  const resources = { module: null, functions: [], dag: null, plans: [], adapter: null };
   const outcomes = request.matmuls.map((entry) => simtOutcome(entry));
   const outcomeIndex = new Map(outcomes.map((entry, index) => [entry.semanticNode, index]));
   const selected = new Map();
@@ -157,20 +108,25 @@ export async function createCudaJsTensorBackend(runtime, lowering, request, opti
   try {
     if (request.candidates.length > 0) {
       try {
-        resources.adapterLease = await acquireSharedCublasLt(runtime);
+        resources.adapter = await runtime.openCublasLt();
         provider = Object.freeze({
-          profile: resources.adapterLease.adapter.profile,
-          identity: Object.freeze({ ...resources.adapterLease.adapter.provider }),
+          profile: resources.adapter.profile,
+          identity: Object.freeze({ ...resources.adapter.provider }),
         });
+        if (!Number.isSafeInteger(provider.identity.workspaceAlignmentBytes) || provider.identity.workspaceAlignmentBytes < 1) {
+          fail('TENSOR_CUBLASLT_PROVIDER_ALIGNMENT_INVALID', 'internal', 'CUDA-JS returned an invalid cuBLASLt workspace alignment capability.', {
+            workspaceAlignmentBytes: provider.identity.workspaceAlignmentBytes,
+          });
+        }
       } catch (error) {
-        if (!fallbackAllowed(request, error)) throw error;
+        if (request.policy !== 'prefer-cublaslt' || error?.category !== 'unsupported') throw error;
         for (const candidate of request.candidates) {
-          outcomes[outcomeIndex.get(candidate.semanticNode)] = simtOutcome(candidate, [`profile-unavailable:${error.code}`]);
+          outcomes[outcomeIndex.get(candidate.semanticNode)] = simtOutcome(candidate, ['provider-unsupported']);
         }
       }
     }
 
-    if (resources.adapterLease) {
+    if (resources.adapter) {
       for (const candidate of request.candidates) {
         const remainingWorkspaceBytes = Math.min(
           options.acceleratorWorkspaceBytes - selectedWorkspaceBytes,
@@ -178,7 +134,7 @@ export async function createCudaJsTensorBackend(runtime, lowering, request, opti
         );
         let plan = null;
         try {
-          plan = await resources.adapterLease.adapter.createF32MatmulPlan({
+          plan = await resources.adapter.createF32MatmulPlan({
             m: candidate.m,
             n: candidate.n,
             k: candidate.k,
@@ -203,7 +159,7 @@ export async function createCudaJsTensorBackend(runtime, lowering, request, opti
             dtype: 'u32',
             elementCount: plan.workspaceBytes / 4,
             byteLength: plan.workspaceBytes,
-            requiredByteOffsetAlignment: 256,
+            requiredByteOffsetAlignment: provider.identity.workspaceAlignmentBytes,
           }) : null;
           if (workspace) workspaces.push(workspace);
           selectedWorkspaceBytes += plan.workspaceBytes;
@@ -224,10 +180,13 @@ export async function createCudaJsTensorBackend(runtime, lowering, request, opti
       fail('TENSOR_CUBLASLT_STRICT_SELECTION_FAILED', 'unsupported', 'A strict cuBLASLt resolution did not select every eligible matmul.');
     }
 
-    if (selected.size === 0 && resources.adapterLease) {
-      const release = await resources.adapterLease.release();
-      resources.adapterLease = null;
-      if (!release.graceful) fail('TENSOR_CUBLASLT_ADAPTER_ROLLBACK_UNPROVED', 'cleanup-unproved', 'Unused shared cuBLASLt adapter cleanup was not proved.', { failures: release.failures });
+    if (selected.size === 0 && resources.adapter) {
+      const adapter = resources.adapter;
+      resources.adapter = null;
+      try { await adapter.close(); }
+      catch (error) {
+        fail('TENSOR_CUBLASLT_ADAPTER_ROLLBACK_UNPROVED', 'cleanup-unproved', 'Unused cuBLASLt borrower cleanup was not proved.', { cleanup: failureSummary(error) }, { cause: error });
+      }
     }
 
     const compiled = await compileSimtKernels(runtime, lowering, new Set(selected.keys()), resources, ports.compileDeviceProgram);
