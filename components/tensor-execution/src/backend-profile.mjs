@@ -69,7 +69,7 @@ export function createBackendProfileRequest(plan, lowering, options) {
     planIdentity: plan.compatibilityIdentity,
     completeSimtLoweringIdentity: lowering.compatibilityIdentity,
     policy: options.backend,
-    alignment: { operandByteOffset: 4, workspaceByteOffset: 256 },
+    alignment: { operandByteOffset: 4 },
     matmuls: matmuls.map((entry) => ({
       semanticNode: entry.semanticNode,
       executionNodeId: entry.executionNodeId,
