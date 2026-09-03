@@ -49,7 +49,7 @@
     "scripts/smoke-tensor-value-native.mjs"
   ],
   "dependencies": {
-    "cuda-js": "https://codeload.github.com/iteathen/CUDA-JS/tar.gz/85d92d4a04385b0edbc7a19c2bce3d256642bf2f"
+    "cuda-js": "https://codeload.github.com/iteathen/CUDA-JS/tar.gz/bc2700f2e5c654567c2e17bf8d67b882351b8681"
   },
   "repository": {
     "type": "git",
