@@ -1,13 +1,27 @@
 import { createHash } from 'node:crypto';
 
 import { TensorError } from '../../tensor-value/index.mjs';
+import { CUDA_JS_TENSOR_COMPATIBILITY } from './cuda-js-compatibility.mjs';
 
 export const RESOLVED_TENSOR_PLAN_CONTRACT = 'SPEC-0006-resolved-dense-plan-v1+SPEC-0007-exact-elementwise-fusion-v1';
 export const TENSOR_EXECUTION_RESULT_CONTRACT = 'SPEC-0005-tensor-execution-result-v1';
-export const TENSOR_SIMT_LIMITS = Object.freeze({
+
+const tensorSimtLimits = {
   maxLogicalWorkItems: 0xffff_ffff,
   maxWorkspaceBytes: 64 * 1024 * 1024,
+  cudaJsPreparedOperationDagLimits: CUDA_JS_TENSOR_COMPATIBILITY.preparedOperationDagLimits,
+};
+Object.defineProperties(tensorSimtLimits, {
+  maxKernels: {
+    enumerable: false,
+    get() { return CUDA_JS_TENSOR_COMPATIBILITY.preparedOperationDagLimits.nodes; },
+  },
+  maxBindings: {
+    enumerable: false,
+    get() { return CUDA_JS_TENSOR_COMPATIBILITY.preparedOperationDagLimits.bindings; },
+  },
 });
+export const TENSOR_SIMT_LIMITS = Object.freeze(tensorSimtLimits);
 
 export function fail(code, category, message, details = {}, options = {}) {
   throw new TensorError(code, category, message, details, options);
