@@ -1,56 +1,62 @@
 {
-  "schema_version": 10,
+  "schema_version": 11,
   "updated": "2026-09-05",
-  "status": "device_callable_gather_concat_child",
-  "objective": "Keep the protected SPEC-0010 ordinary Tensor semantics, protected SPEC-0009 unary:erf path and exact CUDA-JS alpha.18 peer stable while completing the consumer-backed device-callable gather/concat child. Preserve caller-owned item axis 0, existing ABI/workspace ownership and lower CUDA-JS pressure ownership.",
+  "status": "consumer_readiness_external_model_gate",
+  "objective": "Keep the protected ordinary and device-callable Tensor correctness profile stable while the first real external model proves complete public operation/spec/resource/oracle coverage. Add no new Tensor capability unless that concrete campaign demonstrates a generic Tensor-owned gap.",
   "current_focus": {
-    "id": "TENSOR-DEVICE-GATHER-CONCAT-037",
+    "id": "TENSOR-CONSUMER-READINESS-022",
     "repository": "iteathen/CUDA-JS-Tensor",
-    "issue": 37,
-    "name": "device-callable static gather/concat item semantics",
-    "next_action": "Protect the fresh current-main SPEC-0009 gather/concat item addendum, then implement only the accepted non-axis-0 item-varying gather and all-item-varying concat classification/lowering through the existing device-item profile owner. Reject axis 0 and shared-source/shared-input cases before compiler work; add the explicit additive child identity, no new callable parameters/resources, and portable/package/no-cross-item falsifiers.",
-    "exit": "#37 is protected-complete with fresh child authority, implementation and exact portable/package/legacy/cleanup evidence; base SPEC-0009 remains exact when gather/concat item semantics are unused."
+    "issue": 22,
+    "name": "first-real-model evaluator-consumer qualification",
+    "state": "external consumer evidence gate; no local generic Tensor implementation leaf is currently demonstrated",
+    "external_model_owner": "iteathen/UCI-Arena-Vector#3",
+    "runtime_connector_owner": "iteathen/CUDA-MCGS#124",
+    "next_action": "Consume and falsify one exact frozen Vector model coverage record through public cuda-js-tensor contracts: verify complete TensorSpecs/operations, normalized f32 TensorProgram, exact model/per-item/workspace resources, typed outputs, full/partial item independence, package identity and oracle comparison. If and only if this exposes a reusable generic Tensor gap, route one bounded child here before any downstream workaround.",
+    "exit": "#22 has one exact real-model public-contract coverage/oracle result and CUDA-MCGS #124 composes only public Tensor/CUDA-JS contracts, or every newly demonstrated lower gap has been routed to its natural owner without product-private escape code."
   },
   "completed_foundations": [
     "CUDA-MCGS #122 semantic acceptance completed",
     "CUDA-MCGS #125 public CUDA-JS runtime adapter completed",
     "CUDA-JS #157 public f32/f64 Device-JS erf completed at 30d11a5d38dd7b9987bc8bac4ac67c2fcf8fee60",
     "Tensor #32 / PR #53 ordinary SPEC-0010 erf/gather/concat completed at 02ae07777632cfa8b527bd5482a59dbff472e4d5",
-    "Tensor #52 / PR #55 device-callable unary:erf completed at 23e3795b3f22162e3705f0f2c659400f69f86ed7"
+    "Tensor #52 / PR #55 device-callable unary:erf completed at 23e3795b3f22162e3705f0f2c659400f69f86ed7",
+    "Tensor #37 authority PR #58 and implementation PR #59 completed at protected implementation merge 999f8b56077f051b2e90a64eebc0a0cf59a659bc / tree 85a768b521ff493e07fd9f4a6a65a0210d2e67f6 with protected verify 34005276462"
   ],
   "exact_dependencies": [
     "cuda-js@0.1.0-alpha.18 protected revision 30d11a5d38dd7b9987bc8bac4ac67c2fcf8fee60",
     "CUDA-JS public Device-JS limits and SPEC-0028 typed leaf-library composition",
-    "CUDA-JS-Tensor protected SPEC-0010 ordinary static gather/ordered concat implementation",
-    "CUDA-JS-Tensor protected SPEC-0009 base item-parallel callable contract and unary:erf implementation"
+    "CUDA-JS-Tensor protected SPEC-0010 ordinary erf/static-gather/ordered-concat semantics",
+    "CUDA-JS-Tensor protected SPEC-0009 item-parallel contract plus unary:erf and additive gather/concat child"
   ],
   "local_sequence": [
-    "#37 fresh current-main SPEC-0009 gather/concat child authority",
-    "#37 implementation/evidence through existing device-item classification/lowering/workspace owner",
-    "#22 first-real-model/evaluator-consumer readiness after frozen model/resource/oracle inputs and CUDA-MCGS #124"
+    "No speculative Tensor source work while no generic gap is demonstrated.",
+    "Vector #3 freezes one exact model and produces complete operation/spec/resource/oracle coverage.",
+    "Tensor #22 falsifies that model against public Tensor contracts and routes only demonstrated generic gaps.",
+    "CUDA-MCGS #124 consumes the qualified callable/resource facts while retaining evaluator/search lifecycle ownership."
   ],
   "cross_repo_state": [
-    "CUDA-MCGS #124 remains the evaluator queue/batch/scatter/publication/search-lifecycle owner and is downstream of Tensor #37/#22 plus the frozen real-model gate.",
-    "CUDA-MCGS #123 remains a separate evaluator-free external-consumer falsifier lane.",
+    "CUDA-MCGS #123 is a separate evaluator-free public-package external-consumer falsifier and can proceed independently.",
+    "CUDA-MCGS #124 is ready only after the first-real-model public coverage facts are sufficiently known; it must not absorb model/chess/head semantics.",
     "Physical CUDA-JS/CUDA-MCGS and Tensor native/provider qualification remain separate hardware evidence cells."
   ],
   "stable_tensor_ownership": [
-    "SPEC-0010 owns gather/concat mathematics, static indices, shapes and input order.",
-    "SPEC-0009 owns device-callable item-axis independence, item-major outputs, callable ABI, per-item workspace and operation-specific item propagation.",
+    "SPEC-0010 owns erf/gather/concat mathematics, static indices, shapes and input order.",
+    "SPEC-0009 owns device-callable item-axis independence, item-major outputs, callable ABI, per-item workspace and accepted operation-specific item propagation.",
     "CUDA-JS owns generic Device-JS compiler/library/runtime mechanisms and lower compatibility/pressure facts.",
     "Model, evaluator scheduling, search, chess and product meaning remain downstream."
   ],
   "issue_tracker_rule": [
     "Completed implementation children close on their own exact evidence.",
     "Protected STATUS.md and next_step.yaml own the live execution seam.",
+    "An open outcome issue does not imply an implementation gap in this repository.",
     "Historical branches and PRs are evidence/research only unless requalified against current protected authority."
   ],
   "qualification_limits": [
     "Portable/package evidence cannot promote native/provider support.",
-    "#37 completion cannot by itself establish first-real-model or CUDA-MCGS evaluator readiness.",
-    "Semantically valid large gather/concat programs may still reject under existing lower Device-JS/ABI/workspace pressure without changing Tensor mathematics."
+    "Real-model coverage cannot by itself establish CUDA-MCGS request/publication correctness or physical CUDA support.",
+    "Semantically valid programs may still reject under existing lower Device-JS/ABI/workspace pressure without changing Tensor mathematics."
   ],
-  "native_gap_rule": "If #37 implementation demonstrates a genuinely generic missing CUDA mechanism, stop and route it to CUDA-JS. Do not add private CUDA-JS imports, native Tensor code or a second runtime path.",
+  "native_gap_rule": "If the real-model campaign demonstrates a genuinely generic missing CUDA mechanism, route it to CUDA-JS. If it demonstrates generic Tensor mathematics/item semantics, accept the smallest child here. Never add private CUDA-JS imports, native Tensor code, model-specific Tensor semantics or a second runtime path.",
   "deferred": [
     "result-owned material arena unless representative measurement reactivates it",
     "FFT/sparse/solver math until a concrete consumer selects a bounded profile",
