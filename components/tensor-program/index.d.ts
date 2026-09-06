@@ -1,6 +1,6 @@
 import type { TensorDtype, TensorSpec, TensorSpecOptions } from '../tensor-value/index.mjs';
 
-export type UnaryOperator = 'neg' | 'abs' | 'exp' | 'log' | 'sqrt' | 'erf';
+export type UnaryOperator = 'neg' | 'abs' | 'exp' | 'log' | 'sqrt' | 'erf' | 'tanh';
 export type BinaryOperator = 'add' | 'sub' | 'mul' | 'div' | 'minimum' | 'maximum';
 export type ReductionOperator = 'sum' | 'product' | 'minimum' | 'maximum';
 
@@ -36,12 +36,18 @@ export interface TensorProgramBuilder {
   output(name: string, value: TensorValueRef): TensorValueRef;
 }
 
+export type TensorProgramContract =
+  | 'SPEC-0004-tensor-program-v1'
+  | 'SPEC-0004-tensor-program-v1+SPEC-0010-erf-gather-concat-v1'
+  | 'SPEC-0004-tensor-program-v1+SPEC-0011-tanh-v1'
+  | 'SPEC-0004-tensor-program-v1+SPEC-0010-erf-gather-concat-v1+SPEC-0011-tanh-v1';
+
 export class TensorProgram {
   private constructor();
   static create(record: TensorProgramRecord): TensorProgram;
   static define(callback: (builder: TensorProgramBuilder) => TensorValueRef | Readonly<Record<string, TensorValueRef>> | void): TensorProgram;
   readonly kind: 'tensor-program';
-  readonly contract: 'SPEC-0004-tensor-program-v1' | 'SPEC-0004-tensor-program-v1+SPEC-0010-erf-gather-concat-v1';
+  readonly contract: TensorProgramContract;
   readonly compatibilityIdentity: string;
   readonly inputs: readonly Readonly<Record<string, unknown>>[];
   readonly nodes: readonly Readonly<Record<string, unknown>>[];
@@ -74,6 +80,8 @@ export class TensorPlan {
 
 export const TENSOR_PROGRAM_CONTRACT: 'SPEC-0004-tensor-program-v1';
 export const TENSOR_PROGRAM_SPEC0010_CONTRACT: 'SPEC-0004-tensor-program-v1+SPEC-0010-erf-gather-concat-v1';
+export const TENSOR_PROGRAM_SPEC0011_CONTRACT: 'SPEC-0004-tensor-program-v1+SPEC-0011-tanh-v1';
+export const TENSOR_PROGRAM_SPEC0010_SPEC0011_CONTRACT: 'SPEC-0004-tensor-program-v1+SPEC-0010-erf-gather-concat-v1+SPEC-0011-tanh-v1';
 export const TENSOR_PLAN_CONTRACT: 'SPEC-0004-static-tensor-plan-v1';
 export const TENSOR_PROGRAM_LIMITS: Readonly<{ maxInputs: 256; maxNodes: 4096; maxOutputs: 256 }>;
 export const TENSOR_PROGRAM_SPEC0010_LIMITS: Readonly<{ maxInputs: 256; maxNodes: 4096; maxOutputs: 256; maxStaticGatherIndices: 65536; maxConcatInputs: 256 }>;

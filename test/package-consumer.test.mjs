@@ -27,7 +27,7 @@ test('packed package installs and an unrelated public consumer uses only canonic
     await writeFile(path.join(directory, 'consumer.mjs'), `
 import { compileDeviceProgram } from 'cuda-js';
 import { openCudaRuntimeForTesting } from 'cuda-js/testing';
-import { compileTensorDeviceProgram, CUDA_JS_TENSOR_COMPATIBILITY, resolveTensorPlan, TENSOR_BACKEND_POLICIES, TENSOR_PROGRAM_SPEC0010_CONTRACT, TensorPlan, TensorProgram, TensorSession, TensorSpec } from 'cuda-js-tensor';
+import { compileTensorDeviceProgram, CUDA_JS_TENSOR_COMPATIBILITY, resolveTensorPlan, TENSOR_BACKEND_POLICIES, TENSOR_DEVICE_PROGRAM_CONTRACT, TENSOR_PROGRAM_SPEC0010_CONTRACT, TENSOR_PROGRAM_SPEC0010_SPEC0011_CONTRACT, TENSOR_PROGRAM_SPEC0011_CONTRACT, TensorPlan, TensorProgram, TensorSession, TensorSpec } from 'cuda-js-tensor';
 let runtimeClosed = false;
 const runtime = {
   async describe() { return { package: { name: 'cuda-js', version: '0.1.0-alpha.18', publicApiSchema: 1 }, state: 'open', profile: 'consumer-double', device: null }; },
@@ -56,6 +56,13 @@ const extension = TensorProgram.define((graph) => {
 if (extension.contract !== TENSOR_PROGRAM_SPEC0010_CONTRACT || extension.outputs[0].spec.capacityShape.join(',') !== '2,6') throw new Error('SPEC-0010 public program mismatch');
 const extensionPlan = TensorPlan.create(extension);
 if (extensionPlan.operations.map((entry) => entry.op).join(',') !== 'gather,unary,concat' || extensionPlan.totalDistinctBytes !== 112) throw new Error('SPEC-0010 static plan mismatch');
+const tanhProgram = TensorProgram.define((graph) => graph.unary('tanh', graph.input('items', { dtype: 'f32', capacityShape: [2, 3], access: 'read' })));
+if (tanhProgram.contract !== TENSOR_PROGRAM_SPEC0011_CONTRACT) throw new Error('SPEC-0011 tanh contract mismatch');
+const mixedProgram = TensorProgram.define((graph) => {
+  const items = graph.input('items', { dtype: 'f32', capacityShape: [2, 3], access: 'read' });
+  return graph.unary('tanh', graph.unary('erf', items));
+});
+if (mixedProgram.contract !== TENSOR_PROGRAM_SPEC0010_SPEC0011_CONTRACT) throw new Error('SPEC-0010+SPEC-0011 contract mismatch');
 const emptyProgram = TensorProgram.define((graph) => graph.fill({ dtype: 'f32', capacityShape: [0] }, 0));
 const resolved = await resolveTensorPlan(session, emptyProgram);
 const result = await resolved.run();
@@ -66,8 +73,11 @@ const compilerSession = await TensorSession.open(compilerRuntime);
 const resolvedExtension = await resolveTensorPlan(compilerSession, extension);
 if (resolvedExtension.kernelCount !== 3 || resolvedExtension.plan.program.contract !== TENSOR_PROGRAM_SPEC0010_CONTRACT) throw new Error('SPEC-0010 ordinary resolved contract mismatch');
 if (!(await resolvedExtension.close()).graceful) throw new Error('SPEC-0010 resolved cleanup mismatch');
-const itemProgram = TensorProgram.define((graph) => graph.unary('neg', graph.input('items', { dtype: 'f32', capacityShape: [2, 3], access: 'read' })));
-const callable = await compileTensorDeviceProgram(compilerSession, itemProgram, { itemCapacity: 2, itemInputs: ['items'] });
+const resolvedTanh = await resolveTensorPlan(compilerSession, tanhProgram);
+if (resolvedTanh.kernelCount !== 1 || resolvedTanh.plan.program.contract !== TENSOR_PROGRAM_SPEC0011_CONTRACT) throw new Error('SPEC-0011 ordinary resolved contract mismatch');
+if (!(await resolvedTanh.close()).graceful) throw new Error('SPEC-0011 resolved cleanup mismatch');
+const callable = await compileTensorDeviceProgram(compilerSession, tanhProgram, { itemCapacity: 2, itemInputs: ['items'] });
+if (callable.contract !== TENSOR_DEVICE_PROGRAM_CONTRACT || !/SPEC-0030-dense-numeric-v1\\+SPEC-0030-tanh-v1\\+SPEC-0028-device-library-v1$/u.test(callable.library.contract)) throw new Error('device-callable tanh library contract mismatch');
 const pointers = callable.function.parameters.slice(1);
 const consumerParameters = [...pointers, { name: 'status', type: 'ptr<u32>' }];
 const consumerSource = \`function consume(\${consumerParameters.map((entry) => entry.name).join(', ')}) { status[gpu.u32(0)] = runItem(gpu.u32(0), \${pointers.map((entry) => entry.name).join(', ')}); }\`;
@@ -85,7 +95,7 @@ try {
   if (error.code !== 'ERR_PACKAGE_PATH_NOT_EXPORTED') throw error;
 }
 const terminal = await session.close();
-if (!terminal.graceful || !runtimeClosed || CUDA_JS_TENSOR_COMPATIBILITY.package.version !== '0.1.0-alpha.6' || CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version !== '0.1.0-alpha.18') throw new Error('terminal contract mismatch');
+if (!terminal.graceful || !runtimeClosed || CUDA_JS_TENSOR_COMPATIBILITY.package.version !== '0.1.0-alpha.6' || CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version !== '0.1.0-alpha.18' || CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.protectedMainRevision !== 'd1a8edef5bd06c402a5c14c8945269f206520174') throw new Error('terminal contract mismatch');
 console.log('installed CUDA-JS-Tensor consumer passed');
 `);
     const output = run(process.execPath, [path.join(directory, 'consumer.mjs')], directory);
