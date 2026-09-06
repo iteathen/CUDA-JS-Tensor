@@ -18,7 +18,7 @@ function code(expected) {
 }
 
 test('SPEC-0011 f32 unary:tanh selects its additive TensorProgram contract and exact normalized semantics', () => {
-  const program = TensorProgram.define((graph) => graph.unary('tanh', graph.input('x', { dtype: 'f32', capacityShape: [4, 3], activeAxis0: { maximum: 4, current: 2 } })));
+  const program = TensorProgram.define((graph) => graph.unary('tanh', graph.input('x', { dtype: 'f32', capacityShape: [4, 3], activeAxis0: { maximum: 4, extent: 2 } })));
   assert.equal(program.contract, TENSOR_PROGRAM_SPEC0011_CONTRACT);
   assert.deepEqual(program.canonical.limits, BASE_LIMITS);
   assert.deepEqual(program.nodes[0].options, {
@@ -28,7 +28,7 @@ test('SPEC-0011 f32 unary:tanh selects its additive TensorProgram contract and e
   });
   assert.equal(program.outputs[0].spec.dtype, 'f32');
   assert.deepEqual(program.outputs[0].spec.capacityShape, [4, 3]);
-  assert.deepEqual(program.outputs[0].spec.activeAxis0, { maximum: 4, current: 2 });
+  assert.deepEqual(program.outputs[0].spec.activeAxis0, { maximum: 4, extent: 2 });
   assert.equal(program.outputs[0].spec.layout, 'row-major-contiguous');
   assert.equal(program.nodes[0].materialization, 'materialize');
   const roundTrip = TensorProgram.create(program.canonical);
