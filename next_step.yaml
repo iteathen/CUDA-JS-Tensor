@@ -1,62 +1,84 @@
 {
-  "schema_version": 11,
+  "schema_version": 12,
   "updated": "2026-09-05",
-  "status": "consumer_readiness_external_model_gate",
-  "objective": "Keep the protected ordinary and device-callable Tensor correctness profile stable while the first real external model proves complete public operation/spec/resource/oracle coverage. Add no new Tensor capability unless that concrete campaign demonstrates a generic Tensor-owned gap.",
+  "status": "consumer_backed_unary_tanh_implementation_ready",
+  "objective": "Implement the accepted SPEC-0011 f32/f64 unary:tanh TensorProgram child through the exact protected public CUDA-JS tanh capability, preserving all pre-tanh Tensor identities and existing item/workspace ownership.",
   "current_focus": {
-    "id": "TENSOR-CONSUMER-READINESS-022",
+    "id": "TENSOR-UNARY-TANH-061",
     "repository": "iteathen/CUDA-JS-Tensor",
-    "issue": 22,
-    "name": "first-real-model evaluator-consumer qualification",
-    "state": "external consumer evidence gate; no local generic Tensor implementation leaf is currently demonstrated",
+    "issue": 61,
+    "name": "consumer-backed f32/f64 unary:tanh",
+    "state": "accepted Tensor mathematical authority; implementation and portable/package evidence required before support claim",
     "external_model_owner": "iteathen/UCI-Arena-Vector#3",
     "runtime_connector_owner": "iteathen/CUDA-MCGS#124",
-    "next_action": "Consume and falsify one exact frozen Vector model coverage record through public cuda-js-tensor contracts: verify complete TensorSpecs/operations, normalized f32 TensorProgram, exact model/per-item/workspace resources, typed outputs, full/partial item independence, package identity and oracle comparison. If and only if this exposes a reusable generic Tensor gap, route one bounded child here before any downstream workaround.",
-    "exit": "#22 has one exact real-model public-contract coverage/oracle result and CUDA-MCGS #124 composes only public Tensor/CUDA-JS contracts, or every newly demonstrated lower gap has been routed to its natural owner without product-private escape code."
+    "next_action": "From the exact protected SPEC-0011 authority, first establish a permanent expected-failure test on unary:tanh. Then select cuda-js@0.1.0-alpha.18 revision d1a8edef5bd06c402a5c14c8945269f206520174, implement TensorProgram contract composition plus ordinary/fused/device-callable lowering through public gpu.math.tanh only, run installed-package evidence, and guarded-integrate only the exact reviewed green head.",
+    "exit": "#61 is protected-qualified with exact base/SPEC-0010 identity preservation and portable/package tanh evidence, or a newly demonstrated generic lower gap is routed to its natural owner without a Tensor/private workaround."
+  },
+  "current_package_dependency": {
+    "package": "cuda-js@0.1.0-alpha.18",
+    "revision": "30d11a5d38dd7b9987bc8bac4ac67c2fcf8fee60",
+    "meaning": "Current protected Tensor package dependency before #61 implementation; it provides the already-integrated erf path but not Tensor-selected tanh."
+  },
+  "implementation_dependency": {
+    "package": "cuda-js@0.1.0-alpha.18",
+    "revision": "d1a8edef5bd06c402a5c14c8945269f206520174",
+    "tree": "4e71779e19132fedbaa60bacee7db84b0692e1ae",
+    "capability": "accepted/implemented SPEC-0030-tanh-v1 public gpu.math.tanh for f32/f64 with canonical erf+tanh Device-JS composition",
+    "qualification": "protected merge tree equals reviewed candidate; 19 protected post-merge checks terminal with no failures",
+    "claim_limit": "portable/software/package lower capability; no Tensor/native/provider promotion by implication"
   },
   "completed_foundations": [
     "CUDA-MCGS #122 semantic acceptance completed",
     "CUDA-MCGS #125 public CUDA-JS runtime adapter completed",
     "CUDA-JS #157 public f32/f64 Device-JS erf completed at 30d11a5d38dd7b9987bc8bac4ac67c2fcf8fee60",
+    "CUDA-JS #206/#209 accepted and implemented composable public f32/f64 Device-JS tanh plus exact public contract typing at d1a8edef5bd06c402a5c14c8945269f206520174 / tree 4e71779e19132fedbaa60bacee7db84b0692e1ae",
     "Tensor #32 / PR #53 ordinary SPEC-0010 erf/gather/concat completed at 02ae07777632cfa8b527bd5482a59dbff472e4d5",
     "Tensor #52 / PR #55 device-callable unary:erf completed at 23e3795b3f22162e3705f0f2c659400f69f86ed7",
-    "Tensor #37 authority PR #58 and implementation PR #59 completed at protected implementation merge 999f8b56077f051b2e90a64eebc0a0cf59a659bc / tree 85a768b521ff493e07fd9f4a6a65a0210d2e67f6 with protected verify 34005276462"
+    "Tensor #37 authority PR #58 and implementation PR #59 completed at protected implementation merge 999f8b56077f051b2e90a64eebc0a0cf59a659bc / tree 85a768b521ff493e07fd9f4a6a65a0210d2e67f6 with protected verify 34005276462",
+    "Vector #3 / PR #17 protected real-model coverage corrected the value-head inventory and proved unary:tanh is the sole remaining mathematical gap before workspace resolution"
   ],
-  "exact_dependencies": [
-    "cuda-js@0.1.0-alpha.18 protected revision 30d11a5d38dd7b9987bc8bac4ac67c2fcf8fee60",
-    "CUDA-JS public Device-JS limits and SPEC-0028 typed leaf-library composition",
-    "CUDA-JS-Tensor protected SPEC-0010 ordinary erf/static-gather/ordered-concat semantics",
-    "CUDA-JS-Tensor protected SPEC-0009 item-parallel contract plus unary:erf and additive gather/concat child"
-  ],
+  "accepted_spec0011": {
+    "contract_child": "SPEC-0011-tanh-v1",
+    "dtypes": ["f32", "f64"],
+    "materialization": "materialize",
+    "base_contract_unchanged": "SPEC-0004-tensor-program-v1",
+    "spec0010_contract_unchanged": "SPEC-0004-tensor-program-v1+SPEC-0010-erf-gather-concat-v1",
+    "tanh_contract": "SPEC-0004-tensor-program-v1+SPEC-0011-tanh-v1",
+    "mixed_contract": "SPEC-0004-tensor-program-v1+SPEC-0010-erf-gather-concat-v1+SPEC-0011-tanh-v1",
+    "child_order": ["SPEC-0010-erf-gather-concat-v1", "SPEC-0011-tanh-v1"],
+    "limits_rule": "tanh adds no limits; tanh-only uses base limits and mixed SPEC-0010+tanh uses existing SPEC-0010 limits"
+  },
   "local_sequence": [
-    "No speculative Tensor source work while no generic gap is demonstrated.",
-    "Vector #3 freezes one exact model and produces complete operation/spec/resource/oracle coverage.",
-    "Tensor #22 falsifies that model against public Tensor contracts and routes only demonstrated generic gaps.",
-    "CUDA-MCGS #124 consumes the qualified callable/resource facts while retaining evaluator/search lifecycle ownership."
-  ],
-  "cross_repo_state": [
-    "CUDA-MCGS #123 is a separate evaluator-free public-package external-consumer falsifier and can proceed independently.",
-    "CUDA-MCGS #124 is ready only after the first-real-model public coverage facts are sufficiently known; it must not absorb model/chess/head semantics.",
-    "Physical CUDA-JS/CUDA-MCGS and Tensor native/provider qualification remain separate hardware evidence cells."
+    "Integrate SPEC-0011 authority/current-state transaction with no production implementation or dependency change.",
+    "Create a fresh #61 implementation branch from that exact protected authority.",
+    "Wire a tanh expected-failure falsifier into npm run verify before production support.",
+    "Update the exact cuda-js dependency/lock to protected d1a8edef5bd06c402a5c14c8945269f206520174.",
+    "Implement semantic inference and four-state canonical contract/limit selection without changing pre-tanh identities.",
+    "Lower ordinary and device-callable unary:tanh through public gpu.math.tanh only; let the existing fusion owner admit tanh only under its existing exact criteria.",
+    "Prove rehydration failure on forged/reordered/unnecessary child contracts, unsupported dtypes, package composition, and legacy base/SPEC-0010 identity preservation.",
+    "After protected #61 integration, refresh Vector #3's exact Tensor capability snapshot and execute its complete TensorProgram/TensorPlan workspace/oracle gate."
   ],
   "stable_tensor_ownership": [
-    "SPEC-0010 owns erf/gather/concat mathematics, static indices, shapes and input order.",
-    "SPEC-0009 owns device-callable item-axis independence, item-major outputs, callable ABI, per-item workspace and accepted operation-specific item propagation.",
-    "CUDA-JS owns generic Device-JS compiler/library/runtime mechanisms and lower compatibility/pressure facts.",
+    "SPEC-0004 owns the base dense mathematical family and exact base contract.",
+    "SPEC-0010 owns erf/gather/concat mathematics and its additive program child/limits.",
+    "SPEC-0011 owns only f32/f64 unary:tanh mathematics and additive program compatibility.",
+    "SPEC-0009 already owns generic unary item-axis propagation, callable ABI, item-major outputs and per-item workspace; tanh adds no item semantic child.",
+    "CUDA-JS owns generic Device-JS compiler/library/runtime mechanisms and public gpu.math.tanh provider semantics.",
     "Model, evaluator scheduling, search, chess and product meaning remain downstream."
   ],
-  "issue_tracker_rule": [
-    "Completed implementation children close on their own exact evidence.",
-    "Protected STATUS.md and next_step.yaml own the live execution seam.",
-    "An open outcome issue does not imply an implementation gap in this repository.",
-    "Historical branches and PRs are evidence/research only unless requalified against current protected authority."
+  "cross_repo_state": [
+    "Vector #3 is the protected evidence owner proving unary:tanh is required and remains responsible for model/head/numerical-oracle meaning.",
+    "CUDA-MCGS #124 waits on the complete real-model callable/resource facts and must not absorb Tensor/model semantics.",
+    "CUDA-MCGS #123 remains a separate evaluator-free public-package falsifier.",
+    "Physical CUDA-JS/CUDA-MCGS and Tensor native/provider qualification remain separate hardware evidence cells."
   ],
   "qualification_limits": [
-    "Portable/package evidence cannot promote native/provider support.",
-    "Real-model coverage cannot by itself establish CUDA-MCGS request/publication correctness or physical CUDA support.",
+    "Portable/package tanh evidence cannot promote native/provider support.",
+    "Do not silently substitute an exp identity, fast approximate intrinsic, GELU or product-specific formula for tanh.",
+    "Do not add f16/bf16 tanh without separate accepted evidence.",
     "Semantically valid programs may still reject under existing lower Device-JS/ABI/workspace pressure without changing Tensor mathematics."
   ],
-  "native_gap_rule": "If the real-model campaign demonstrates a genuinely generic missing CUDA mechanism, route it to CUDA-JS. If it demonstrates generic Tensor mathematics/item semantics, accept the smallest child here. Never add private CUDA-JS imports, native Tensor code, model-specific Tensor semantics or a second runtime path.",
+  "native_gap_rule": "If #61 demonstrates a genuinely generic missing CUDA mechanism, route it to CUDA-JS. Never add private CUDA-JS imports, native Tensor code, model-specific Tensor semantics or a second runtime path.",
   "deferred": [
     "result-owned material arena unless representative measurement reactivates it",
     "FFT/sparse/solver math until a concrete consumer selects a bounded profile",
