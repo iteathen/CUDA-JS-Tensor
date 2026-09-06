@@ -88,6 +88,7 @@ const visit = (directory) => {
   }
 };
 visit(root);
+
 const forbiddenNative = files.filter((file) => /\.(?:c|cc|cpp|cxx|cu|h|hh|hpp|ptx)$/i.test(file));
 assert.deepEqual(forbiddenNative, [], `Forbidden maintained native source: ${forbiddenNative.join(', ')}`);
 
