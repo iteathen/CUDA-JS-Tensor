@@ -45,7 +45,7 @@ function combine(operator, dtype, left, right) {
 
 function unary(operator, dtype, value) {
   if (operator === 'abs') return `gpu.math.abs(${value})`;
-  if (operator === 'exp' || operator === 'log' || operator === 'sqrt' || operator === 'erf') return `gpu.math.${operator}(${value})`;
+  if (operator === 'exp' || operator === 'log' || operator === 'sqrt' || operator === 'erf' || operator === 'tanh') return `gpu.math.${operator}(${value})`;
   if (operator === 'neg') return dtype === 'i32' ? `gpu.cast.i32(gpu.u32(0) - gpu.cast.u32(${value}))` : `(-${value})`;
   fail('TENSOR_DEVICE_OPERATOR_UNSUPPORTED', 'unsupported', 'Device-callable lowering does not own the requested unary operator.', { operator });
 }
