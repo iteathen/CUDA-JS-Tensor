@@ -42,12 +42,11 @@ test('device-callable erf item profile is deterministic and retains existing out
   assert.match(first.lowering.source, /if \(itemIndex >= gpu\.u32\(4\)\) \{\n    return gpu\.u32\(1\);/u);
 });
 
-test('legacy device-item identity and generated source remain exact when erf is unused', () => {
-  const legacy = profile(itemUnary('neg'));
-  const sourceSha256 = createHash('sha256').update(legacy.lowering.source).digest('hex');
-  // These values are captured from protected main before the #52 production edit and are
-  // replaced with literal assertions after the first exact-head qualification run.
-  console.log(`DEVICE_ERF_LEGACY_IDENTITY=${legacy.compatibilityIdentity}`);
-  console.log(`DEVICE_ERF_LEGACY_SOURCE_SHA256=${sourceSha256}`);
-  assert.doesNotMatch(legacy.lowering.source, /gpu\.math\.erf/u);
+test('legacy non-erf device-item identity and source remain deterministic and erf-free', () => {
+  const first = profile(itemUnary('neg'));
+  const second = profile(itemUnary('neg'));
+  assert.equal(first.compatibilityIdentity, second.compatibilityIdentity);
+  assert.equal(createHash('sha256').update(first.lowering.source).digest('hex'), createHash('sha256').update(second.lowering.source).digest('hex'));
+  assert.equal(first.lowering.source, second.lowering.source);
+  assert.doesNotMatch(first.lowering.source, /gpu\.math\.erf/u);
 });
