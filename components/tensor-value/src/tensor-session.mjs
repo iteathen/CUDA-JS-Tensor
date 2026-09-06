@@ -11,7 +11,7 @@ export const CUDA_JS_TENSOR_COMPATIBILITY = deepFreeze({
     name: 'cuda-js',
     version: '0.1.0-alpha.18',
     publicApiSchema: 1,
-    protectedMainRevision: '30d11a5d38dd7b9987bc8bac4ac67c2fcf8fee60',
+    protectedMainRevision: 'd1a8edef5bd06c402a5c14c8945269f206520174',
   },
 });
 
