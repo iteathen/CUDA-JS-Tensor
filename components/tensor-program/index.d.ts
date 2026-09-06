@@ -1,6 +1,6 @@
 import type { TensorDtype, TensorSpec, TensorSpecOptions } from '../tensor-value/index.mjs';
 
-export type UnaryOperator = 'neg' | 'abs' | 'exp' | 'log' | 'sqrt';
+export type UnaryOperator = 'neg' | 'abs' | 'exp' | 'log' | 'sqrt' | 'erf';
 export type BinaryOperator = 'add' | 'sub' | 'mul' | 'div' | 'minimum' | 'maximum';
 export type ReductionOperator = 'sum' | 'product' | 'minimum' | 'maximum';
 
@@ -31,6 +31,8 @@ export interface TensorProgramBuilder {
   binary(operator: BinaryOperator, left: TensorValueRef, right: TensorValueRef): TensorValueRef;
   reduce(operator: ReductionOperator, input: TensorValueRef, options?: Readonly<{ axes?: readonly number[]; keepDimensions?: boolean; accumulatorDtype?: TensorDtype; order?: 'fixed-tree-v1' | 'backend-defined'; identity?: number | bigint }>): TensorValueRef;
   matmul(left: TensorValueRef, right: TensorValueRef, options?: Readonly<{ transposeA?: boolean; transposeB?: boolean; accumulatorDtype?: TensorDtype }>): TensorValueRef;
+  gather(input: TensorValueRef, axis: number, indices: readonly number[]): TensorValueRef;
+  concat(inputs: readonly TensorValueRef[], axis: number): TensorValueRef;
   output(name: string, value: TensorValueRef): TensorValueRef;
 }
 
@@ -39,7 +41,7 @@ export class TensorProgram {
   static create(record: TensorProgramRecord): TensorProgram;
   static define(callback: (builder: TensorProgramBuilder) => TensorValueRef | Readonly<Record<string, TensorValueRef>> | void): TensorProgram;
   readonly kind: 'tensor-program';
-  readonly contract: 'SPEC-0004-tensor-program-v1';
+  readonly contract: 'SPEC-0004-tensor-program-v1' | 'SPEC-0004-tensor-program-v1+SPEC-0010-erf-gather-concat-v1';
   readonly compatibilityIdentity: string;
   readonly inputs: readonly Readonly<Record<string, unknown>>[];
   readonly nodes: readonly Readonly<Record<string, unknown>>[];
@@ -71,5 +73,7 @@ export class TensorPlan {
 }
 
 export const TENSOR_PROGRAM_CONTRACT: 'SPEC-0004-tensor-program-v1';
+export const TENSOR_PROGRAM_SPEC0010_CONTRACT: 'SPEC-0004-tensor-program-v1+SPEC-0010-erf-gather-concat-v1';
 export const TENSOR_PLAN_CONTRACT: 'SPEC-0004-static-tensor-plan-v1';
 export const TENSOR_PROGRAM_LIMITS: Readonly<{ maxInputs: 256; maxNodes: 4096; maxOutputs: 256 }>;
+export const TENSOR_PROGRAM_SPEC0010_LIMITS: Readonly<{ maxInputs: 256; maxNodes: 4096; maxOutputs: 256; maxStaticGatherIndices: 65536; maxConcatInputs: 256 }>;
