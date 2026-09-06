@@ -5,6 +5,7 @@ import { checkedAdd, checkedMultiply, deepFreeze, fail, identity, TENSOR_SIMT_LI
 import { CUDA_JS_TENSOR_COMPATIBILITY, requireTensorDeviceLibraryOutput } from './cuda-js-compatibility.mjs';
 
 export const TENSOR_DEVICE_PROGRAM_CONTRACT = 'SPEC-0009-item-parallel-device-tensor-program-v1';
+export const TENSOR_DEVICE_GATHER_CONCAT_CONTRACT = `${TENSOR_DEVICE_PROGRAM_CONTRACT}+SPEC-0009-gather-concat-v1`;
 export const TENSOR_DEVICE_PROGRAM_OUTPUTS = Object.freeze(['ptx', 'lto-ir']);
 export const TENSOR_DEVICE_PROGRAM_LIMITS = Object.freeze({
   maxItemCapacity: 0xffff_ffff,
@@ -24,6 +25,10 @@ function scalar(record) {
   if (value === '-0') return `gpu.${dtype}(-0)`;
   if (dtype === 'u64') return `gpu.u64(${value}n)`;
   return `gpu.${dtype}(${String(value)})`;
+}
+
+function zeroScalar(dtype) {
+  return dtype === 'u64' ? 'gpu.u64(0n)' : `gpu.${dtype}(0)`;
 }
 
 function cast(target, source, expression) {
@@ -88,6 +93,10 @@ function sharedInvariantAtItemAxis(spec, outputRank) {
   return sourceAxis < 0 || spec.capacityShape[sourceAxis] === 1 || spec.strides[sourceAxis] === 0;
 }
 
+function usesGatherConcatChild(program) {
+  return program.nodes.some((node) => node.op === 'gather' || node.op === 'concat');
+}
+
 function classifyItemValues(plan, itemCapacity, itemInputNames) {
   const program = plan.program;
   const selected = new Set(itemInputNames);
@@ -130,6 +139,21 @@ function classifyItemValues(plan, itemCapacity, itemInputNames) {
       }
     } else if (['copy', 'cast', 'contiguous', 'unary'].includes(node.op)) {
       item = inputItems[0];
+    } else if (node.op === 'gather') {
+      if (node.options.axis === 0) fail('TENSOR_DEVICE_GATHER_ITEM_AXIS_UNSUPPORTED', 'unsupported', 'Device-callable gather cannot select or reorder caller-owned item axis 0.', { node: node.id });
+      if (!inputItems[0]) fail('TENSOR_DEVICE_GATHER_SHARED_SOURCE_UNSUPPORTED', 'unsupported', 'Device-callable gather requires an already item-varying source.', { node: node.id });
+      const source = inputSpecs[0];
+      if (source.rank < 1 || node.outputSpec.rank < 1 || source.capacityShape[0] !== itemCapacity || node.outputSpec.capacityShape[0] !== itemCapacity) {
+        fail('TENSOR_DEVICE_GATHER_ITEM_AXIS_INVALID', 'unsupported', 'Device-callable gather must preserve exact item axis 0.', { node: node.id });
+      }
+      item = true;
+    } else if (node.op === 'concat') {
+      if (node.options.axis === 0) fail('TENSOR_DEVICE_CONCAT_ITEM_AXIS_UNSUPPORTED', 'unsupported', 'Device-callable concat cannot merge or change caller-owned item axis 0.', { node: node.id });
+      if (inputItems.some((entry) => !entry)) fail('TENSOR_DEVICE_CONCAT_SHARED_INPUT_UNSUPPORTED', 'unsupported', 'Device-callable concat requires every input to be item-varying.', { node: node.id });
+      if (node.outputSpec.rank < 1 || node.outputSpec.capacityShape[0] !== itemCapacity || inputSpecs.some((spec) => spec.rank < 1 || spec.capacityShape[0] !== itemCapacity)) {
+        fail('TENSOR_DEVICE_CONCAT_ITEM_AXIS_INVALID', 'unsupported', 'Device-callable concat must preserve exact item axis 0 for every input and output.', { node: node.id });
+      }
+      item = true;
     } else if (node.op === 'binary') {
       item = inputItems.some(Boolean);
       if (item) {
@@ -312,7 +336,46 @@ function lowerDeviceItemPlan(plan, profile) {
     body.push(...outputCoordinates.lines.map((line) => `  ${line}`));
 
     let expression;
-    if (node.op === 'reduce') {
+    if (node.op === 'gather') {
+      const input = inputs[0];
+      const gatherCoordinate = fullOutputCoordinates[node.options.axis];
+      const selectedIndex = `n${nodeIndex}GatherIndex`;
+      body.push(`  let ${selectedIndex} = gpu.u64(0n);`);
+      node.options.indices.forEach((sourceIndex, index) => {
+        body.push(`  ${index === 0 ? 'if' : 'else if'} (${gatherCoordinate} === ${u64(index)}) {`);
+        body.push(`    ${selectedIndex} = ${u64(sourceIndex)};`);
+        body.push('  }');
+      });
+      const inputCoordinates = [...fullOutputCoordinates];
+      inputCoordinates[node.options.axis] = selectedIndex;
+      const gatherLines = [];
+      expression = readExpression(gatherLines, `n${nodeIndex}InputOffset`, input, inputCoordinates);
+      body.push(...gatherLines.map((line) => `  ${line}`));
+    } else if (node.op === 'concat') {
+      const concatCoordinate = fullOutputCoordinates[node.options.axis];
+      const valueName = `n${nodeIndex}ConcatValue`;
+      body.push(`  let ${valueName} = ${zeroScalar(node.outputSpec.dtype)};`);
+      let start = 0;
+      let branch = 0;
+      for (let inputIndex = 0; inputIndex < inputs.length; inputIndex += 1) {
+        const input = inputs[inputIndex];
+        const length = input.spec.logicalShape[node.options.axis];
+        const end = checkedAdd(start, length, 'device.concat.segmentEnd');
+        if (length > 0) {
+          body.push(`  ${branch === 0 ? 'if' : 'else if'} (${concatCoordinate} < ${u64(end)}) {`);
+          const inputCoordinates = [...fullOutputCoordinates];
+          inputCoordinates[node.options.axis] = start === 0 ? concatCoordinate : `(${concatCoordinate} - ${u64(start)})`;
+          const concatLines = [];
+          const value = readExpression(concatLines, `n${nodeIndex}Input${inputIndex}Offset`, input, inputCoordinates);
+          body.push(...concatLines.map((line) => `    ${line}`));
+          body.push(`    ${valueName} = ${value};`);
+          body.push('  }');
+          branch += 1;
+        }
+        start = end;
+      }
+      expression = valueName;
+    } else if (node.op === 'reduce') {
       const input = inputs[0];
       const layout = reductionLayout(input.spec, node.outputSpec, node.options.axes, node.options.keepDimensions);
       const inputCoordinates = new Array(input.spec.rank).fill('0');
@@ -447,6 +510,7 @@ export function createDeviceItemProfile(plan, options) {
   if (!Number.isSafeInteger(maxWorkspaceBytes) || maxWorkspaceBytes < 0 || maxWorkspaceBytes > TENSOR_DEVICE_PROGRAM_LIMITS.maxWorkspaceBytes) fail('TENSOR_DEVICE_WORKSPACE_LIMIT_INVALID', 'validation', 'maxWorkspaceBytes must be a nonnegative safe integer within the device-callable profile limit.', { maximum: TENSOR_DEVICE_PROGRAM_LIMITS.maxWorkspaceBytes });
 
   const itemByValue = classifyItemValues(plan, itemCapacity, normalizedItemInputs);
+  const contract = usesGatherConcatChild(plan.program) ? TENSOR_DEVICE_GATHER_CONCAT_CONTRACT : TENSOR_DEVICE_PROGRAM_CONTRACT;
   const allocation = allocateWorkspace(plan, itemCapacity);
   if (allocation.totalBytes > maxWorkspaceBytes) fail('TENSOR_DEVICE_WORKSPACE_LIMIT', 'pressure', 'The device-callable program exceeds the selected finite workspace limit.', { required: allocation.totalBytes, maximum: maxWorkspaceBytes });
 
@@ -481,7 +545,7 @@ export function createDeviceItemProfile(plan, options) {
   if (parameters.length > parameterLimit) fail('TENSOR_DEVICE_PARAMETER_LIMIT', 'pressure', 'The device-callable ABI exceeds the public CUDA-JS function parameter limit.', { required: parameters.length, maximum: parameterLimit });
 
   const canonical = deepFreeze({
-    contract: TENSOR_DEVICE_PROGRAM_CONTRACT,
+    contract,
     planIdentity: plan.compatibilityIdentity,
     itemCapacity,
     itemInputs: [...normalizedItemInputs],
@@ -498,6 +562,7 @@ export function createDeviceItemProfile(plan, options) {
   });
   const profile = {
     plan,
+    contract,
     itemCapacity,
     itemInputs: Object.freeze([...normalizedItemInputs]),
     output,

@@ -5,6 +5,7 @@ import { compileDeviceProgram } from 'cuda-js';
 import { openCudaRuntimeForTesting } from 'cuda-js/testing';
 
 import { TensorPlan, TensorProgram } from '../../tensor-program/index.mjs';
+import { TENSOR_DEVICE_GATHER_CONCAT_CONTRACT } from '../index.mjs';
 import { createDeviceItemProfile, lowerSimtPlan } from '../testing.mjs';
 
 function extensionProgram(dtype = 'f32') {
@@ -71,17 +72,19 @@ test('ordinary concat pressure remains a resolved binding limit rather than a se
   assert.throws(() => lowerSimtPlan(TensorPlan.create(program)), (error) => error?.code === 'TENSOR_SIMT_BINDING_LIMIT' && error?.category === 'pressure');
 });
 
-test('SPEC-0009 device-callable admission remains fail-closed for gather and concat', () => {
+test('SPEC-0009 child now admits item-preserving non-axis gather and concat', () => {
   const gathered = TensorProgram.define((graph) => {
     const items = graph.input('items', { dtype: 'f32', capacityShape: [4, 3], access: 'read' });
     return graph.gather(items, 1, [2, 0]);
   });
-  assert.throws(() => createDeviceItemProfile(TensorPlan.create(gathered), { itemCapacity: 4, itemInputs: ['items'] }), (error) => error?.category === 'unsupported');
+  const gatherProfile = createDeviceItemProfile(TensorPlan.create(gathered), { itemCapacity: 4, itemInputs: ['items'] });
+  assert.equal(gatherProfile.contract, TENSOR_DEVICE_GATHER_CONCAT_CONTRACT);
 
   const concatenated = TensorProgram.define((graph) => {
     const left = graph.input('left', { dtype: 'f32', capacityShape: [4, 2], access: 'read' });
     const right = graph.input('right', { dtype: 'f32', capacityShape: [4, 1], access: 'read' });
     return graph.concat([left, right], 1);
   });
-  assert.throws(() => createDeviceItemProfile(TensorPlan.create(concatenated), { itemCapacity: 4, itemInputs: ['left', 'right'] }), (error) => error?.category === 'unsupported');
+  const concatProfile = createDeviceItemProfile(TensorPlan.create(concatenated), { itemCapacity: 4, itemInputs: ['left', 'right'] });
+  assert.equal(concatProfile.contract, TENSOR_DEVICE_GATHER_CONCAT_CONTRACT);
 });

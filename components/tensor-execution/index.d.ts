@@ -126,7 +126,7 @@ export type TensorDeviceProgramParameter = TensorDeviceItemIndexParameter | Tens
 export class TensorDeviceProgram {
   private constructor();
   readonly kind: 'tensor-device-program';
-  readonly contract: 'SPEC-0009-item-parallel-device-tensor-program-v1';
+  readonly contract: 'SPEC-0009-item-parallel-device-tensor-program-v1' | 'SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-gather-concat-v1';
   readonly plan: TensorPlan;
   readonly itemCapacity: number;
   readonly itemInputs: readonly string[];
@@ -148,5 +148,6 @@ export function compileTensorDeviceProgram(session: TensorSession, plan: TensorP
 export function compileTensorDeviceProgram(session: TensorSession, program: TensorProgram, options: CompileTensorDeviceProgramOptions): Promise<TensorDeviceProgram>;
 
 export const TENSOR_DEVICE_PROGRAM_CONTRACT: 'SPEC-0009-item-parallel-device-tensor-program-v1';
+export const TENSOR_DEVICE_GATHER_CONCAT_CONTRACT: 'SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-gather-concat-v1';
 export const TENSOR_DEVICE_PROGRAM_OUTPUTS: readonly ['ptx', 'lto-ir'];
 export const TENSOR_DEVICE_PROGRAM_LIMITS: Readonly<{ maxParameters: 64; maxItemCapacity: 4294967295; defaultMaxWorkspaceBytes: number; maxWorkspaceBytes: number }>;

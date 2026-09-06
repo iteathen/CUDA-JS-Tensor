@@ -4,7 +4,7 @@ import { TensorPlan, TensorProgram } from '../../tensor-program/index.mjs';
 import { inspectTensorSessionForExecution, reserveTensorSessionExecution } from '../../tensor-value/internal.mjs';
 
 import { deepFreeze, exactRecord, fail, identity } from './contract.mjs';
-import { createDeviceItemProfile, TENSOR_DEVICE_PROGRAM_CONTRACT } from './device-item-profile.mjs';
+import { createDeviceItemProfile } from './device-item-profile.mjs';
 
 const OPTION_FIELDS = new Set(['itemCapacity', 'itemInputs', 'output', 'maxWorkspaceBytes']);
 const IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
@@ -47,7 +47,7 @@ export class TensorDeviceProgram {
   }
 
   get kind() { return 'tensor-device-program'; }
-  get contract() { return TENSOR_DEVICE_PROGRAM_CONTRACT; }
+  get contract() { return data(this, 'TensorDeviceProgram.contract').profile.contract; }
   get plan() { return data(this, 'TensorDeviceProgram.plan').plan; }
   get itemCapacity() { return data(this, 'TensorDeviceProgram.itemCapacity').profile.itemCapacity; }
   get itemInputs() { return data(this, 'TensorDeviceProgram.itemInputs').profile.itemInputs; }
@@ -106,7 +106,7 @@ export async function compileTensorDeviceProgram(session, planOrProgram, options
     });
     const compatibilityIdentity = identity('tensor-device-program-v1', compiledIdentity);
     const canonical = deepFreeze({
-      contract: TENSOR_DEVICE_PROGRAM_CONTRACT,
+      contract: profile.contract,
       compatibilityIdentity,
       profile: profile.canonical,
       sessionCompatibilityIdentity: inspection.compatibilityIdentity,
