@@ -1,17 +1,17 @@
 {
-  "schema_version": 12,
+  "schema_version": 13,
   "updated": "2026-09-05",
   "status": "consumer_backed_unary_tanh_implementation_ready",
-  "objective": "Implement the accepted SPEC-0011 f32/f64 unary:tanh TensorProgram child through the exact protected public CUDA-JS tanh capability, preserving all pre-tanh Tensor identities and existing item/workspace ownership.",
+  "objective": "Implement the protected accepted SPEC-0011 f32/f64 unary:tanh TensorProgram child through the exact protected public CUDA-JS tanh capability, preserving all pre-tanh Tensor identities and existing item/workspace ownership.",
   "current_focus": {
     "id": "TENSOR-UNARY-TANH-061",
     "repository": "iteathen/CUDA-JS-Tensor",
     "issue": 61,
     "name": "consumer-backed f32/f64 unary:tanh",
-    "state": "accepted Tensor mathematical authority; implementation and portable/package evidence required before support claim",
+    "state": "SPEC-0011 authority protected-integrated at 3f34e3153b75e5059a6473ee52c95c7b662a62ed; implementation and portable/package evidence remain required before support claim",
     "external_model_owner": "iteathen/UCI-Arena-Vector#3",
     "runtime_connector_owner": "iteathen/CUDA-MCGS#124",
-    "next_action": "From the exact protected SPEC-0011 authority, first establish a permanent expected-failure test on unary:tanh. Then select cuda-js@0.1.0-alpha.18 revision d1a8edef5bd06c402a5c14c8945269f206520174, implement TensorProgram contract composition plus ordinary/fused/device-callable lowering through public gpu.math.tanh only, run installed-package evidence, and guarded-integrate only the exact reviewed green head.",
+    "next_action": "Create the #61 implementation branch from the exact protected SPEC-0011 authority. First establish a permanent expected-failure test on unary:tanh. Then select cuda-js@0.1.0-alpha.18 revision d1a8edef5bd06c402a5c14c8945269f206520174, implement TensorProgram contract composition plus ordinary/fused/device-callable lowering through public gpu.math.tanh only, run installed-package evidence, and guarded-integrate only the exact reviewed green head.",
     "exit": "#61 is protected-qualified with exact base/SPEC-0010 identity preservation and portable/package tanh evidence, or a newly demonstrated generic lower gap is routed to its natural owner without a Tensor/private workaround."
   },
   "current_package_dependency": {
@@ -35,7 +35,8 @@
     "Tensor #32 / PR #53 ordinary SPEC-0010 erf/gather/concat completed at 02ae07777632cfa8b527bd5482a59dbff472e4d5",
     "Tensor #52 / PR #55 device-callable unary:erf completed at 23e3795b3f22162e3705f0f2c659400f69f86ed7",
     "Tensor #37 authority PR #58 and implementation PR #59 completed at protected implementation merge 999f8b56077f051b2e90a64eebc0a0cf59a659bc / tree 85a768b521ff493e07fd9f4a6a65a0210d2e67f6 with protected verify 34005276462",
-    "Vector #3 / PR #17 protected real-model coverage corrected the value-head inventory and proved unary:tanh is the sole remaining mathematical gap before workspace resolution"
+    "Vector #3 / PR #17 protected real-model coverage corrected the value-head inventory and proved unary:tanh is the sole remaining mathematical gap before workspace resolution",
+    "Tensor SPEC-0011 unary:tanh authority/current-state transaction protected-integrated at 3f34e3153b75e5059a6473ee52c95c7b662a62ed"
   ],
   "accepted_spec0011": {
     "contract_child": "SPEC-0011-tanh-v1",
@@ -49,8 +50,7 @@
     "limits_rule": "tanh adds no limits; tanh-only uses base limits and mixed SPEC-0010+tanh uses existing SPEC-0010 limits"
   },
   "local_sequence": [
-    "Integrate SPEC-0011 authority/current-state transaction with no production implementation or dependency change.",
-    "Create a fresh #61 implementation branch from that exact protected authority.",
+    "Create a fresh #61 implementation branch from protected SPEC-0011 authority at 3f34e3153b75e5059a6473ee52c95c7b662a62ed.",
     "Wire a tanh expected-failure falsifier into npm run verify before production support.",
     "Update the exact cuda-js dependency/lock to protected d1a8edef5bd06c402a5c14c8945269f206520174.",
     "Implement semantic inference and four-state canonical contract/limit selection without changing pre-tanh identities.",
