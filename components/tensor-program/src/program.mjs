@@ -3,11 +3,14 @@ import { isDeepStrictEqual } from 'node:util';
 import { boundedName, deepFreeze, exactRecord, fail, identity, plainObject } from './contract.mjs';
 import { inferOperation } from './semantics.mjs';
 import { inferSpec0010Operation, isSpec0010Operation, SPEC0010_LIMITS, SPEC0010_PROGRAM_CONTRACT } from './spec0010.mjs';
+import { inferSpec0011Operation, isSpec0011Operation, SPEC0010_SPEC0011_PROGRAM_CONTRACT, SPEC0011_PROGRAM_CONTRACT } from './spec0011.mjs';
 
 export const TENSOR_PROGRAM_CONTRACT = 'SPEC-0004-tensor-program-v1';
 export const TENSOR_PROGRAM_LIMITS = Object.freeze({ maxInputs: 256, maxNodes: 4_096, maxOutputs: 256 });
 export const TENSOR_PROGRAM_SPEC0010_CONTRACT = SPEC0010_PROGRAM_CONTRACT;
 export const TENSOR_PROGRAM_SPEC0010_LIMITS = SPEC0010_LIMITS;
+export const TENSOR_PROGRAM_SPEC0011_CONTRACT = SPEC0011_PROGRAM_CONTRACT;
+export const TENSOR_PROGRAM_SPEC0010_SPEC0011_CONTRACT = SPEC0010_SPEC0011_PROGRAM_CONTRACT;
 
 const PROGRAM_FIELDS = new Set(['inputs', 'nodes', 'outputs']);
 const INPUT_FIELDS = new Set(['name', 'spec']);
@@ -83,9 +86,11 @@ class ProgramBuilder {
       ? { ...options, spec: normalizeSpec(options.spec, 'fill.spec') }
       : options;
     const inputSpecs = inputData.map((entry) => entry.spec);
-    const inferred = isSpec0010Operation(op, normalizedOptions)
-      ? inferSpec0010Operation(op, inputSpecs, normalizedOptions)
-      : inferOperation(op, inputSpecs, normalizedOptions);
+    const inferred = isSpec0011Operation(op, normalizedOptions)
+      ? inferSpec0011Operation(op, inputSpecs, normalizedOptions)
+      : isSpec0010Operation(op, normalizedOptions)
+        ? inferSpec0010Operation(op, inputSpecs, normalizedOptions)
+        : inferOperation(op, inputSpecs, normalizedOptions);
     const ref = new TensorValueRef(REF_TOKEN, this.#owner, nodeId, inferred.outputSpec);
     this.#nodes.push(Object.freeze({
       id: nodeId,
@@ -150,10 +155,17 @@ function usesSpec0010(nodes) {
   return nodes.some((entry) => isSpec0010Operation(entry.op, entry.options));
 }
 
+function usesSpec0011(nodes) {
+  return nodes.some((entry) => isSpec0011Operation(entry.op, entry.options));
+}
+
 function canonicalProgram(inputs, nodes, outputs) {
-  const extension = usesSpec0010(nodes);
-  const contract = extension ? SPEC0010_PROGRAM_CONTRACT : TENSOR_PROGRAM_CONTRACT;
-  const limits = extension ? SPEC0010_LIMITS : TENSOR_PROGRAM_LIMITS;
+  const hasSpec0010 = usesSpec0010(nodes);
+  const hasSpec0011 = usesSpec0011(nodes);
+  const contract = hasSpec0010
+    ? (hasSpec0011 ? SPEC0010_SPEC0011_PROGRAM_CONTRACT : SPEC0010_PROGRAM_CONTRACT)
+    : (hasSpec0011 ? SPEC0011_PROGRAM_CONTRACT : TENSOR_PROGRAM_CONTRACT);
+  const limits = hasSpec0010 ? SPEC0010_LIMITS : TENSOR_PROGRAM_LIMITS;
   return deepFreeze({
     contract,
     limits: { ...limits },
@@ -271,7 +283,10 @@ export class TensorProgram {
   }
 
   static create(record) {
-    return record?.contract === TENSOR_PROGRAM_CONTRACT || record?.contract === SPEC0010_PROGRAM_CONTRACT
+    return record?.contract === TENSOR_PROGRAM_CONTRACT
+      || record?.contract === SPEC0010_PROGRAM_CONTRACT
+      || record?.contract === SPEC0011_PROGRAM_CONTRACT
+      || record?.contract === SPEC0010_SPEC0011_PROGRAM_CONTRACT
       ? fromNormalizedCanonical(record)
       : fromCanonicalRecord(record);
   }
