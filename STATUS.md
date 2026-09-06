@@ -4,55 +4,55 @@
 repository:                 public protected pre-release
 package name:               cuda-js-tensor (reserved by intent, unpublished)
 package version:            0.1.0-alpha.6 (publication-guarded)
-phase:                      SPEC-0010 ordinary + device-callable erf protected-complete; gather/concat item child active
+phase:                      ordinary + required device-callable Tensor primitives protected-complete; consumer-readiness gate active
 host-planned execution:     complete dense SIMT + optional exact fusion + bounded optional cuBLASLt + ordinary SPEC-0010 erf/gather/concat
-device-callable execution:  base SPEC-0009 + protected unary:erf; gather/concat child authority in current transaction
+device-callable execution:  SPEC-0009 base + unary:erf + accepted non-axis-0 static gather/ordered concat child
 native qualification:       prior exact Windows evidence remains historical; alpha.18 pair not silently requalified
 performance claims:         none
 exact CUDA-JS pair:         0.1.0-alpha.18 at 30d11a5d38dd7b9987bc8bac4ac67c2fcf8fee60
-current local target:       #37 device-callable non-axis-0 static gather/concat child + implementation
-cross-repo outcome:         #22 evaluator readiness with CUDA-MCGS #124 and a frozen real model
+current local target:       no generic Tensor implementation leaf; #22 waits on one frozen real model/public-contract coverage campaign
+external coverage owner:    UCI-Arena-Vector #3
+cross-repo runtime owner:    CUDA-MCGS #124
 ```
 
-## Stable CUDA-JS/Tensor boundary
+## Stable ownership boundary
 
-Tensor owns mathematics, dtype/shape/layout/stride, TensorProgram/TensorPlan normalization, liveness/material/workspace meaning, deterministic Tensor Device-JS generation and SPEC-0009 item semantics. CUDA-JS owns generic provider/resource lifecycle, lower validity/compatibility, compiler/module/function/library mechanisms and native CUDA execution. Search/model/chess/product meaning remains downstream.
+CUDA-JS-Tensor owns generic Tensor mathematics, dtype/shape/layout/stride semantics, TensorProgram/TensorPlan normalization, material/liveness/workspace meaning, deterministic Tensor Device-JS generation and SPEC-0009 item semantics. CUDA-JS owns generic provider/resource lifecycle, lower validity/compatibility, compiler/module/function/library mechanisms and native CUDA execution. CUDA-MCGS owns evaluator request/batch/scatter/publication/search lifecycle. Model/chess/head/product meaning remains downstream.
 
 The exact public lower peer is `cuda-js@0.1.0-alpha.18@30d11a5d38dd7b9987bc8bac4ac67c2fcf8fee60`. This is an exact prerelease peer, not a broad compatible-version claim.
 
 ## Protected completed Tensor leaves
 
-Tensor #32 / PR #53 is protected-complete at merge `02ae07777632cfa8b527bd5482a59dbff472e4d5`, tree `801b480740100422745b56819e957a3ff7d356f0`. It implements ordinary SPEC-0010 `unary:erf`, static gather and ordered concat with additive TensorProgram identity and portable/package evidence.
+- **#32 / PR #53** — ordinary SPEC-0010 `unary:erf`, bounded static gather and ordered concat; protected merge `02ae07777632cfa8b527bd5482a59dbff472e4d5`.
+- **#52 / PR #55** — device-callable f32/f64 `unary:erf` through the existing SPEC-0009 unary path and public CUDA-JS `gpu.math.erf`; protected merge `23e3795b3f22162e3705f0f2c659400f69f86ed7`.
+- **#37 / PRs #58/#59** — accepted and implemented SPEC-0009 device-callable non-axis-0 static gather/ordered concat child; protected implementation merge `999f8b56077f051b2e90a64eebc0a0cf59a659bc`, tree `85a768b521ff493e07fd9f4a6a65a0210d2e67f6`, protected verify `34005276462` / job `101411188269` success.
 
-Tensor #52 / PR #55 is protected-complete at merge `23e3795b3f22162e3705f0f2c659400f69f86ed7`, tree `05ffa1771009955e833775a0893612387476b4b7`. The reviewed candidate passed verify run `34004498401`; protected push verify run `34004532472` / job `101409231676` also passed. Device-callable `unary:erf` now reuses the existing SPEC-0009 unary item propagation/ABI/workspace path and public CUDA-JS `gpu.math.erf`. No new item contract or native/provider claim was introduced.
+The #37 child admits gather only from an already item-varying source and concat only when every input is item-varying. Axis 0 and shared-source/shared-input cases fail closed before compiler work. It reuses the existing item-major output ABI and dtype-partitioned per-item workspace and adds no scheduler, host progression loop, runtime index tensor, hidden allocation or CUDA-private path.
 
-## Active Tensor dependency lane
+## Active dependency lane
 
-The current dependency-ready child is **#37**.
+There is currently **no demonstrated missing generic Tensor primitive** on the first evaluator path.
 
-Fresh current-main reassessment confirmed the old closed/unmerged PR #39 was stale transport but its narrow semantic core remains valid. The current authority transaction accepts a SPEC-0009 addendum with only:
+Tensor #22 remains the cross-repository evaluator-readiness outcome. Its next evidence comes from one exact frozen real model owned by `iteathen/UCI-Arena-Vector#3`, which must provide:
 
-- non-axis-0 static gather from an already item-varying source;
-- non-axis-0 ordered concat only when every input is already item-varying;
-- axis-0 and shared-source/shared-input cases rejected before compiler work;
-- no new callable parameters, scheduler, runtime table, hidden allocation, host progression or CUDA-private mechanism;
-- existing item-major outputs and dtype-partitioned per-item workspace retained;
-- additive `SPEC-0009-gather-concat-v1` identity only when gather/concat item semantics are selected; base SPEC-0009 profiles remain exact.
+- complete input/output TensorSpecs, dtypes, layouts and item-axis meaning;
+- complete post-translation operation inventory;
+- mapping of every operation to protected public Tensor/CUDA-JS authority or one explicit natural-owner gap;
+- normalized f32 TensorProgram and exact model/parameter/per-item/workspace resource accounting;
+- typed multi-head output ABI;
+- full/partial item-batch comparison against an independent oracle; and
+- exact package/target identity plus terminal cleanup.
 
-After this authority transaction is protected and verified, #37 implementation is the next local action. #22 remains downstream and additionally requires a frozen real model/resource/oracle campaign plus CUDA-MCGS #124.
+If that campaign exposes a genuinely generic Tensor capability gap, open/accept the smallest Tensor child here and keep product/model meaning downstream. Do not invent Tensor breadth merely because #22 remains open.
 
-## CUDA-MCGS relationship
-
-CUDA-MCGS #122 semantic acceptance and #125 public CUDA-JS runtime adapter are protected-complete. CUDA-MCGS #124 remains the evaluator request/batch/incarnation/scatter/publication/search-lifecycle owner and is downstream of Tensor #37/#22 plus the frozen real-model gate.
-
-CUDA-MCGS #123 is a separate evaluator-free external-consumer falsifier lane. It neither blocks #37 nor authorizes Tensor/product semantics in CUDA-MCGS. Physical CUDA-JS/CUDA-MCGS and Tensor native/provider qualification remain separate hardware evidence gates.
+CUDA-MCGS #124 owns the separate evaluator queue/request-incarnation/batch/scatter/publication/search-lifecycle connector after the public model coverage gate is sufficiently closed. CUDA-MCGS #123 remains a parallel evaluator-free external-consumer/public-package falsifier and does not authorize Tensor or product semantics in CUDA-MCGS.
 
 ## Qualification limits
 
-Portable/repository/package evidence does not silently promote native/provider support. Prior recorded native evidence belongs only to its exact historical pair. No performance recommendation or production-stability claim exists.
+Portable/repository/package evidence does not promote native/provider support. Prior native evidence belongs only to its exact historical pair. No performance recommendation, broad provider accuracy claim, Tensor-Core claim or production-stability claim exists.
 
 ## Current-state governance
 
-Protected `STATUS.md` and `next_step.yaml` own the live execution seam. Issues own durable obligations and evidence, not a live SHA dashboard. Historical branches/PRs are research/evidence only unless requalified against current protected authority.
+Protected `STATUS.md` and `next_step.yaml` own the live Tensor execution seam. Issues own durable obligations/evidence, not a live SHA timeline. Historical branches and PRs are research/evidence only unless requalified against current protected authority.
 
 `the_restaurant` implementation remains deferred; its retained integration plan is documentation only.
