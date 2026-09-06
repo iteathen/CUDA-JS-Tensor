@@ -1,87 +1,101 @@
 {
-  "schema_version": 13,
-  "updated": "2026-09-05",
-  "status": "unary_tanh_protected_complete_vector_exact_pair_refresh_next",
-  "objective": "Requalify the frozen first real model against the exact protected CUDA-JS-Tensor unary:tanh implementation, then let Tensor #22 own only the resulting generic TensorProgram/TensorPlan coverage, workspace/resource and callable/oracle facts.",
+  "schema_version": 14,
+  "updated": "2026-09-06",
+  "status": "real_model_resource_record_protected_external_oracle_next",
+  "objective": "Retain the protected generic TensorProgram/TensorPlan callable/resource facts demonstrated by the first frozen real model. Wait on the independently produced downstream numerical oracle; route back only a specifically demonstrated generic Tensor defect and do not absorb model/checkpoint/evaluator semantics.",
   "current_focus": {
     "id": "TENSOR-REAL-MODEL-022",
     "repository": "iteathen/CUDA-JS-Tensor",
     "issue": 22,
-    "name": "frozen real-model public-contract coverage/resource/oracle gate",
-    "state": "Tensor #61 is protected-complete at merge 3a62bc47017aa10198eb1640b66f6b71a608b562 / tree 6b8ca9dd802c0f24f93b8cf612d8ba576e932857 with protected verify 34012270778 success; Vector #3 must refresh its exact Tensor snapshot before the earlier workspace prediction can become current evidence",
+    "name": "protected real-model generic callable/resource record with downstream oracle pending",
+    "state": "Tensor #68 is protected at 0da2c70a0a10df908a33e842aa4ba3dbd7605c48 / tree 1330080e112870b696c05dcd2b6d48aece91b1dc over CUDA-JS 45a9ef15537b52d6fd7c615b7e596676dfd00587 with protected verify 34020688142 success. Vector #3 / PR #24 is protected at ca3cce162a73a664a789f6a27a819097ec994bd6 / tree 2182527aa9cd058824d3658a549a2f8224d18db5 with post-merge Repository quality 34023725885 and Model Tensor Coverage 34023725845 success. It demonstrates complete current public Tensor operation/spec/callable/resource coverage with no new generic Tensor/CUDA gap. Per-item workspace is 33194524 bytes; capacity 2 is 66389048 bytes below the 67108864-byte default ceiling; capacity 3 requires 99583572 bytes and fails closed with TENSOR_DEVICE_WORKSPACE_LIMIT before compiler work. The remaining first-real-model gate is an independent checkpoint-bound numerical oracle owned by Vector #3.",
     "external_model_owner": "iteathen/UCI-Arena-Vector#3",
     "runtime_connector_owner": "iteathen/CUDA-MCGS#124",
-    "next_action": "In UCI-Arena-Vector #3, bind the verifier to exact protected CUDA-JS-Tensor merge 3a62bc47017aa10198eb1640b66f6b71a608b562 and rerun the frozen LatticeKnight-4M real-model gate. Do not assume the prior test-only VECTOR_MODEL_WORKSPACE_UNRESOLVED result. If the exact-pair rerun reaches a generic TensorProgram/TensorPlan workspace/resource gate, record and continue that result under Tensor #22; if a new generic gap appears, route it to its natural owner without a Vector/Tensor-private workaround.",
-    "exit": "The exact refreshed model pair has either produced a complete generic Tensor coverage/resource/oracle record owned by #22 or demonstrated a specific natural-owner gap; CUDA-MCGS #124 receives only public generic callable/resource facts."
+    "next_action": "Do not mutate Tensor merely because the product oracle is pending. Let Vector #3 obtain independently produced checkpoint-bound policy/value reference outputs and compare full plus partial admitted-item occupancy through the protected public Tensor path. If that evidence demonstrates a consumer-neutral Tensor math/dtype/item/ABI/workspace defect, open or continue exactly that defect under #22; if it demonstrates a generic lower compiler/runtime defect, route it to CUDA-JS. Otherwise retain the protected Tensor resource/callable facts unchanged. CUDA-MCGS #124 may consume only the resulting public generic facts after the first-real-model correctness/oracle gate is complete.",
+    "exit": "The independent downstream oracle either confirms the protected generic Tensor record or demonstrates one specific natural-owner defect. Tensor does not own the model's expected numerical outputs, evaluator request/batch/scatter/publication semantics or search lifecycle."
   },
   "current_package_dependency": {
     "package": "cuda-js@0.1.0-alpha.18",
-    "revision": "d1a8edef5bd06c402a5c14c8945269f206520174",
-    "meaning": "Exact protected CUDA-JS revision selected by the protected Tensor #61 implementation; package, lockfile, verifier, foundation test and public compatibility manifest agree on this revision."
+    "revision": "45a9ef15537b52d6fd7c615b7e596676dfd00587",
+    "tree": "8d25993380770b5616d0340b4b7fc369b5af603a",
+    "meaning": "Exact protected CUDA-JS revision selected by CUDA-JS-Tensor #68; package, lockfile, verifier, foundation test and public compatibility identity agree on this revision. It includes the generic Device-JS/compiler admission correction required by the real Tensor leaf."
   },
   "implementation_dependency": {
     "package": "cuda-js@0.1.0-alpha.18",
     "revision": "d1a8edef5bd06c402a5c14c8945269f206520174",
     "tree": "4e71779e19132fedbaa60bacee7db84b0692e1ae",
     "capability": "accepted/implemented SPEC-0030-tanh-v1 public gpu.math.tanh for f32/f64 with canonical erf+tanh Device-JS composition",
-    "qualification": "Consumed by protected Tensor #61; lower protected merge tree equals reviewed candidate and its 19 post-merge checks were terminal with no failures",
+    "qualification": "Tanh implementation provenance consumed by protected Tensor #61; current selected lower revision is the later protected 45a9ef15537b52d6fd7c615b7e596676dfd00587 after CUDA-JS #213/#216.",
     "claim_limit": "portable/software/package lower capability; no Tensor/native/provider promotion by implication"
+  },
+  "protected_real_model_record": {
+    "vector_repository": "iteathen/UCI-Arena-Vector",
+    "vector_issue": 3,
+    "vector_merge": "ca3cce162a73a664a789f6a27a819097ec994bd6",
+    "vector_tree": "2182527aa9cd058824d3658a549a2f8224d18db5",
+    "tensor_revision": "0da2c70a0a10df908a33e842aa4ba3dbd7605c48",
+    "cuda_js_revision": "45a9ef15537b52d6fd7c615b7e596676dfd00587",
+    "tensor_program_contract": "SPEC-0004-tensor-program-v1+SPEC-0010-erf-gather-concat-v1+SPEC-0011-tanh-v1",
+    "tensor_device_contract": "SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-gather-concat-v1",
+    "normalized_nodes": 2216,
+    "materialized_nodes": 1340,
+    "plan_distinct_bytes_item_capacity_1": 24457004,
+    "workspace_elements_per_item_f32": 8298631,
+    "workspace_bytes_per_item": 33194524,
+    "workspace_bytes_capacity_2": 66389048,
+    "default_workspace_limit_bytes": 67108864,
+    "capacity_3_required_workspace_bytes": 99583572,
+    "capacity_3_failure": "TENSOR_DEVICE_WORKSPACE_LIMIT",
+    "capacity_3_failure_category": "pressure",
+    "new_generic_gap": null,
+    "qualification": "portable public-package compile/resource/lifecycle evidence; protected Vector post-merge Repository quality 34023725885 and Model Tensor Coverage 34023725845 succeeded",
+    "claim_limit": "not checkpoint numerical parity, partial-batch numerical execution, native/provider/physical CUDA, performance or evaluator readiness"
   },
   "completed_foundations": [
     "CUDA-MCGS #122 semantic acceptance completed",
     "CUDA-MCGS #125 public CUDA-JS runtime adapter completed",
     "CUDA-JS #157 public f32/f64 Device-JS erf completed at 30d11a5d38dd7b9987bc8bac4ac67c2fcf8fee60",
     "CUDA-JS #206/#209 accepted and implemented composable public f32/f64 Device-JS tanh plus exact public contract typing at d1a8edef5bd06c402a5c14c8945269f206520174 / tree 4e71779e19132fedbaa60bacee7db84b0692e1ae",
+    "CUDA-JS #213/#216 protected the generic bounded Device-JS/compiler admission correction at 45a9ef15537b52d6fd7c615b7e596676dfd00587; post-merge verify 34020219808 and node-compatibility 34020219809 succeeded",
     "Tensor #32 / PR #53 ordinary SPEC-0010 erf/gather/concat completed at 02ae07777632cfa8b527bd5482a59dbff472e4d5",
     "Tensor #52 / PR #55 device-callable unary:erf completed at 23e3795b3f22162e3705f0f2c659400f69f86ed7",
     "Tensor #37 authority PR #58 and implementation PR #59 completed at protected implementation merge 999f8b56077f051b2e90a64eebc0a0cf59a659bc / tree 85a768b521ff493e07fd9f4a6a65a0210d2e67f6 with protected verify 34005276462",
-    "Vector #3 / PR #17 protected real-model coverage corrected the value-head inventory and demonstrated unary:tanh as the sole missing mathematical capability in its then-bound Tensor snapshot; its test-only tanh injection reached VECTOR_MODEL_WORKSPACE_UNRESOLVED but must be rerun on the new exact pair",
-    "Tensor SPEC-0011 unary:tanh authority protected-integrated at 3f34e3153b75e5059a6473ee52c95c7b662a62ed",
-    "Tensor #61 / PR #63 f32/f64 unary:tanh implementation protected-complete at 3a62bc47017aa10198eb1640b66f6b71a608b562 / tree 6b8ca9dd802c0f24f93b8cf612d8ba576e932857; required PR verify 34012158868 passed 107/107 and protected post-merge verify 34012270778 succeeded"
-  ],
-  "accepted_spec0011": {
-    "contract_child": "SPEC-0011-tanh-v1",
-    "dtypes": ["f32", "f64"],
-    "materialization": "materialize",
-    "base_contract_unchanged": "SPEC-0004-tensor-program-v1",
-    "spec0010_contract_unchanged": "SPEC-0004-tensor-program-v1+SPEC-0010-erf-gather-concat-v1",
-    "tanh_contract": "SPEC-0004-tensor-program-v1+SPEC-0011-tanh-v1",
-    "mixed_contract": "SPEC-0004-tensor-program-v1+SPEC-0010-erf-gather-concat-v1+SPEC-0011-tanh-v1",
-    "child_order": ["SPEC-0010-erf-gather-concat-v1", "SPEC-0011-tanh-v1"],
-    "limits_rule": "tanh adds no limits; tanh-only uses base limits and mixed SPEC-0010+tanh uses existing SPEC-0010 limits"
-  },
-  "local_sequence": [
-    "Re-read protected Vector #3 state and exact branch protection before mutation.",
-    "Rebind Vector's capability snapshot from its pre-tanh Tensor implementation to protected CUDA-JS-Tensor merge 3a62bc47017aa10198eb1640b66f6b71a608b562 without adding local tanh semantics.",
-    "Rerun the frozen LatticeKnight-4M real-model verifier and treat the first exact-pair divergence as evidence, not the prior predicted workspace result.",
-    "If mathematical operation coverage is complete and the next failure is generic TensorProgram/TensorPlan workspace/resource resolution, record that exact result under Tensor #22 and continue there.",
-    "Complete exact workspace/resource bounds and independent full/partial-batch oracle evidence while Vector retains model/chess/head/product meaning.",
-    "Expose only resulting public generic callable/resource facts to CUDA-MCGS #124; keep evaluator request/batch/scatter/publication/search lifecycle in CUDA-MCGS."
+    "Tensor #61 / PR #63 f32/f64 unary:tanh implementation protected-complete at 3a62bc47017aa10198eb1640b66f6b71a608b562 / tree 6b8ca9dd802c0f24f93b8cf612d8ba576e932857; protected verify 34012270778 succeeded",
+    "Tensor #68 exact CUDA-JS lower-pair refresh protected at 0da2c70a0a10df908a33e842aa4ba3dbd7605c48 / tree 1330080e112870b696c05dcd2b6d48aece91b1dc; protected verify 34020688142 succeeded",
+    "Vector #3 / PR #24 exact TensorProgram/TensorPlan/callable/resource gate protected at ca3cce162a73a664a789f6a27a819097ec994bd6 / tree 2182527aa9cd058824d3658a549a2f8224d18db5; protected Repository quality 34023725885 and Model Tensor Coverage 34023725845 succeeded"
   ],
   "stable_tensor_ownership": [
     "SPEC-0004 owns the base dense mathematical family and exact base contract.",
     "SPEC-0010 owns erf/gather/concat mathematics and its additive program child/limits.",
     "SPEC-0011 owns only f32/f64 unary:tanh mathematics and additive program compatibility.",
-    "SPEC-0009 already owns generic unary item-axis propagation, callable ABI, item-major outputs and per-item workspace; tanh adds no item semantic child.",
-    "CUDA-JS owns generic Device-JS compiler/library/runtime mechanisms and public gpu.math.tanh provider semantics.",
-    "Tensor #22 owns generic complete real-model Tensor coverage/resource/callable facts, while Vector owns model/checkpoint/chess/head and product numerical-oracle meaning.",
+    "SPEC-0009 owns generic item-axis propagation, callable ABI, item-major outputs and per-item workspace.",
+    "CUDA-JS owns generic Device-JS compiler/library/runtime mechanisms and public gpu.math provider semantics.",
+    "Tensor #22 owns generic complete real-model Tensor coverage/resource/callable facts; Vector owns model/checkpoint/chess/head and independent product numerical-oracle meaning.",
     "Evaluator scheduling, request freshness, batching/scatter, publication and search lifecycle remain CUDA-MCGS-owned."
   ],
+  "local_sequence": [
+    "Preserve the protected real-model generic resource/callable record; do not reopen solved workspace/source-admission work without new evidence.",
+    "Wait on Vector #3's independently produced checkpoint-bound numerical oracle rather than generating product expected outputs in Tensor.",
+    "If the oracle demonstrates a generic Tensor defect, classify the exact math/dtype/item/ABI/workspace owner and fix only that natural-owner seam.",
+    "If the oracle demonstrates a lower compiler/runtime defect, route it to CUDA-JS without a Tensor-private workaround.",
+    "After the first-real-model correctness/oracle gate is complete, expose only public generic callable/resource facts to CUDA-MCGS #124; keep evaluator request/batch/scatter/publication/search lifecycle in CUDA-MCGS."
+  ],
   "cross_repo_state": [
-    "Vector #3 owns the frozen LatticeKnight-4M evidence and must refresh to exact Tensor merge 3a62bc47017aa10198eb1640b66f6b71a608b562 before any current workspace/resource conclusion is claimed.",
-    "Tensor #22 receives only generic TensorProgram/TensorPlan coverage, workspace/resource and callable facts demonstrated by that refreshed external evidence.",
-    "CUDA-MCGS #124 waits on the complete generic real-model callable/resource facts and must not absorb Tensor/model semantics.",
+    "Vector #3 has protected the exact current TensorProgram/TensorPlan/callable/resource facts and owns the remaining independent checkpoint numerical oracle.",
+    "Tensor #22 has the generic workspace/resource/callable record and needs no proactive implementation mutation while the downstream oracle is pending.",
+    "CUDA-MCGS #124 remains downstream of first-real-model correctness completion and must not absorb Tensor/model semantics.",
     "CUDA-MCGS #123 remains a separate evaluator-free public-package falsifier.",
     "Physical CUDA-JS/CUDA-MCGS and Tensor native/provider qualification remain separate hardware evidence cells."
   ],
   "qualification_limits": [
-    "Portable/package tanh evidence cannot promote native/provider support.",
+    "Portable/package evidence cannot promote native/provider support.",
+    "The Vector coverage verifier's covered_real_model/real_model_ready fields are capability/resource predicates, not numerical parity or evaluator readiness.",
+    "Do not treat capacity-2 workspace compilation as proof of partial-batch numerical correctness; caller-owned occupancy still requires independent oracle evidence.",
+    "Do not derive product expected outputs from the Tensor/Vector implementation under test and call them an independent oracle.",
     "Do not silently substitute an exp identity, fast approximate intrinsic, GELU or product-specific formula for tanh.",
-    "Do not add f16/bf16 tanh without separate accepted evidence.",
-    "Do not promote the old Vector test-only VECTOR_MODEL_WORKSPACE_UNRESOLVED result to the new exact pair until it is rerun.",
-    "Semantically valid programs may still reject under existing lower Device-JS/ABI/workspace pressure without changing Tensor mathematics."
+    "Do not add f16/bf16 tanh without separate accepted evidence."
   ],
-  "native_gap_rule": "If refreshed real-model evidence demonstrates a genuinely generic missing CUDA mechanism, route it to CUDA-JS; if it demonstrates missing generic Tensor mathematics/item/workspace semantics, route it to CUDA-JS-Tensor. Never add private CUDA-JS imports, native Tensor code, model-specific Tensor semantics or a second runtime path.",
+  "native_gap_rule": "If independent real-model oracle evidence demonstrates a genuinely generic missing CUDA mechanism, route it to CUDA-JS; if it demonstrates missing generic Tensor mathematics/item/workspace semantics, route it to CUDA-JS-Tensor. Never add private CUDA-JS imports, native Tensor code, model-specific Tensor semantics or a second runtime path.",
   "deferred": [
     "result-owned material arena unless representative measurement reactivates it",
     "FFT/sparse/solver math until a concrete consumer selects a bounded profile",
