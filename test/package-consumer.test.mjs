@@ -77,7 +77,7 @@ const resolvedTanh = await resolveTensorPlan(compilerSession, tanhProgram);
 if (resolvedTanh.kernelCount !== 1 || resolvedTanh.plan.program.contract !== TENSOR_PROGRAM_SPEC0011_CONTRACT) throw new Error('SPEC-0011 ordinary resolved contract mismatch');
 if (!(await resolvedTanh.close()).graceful) throw new Error('SPEC-0011 resolved cleanup mismatch');
 const callable = await compileTensorDeviceProgram(compilerSession, tanhProgram, { itemCapacity: 2, itemInputs: ['items'] });
-if (callable.contract !== TENSOR_DEVICE_PROGRAM_CONTRACT || !/SPEC-0030-dense-numeric-v1\+SPEC-0030-tanh-v1\+SPEC-0028-device-library-v1$/u.test(callable.library.contract)) throw new Error('device-callable tanh library contract mismatch');
+if (callable.contract !== TENSOR_DEVICE_PROGRAM_CONTRACT || !/SPEC-0030-dense-numeric-v1\\+SPEC-0030-tanh-v1\\+SPEC-0028-device-library-v1$/u.test(callable.library.contract)) throw new Error('device-callable tanh library contract mismatch');
 const pointers = callable.function.parameters.slice(1);
 const consumerParameters = [...pointers, { name: 'status', type: 'ptr<u32>' }];
 const consumerSource = \`function consume(\${consumerParameters.map((entry) => entry.name).join(', ')}) { status[gpu.u32(0)] = runItem(gpu.u32(0), \${pointers.map((entry) => entry.name).join(', ')}); }\`;
