@@ -1,6 +1,6 @@
 # SPEC-0013: Optional CUDA-MM Physical-Policy Composition
 
-**Status:** Accepted successor authority candidate
+**Status:** Accepted
 
 **Version:** 1.0.0
 
