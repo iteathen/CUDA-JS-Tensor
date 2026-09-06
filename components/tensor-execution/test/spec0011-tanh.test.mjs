@@ -62,30 +62,34 @@ test('exact fusion composes erf then tanh into one kernel and one canonical Devi
   }
 });
 
-test('device-callable tanh reuses the base SPEC-0009 item ABI/workspace and public helper', () => {
-  const profile = createDeviceItemProfile(TensorPlan.create(tanhProgram()), { itemCapacity: 4, itemInputs: ['items'] });
-  assert.equal(profile.contract, TENSOR_DEVICE_PROGRAM_CONTRACT);
-  assert.match(profile.lowering.source, /gpu\.math\.tanh/u);
-  assert.doesNotMatch(profile.lowering.source, /__tanhf|gpu\.math\.exp|gelu|approx|#include|__device__|cuda[A-Z]/iu);
-  assert.deepEqual(profile.parameters.map((entry) => entry.role), ['item-index', 'input', 'output', 'workspace']);
-  assert.equal(profile.workspace.length, 1);
-  assert.equal(profile.workspace[0].dtype, 'f32');
-  assert.equal(profile.workspace[0].perItemElements, 2);
-  assert.equal(profile.totalWorkspaceBytes, 32);
-  assert.match(profile.lowering.source, /if \(itemIndex >= gpu\.u32\(4\)\) \{\n    return gpu\.u32\(1\);/u);
+test('device-callable f32/f64 tanh reuses the base SPEC-0009 item ABI/workspace and public helper', () => {
+  for (const dtype of ['f32', 'f64']) {
+    const profile = createDeviceItemProfile(TensorPlan.create(tanhProgram(dtype)), { itemCapacity: 4, itemInputs: ['items'] });
+    assert.equal(profile.contract, TENSOR_DEVICE_PROGRAM_CONTRACT);
+    assert.match(profile.lowering.source, /gpu\.math\.tanh/u);
+    assert.doesNotMatch(profile.lowering.source, /__tanhf|gpu\.math\.exp|gelu|approx|#include|__device__|cuda[A-Z]|gpu\.thread|gpu\.block|gpu\.shared|atomic|mailbox|queue|scheduler/iu);
+    assert.deepEqual(profile.parameters.map((entry) => entry.role), ['item-index', 'input', 'output', 'workspace']);
+    assert.equal(profile.workspace.length, 1);
+    assert.equal(profile.workspace[0].dtype, dtype);
+    assert.equal(profile.workspace[0].perItemElements, 2);
+    assert.equal(profile.totalWorkspaceBytes, 4 * 2 * (dtype === 'f32' ? 4 : 8));
+    assert.match(profile.lowering.source, /^function tensorRunItem\([^)]*\) \{\n  if \(itemIndex >= gpu\.u32\(4\)\) \{\n    return gpu\.u32\(1\);/u);
+  }
 });
 
-test('public Tensor device program compiles tanh as one copied CUDA-JS leaf library without a tanh-specific item child', { timeout: 20_000 }, async () => {
+test('public Tensor device program compiles f32/f64 tanh as copied CUDA-JS leaf libraries without a tanh-specific item child', { timeout: 20_000 }, async () => {
   const runtime = await openCudaRuntimeForTesting({ compiler: true });
   const session = await TensorSession.open(runtime);
   try {
-    const callable = await compileTensorDeviceProgram(session, tanhProgram(), { itemCapacity: 4, itemInputs: ['items'] });
-    assert.equal(callable.contract, TENSOR_DEVICE_PROGRAM_CONTRACT);
-    assert.equal(callable.function.name, 'tensorRunItem');
-    assert.equal(callable.function.returns, 'u32');
-    assert.match(callable.library.contract, /SPEC-0030-dense-numeric-v1\+SPEC-0030-tanh-v1\+SPEC-0028-device-library-v1$/u);
-    assert.equal(callable.outputFormat, 'ptx');
-    assert.equal(JSON.stringify(callable).includes('gpu.math.tanh'), false);
+    for (const dtype of ['f32', 'f64']) {
+      const callable = await compileTensorDeviceProgram(session, tanhProgram(dtype), { itemCapacity: 4, itemInputs: ['items'] });
+      assert.equal(callable.contract, TENSOR_DEVICE_PROGRAM_CONTRACT);
+      assert.equal(callable.function.name, 'tensorRunItem');
+      assert.equal(callable.function.returns, 'u32');
+      assert.match(callable.library.contract, /SPEC-0030-dense-numeric-v1\+SPEC-0030-tanh-v1\+SPEC-0028-device-library-v1$/u);
+      assert.equal(callable.outputFormat, 'ptx');
+      assert.equal(JSON.stringify(callable).includes('gpu.math.tanh'), false);
+    }
   } finally {
     assert.equal((await session.close()).graceful, true);
     assert.equal((await runtime.close()).graceful, true);
