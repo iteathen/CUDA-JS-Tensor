@@ -1,30 +1,30 @@
 {
   "schema_version": 13,
   "updated": "2026-09-05",
-  "status": "consumer_backed_unary_tanh_implementation_ready",
-  "objective": "Implement the protected accepted SPEC-0011 f32/f64 unary:tanh TensorProgram child through the exact protected public CUDA-JS tanh capability, preserving all pre-tanh Tensor identities and existing item/workspace ownership.",
+  "status": "unary_tanh_protected_complete_vector_exact_pair_refresh_next",
+  "objective": "Requalify the frozen first real model against the exact protected CUDA-JS-Tensor unary:tanh implementation, then let Tensor #22 own only the resulting generic TensorProgram/TensorPlan coverage, workspace/resource and callable/oracle facts.",
   "current_focus": {
-    "id": "TENSOR-UNARY-TANH-061",
+    "id": "TENSOR-REAL-MODEL-022",
     "repository": "iteathen/CUDA-JS-Tensor",
-    "issue": 61,
-    "name": "consumer-backed f32/f64 unary:tanh",
-    "state": "SPEC-0011 authority protected-integrated at 3f34e3153b75e5059a6473ee52c95c7b662a62ed; implementation and portable/package evidence remain required before support claim",
+    "issue": 22,
+    "name": "frozen real-model public-contract coverage/resource/oracle gate",
+    "state": "Tensor #61 is protected-complete at merge 3a62bc47017aa10198eb1640b66f6b71a608b562 / tree 6b8ca9dd802c0f24f93b8cf612d8ba576e932857 with protected verify 34012270778 success; Vector #3 must refresh its exact Tensor snapshot before the earlier workspace prediction can become current evidence",
     "external_model_owner": "iteathen/UCI-Arena-Vector#3",
     "runtime_connector_owner": "iteathen/CUDA-MCGS#124",
-    "next_action": "Create the #61 implementation branch from the exact protected SPEC-0011 authority. First establish a permanent expected-failure test on unary:tanh. Then select cuda-js@0.1.0-alpha.18 revision d1a8edef5bd06c402a5c14c8945269f206520174, implement TensorProgram contract composition plus ordinary/fused/device-callable lowering through public gpu.math.tanh only, run installed-package evidence, and guarded-integrate only the exact reviewed green head.",
-    "exit": "#61 is protected-qualified with exact base/SPEC-0010 identity preservation and portable/package tanh evidence, or a newly demonstrated generic lower gap is routed to its natural owner without a Tensor/private workaround."
+    "next_action": "In UCI-Arena-Vector #3, bind the verifier to exact protected CUDA-JS-Tensor merge 3a62bc47017aa10198eb1640b66f6b71a608b562 and rerun the frozen LatticeKnight-4M real-model gate. Do not assume the prior test-only VECTOR_MODEL_WORKSPACE_UNRESOLVED result. If the exact-pair rerun reaches a generic TensorProgram/TensorPlan workspace/resource gate, record and continue that result under Tensor #22; if a new generic gap appears, route it to its natural owner without a Vector/Tensor-private workaround.",
+    "exit": "The exact refreshed model pair has either produced a complete generic Tensor coverage/resource/oracle record owned by #22 or demonstrated a specific natural-owner gap; CUDA-MCGS #124 receives only public generic callable/resource facts."
   },
   "current_package_dependency": {
     "package": "cuda-js@0.1.0-alpha.18",
-    "revision": "30d11a5d38dd7b9987bc8bac4ac67c2fcf8fee60",
-    "meaning": "Current protected Tensor package dependency before #61 implementation; it provides the already-integrated erf path but not Tensor-selected tanh."
+    "revision": "d1a8edef5bd06c402a5c14c8945269f206520174",
+    "meaning": "Exact protected CUDA-JS revision selected by the protected Tensor #61 implementation; package, lockfile, verifier, foundation test and public compatibility manifest agree on this revision."
   },
   "implementation_dependency": {
     "package": "cuda-js@0.1.0-alpha.18",
     "revision": "d1a8edef5bd06c402a5c14c8945269f206520174",
     "tree": "4e71779e19132fedbaa60bacee7db84b0692e1ae",
     "capability": "accepted/implemented SPEC-0030-tanh-v1 public gpu.math.tanh for f32/f64 with canonical erf+tanh Device-JS composition",
-    "qualification": "protected merge tree equals reviewed candidate; 19 protected post-merge checks terminal with no failures",
+    "qualification": "Consumed by protected Tensor #61; lower protected merge tree equals reviewed candidate and its 19 post-merge checks were terminal with no failures",
     "claim_limit": "portable/software/package lower capability; no Tensor/native/provider promotion by implication"
   },
   "completed_foundations": [
@@ -35,8 +35,9 @@
     "Tensor #32 / PR #53 ordinary SPEC-0010 erf/gather/concat completed at 02ae07777632cfa8b527bd5482a59dbff472e4d5",
     "Tensor #52 / PR #55 device-callable unary:erf completed at 23e3795b3f22162e3705f0f2c659400f69f86ed7",
     "Tensor #37 authority PR #58 and implementation PR #59 completed at protected implementation merge 999f8b56077f051b2e90a64eebc0a0cf59a659bc / tree 85a768b521ff493e07fd9f4a6a65a0210d2e67f6 with protected verify 34005276462",
-    "Vector #3 / PR #17 protected real-model coverage corrected the value-head inventory and proved unary:tanh is the sole remaining mathematical gap before workspace resolution",
-    "Tensor SPEC-0011 unary:tanh authority/current-state transaction protected-integrated at 3f34e3153b75e5059a6473ee52c95c7b662a62ed"
+    "Vector #3 / PR #17 protected real-model coverage corrected the value-head inventory and demonstrated unary:tanh as the sole missing mathematical capability in its then-bound Tensor snapshot; its test-only tanh injection reached VECTOR_MODEL_WORKSPACE_UNRESOLVED but must be rerun on the new exact pair",
+    "Tensor SPEC-0011 unary:tanh authority protected-integrated at 3f34e3153b75e5059a6473ee52c95c7b662a62ed",
+    "Tensor #61 / PR #63 f32/f64 unary:tanh implementation protected-complete at 3a62bc47017aa10198eb1640b66f6b71a608b562 / tree 6b8ca9dd802c0f24f93b8cf612d8ba576e932857; required PR verify 34012158868 passed 107/107 and protected post-merge verify 34012270778 succeeded"
   ],
   "accepted_spec0011": {
     "contract_child": "SPEC-0011-tanh-v1",
@@ -50,13 +51,12 @@
     "limits_rule": "tanh adds no limits; tanh-only uses base limits and mixed SPEC-0010+tanh uses existing SPEC-0010 limits"
   },
   "local_sequence": [
-    "Create a fresh #61 implementation branch from protected SPEC-0011 authority at 3f34e3153b75e5059a6473ee52c95c7b662a62ed.",
-    "Wire a tanh expected-failure falsifier into npm run verify before production support.",
-    "Update the exact cuda-js dependency/lock to protected d1a8edef5bd06c402a5c14c8945269f206520174.",
-    "Implement semantic inference and four-state canonical contract/limit selection without changing pre-tanh identities.",
-    "Lower ordinary and device-callable unary:tanh through public gpu.math.tanh only; let the existing fusion owner admit tanh only under its existing exact criteria.",
-    "Prove rehydration failure on forged/reordered/unnecessary child contracts, unsupported dtypes, package composition, and legacy base/SPEC-0010 identity preservation.",
-    "After protected #61 integration, refresh Vector #3's exact Tensor capability snapshot and execute its complete TensorProgram/TensorPlan workspace/oracle gate."
+    "Re-read protected Vector #3 state and exact branch protection before mutation.",
+    "Rebind Vector's capability snapshot from its pre-tanh Tensor implementation to protected CUDA-JS-Tensor merge 3a62bc47017aa10198eb1640b66f6b71a608b562 without adding local tanh semantics.",
+    "Rerun the frozen LatticeKnight-4M real-model verifier and treat the first exact-pair divergence as evidence, not the prior predicted workspace result.",
+    "If mathematical operation coverage is complete and the next failure is generic TensorProgram/TensorPlan workspace/resource resolution, record that exact result under Tensor #22 and continue there.",
+    "Complete exact workspace/resource bounds and independent full/partial-batch oracle evidence while Vector retains model/chess/head/product meaning.",
+    "Expose only resulting public generic callable/resource facts to CUDA-MCGS #124; keep evaluator request/batch/scatter/publication/search lifecycle in CUDA-MCGS."
   ],
   "stable_tensor_ownership": [
     "SPEC-0004 owns the base dense mathematical family and exact base contract.",
@@ -64,11 +64,13 @@
     "SPEC-0011 owns only f32/f64 unary:tanh mathematics and additive program compatibility.",
     "SPEC-0009 already owns generic unary item-axis propagation, callable ABI, item-major outputs and per-item workspace; tanh adds no item semantic child.",
     "CUDA-JS owns generic Device-JS compiler/library/runtime mechanisms and public gpu.math.tanh provider semantics.",
-    "Model, evaluator scheduling, search, chess and product meaning remain downstream."
+    "Tensor #22 owns generic complete real-model Tensor coverage/resource/callable facts, while Vector owns model/checkpoint/chess/head and product numerical-oracle meaning.",
+    "Evaluator scheduling, request freshness, batching/scatter, publication and search lifecycle remain CUDA-MCGS-owned."
   ],
   "cross_repo_state": [
-    "Vector #3 is the protected evidence owner proving unary:tanh is required and remains responsible for model/head/numerical-oracle meaning.",
-    "CUDA-MCGS #124 waits on the complete real-model callable/resource facts and must not absorb Tensor/model semantics.",
+    "Vector #3 owns the frozen LatticeKnight-4M evidence and must refresh to exact Tensor merge 3a62bc47017aa10198eb1640b66f6b71a608b562 before any current workspace/resource conclusion is claimed.",
+    "Tensor #22 receives only generic TensorProgram/TensorPlan coverage, workspace/resource and callable facts demonstrated by that refreshed external evidence.",
+    "CUDA-MCGS #124 waits on the complete generic real-model callable/resource facts and must not absorb Tensor/model semantics.",
     "CUDA-MCGS #123 remains a separate evaluator-free public-package falsifier.",
     "Physical CUDA-JS/CUDA-MCGS and Tensor native/provider qualification remain separate hardware evidence cells."
   ],
@@ -76,9 +78,10 @@
     "Portable/package tanh evidence cannot promote native/provider support.",
     "Do not silently substitute an exp identity, fast approximate intrinsic, GELU or product-specific formula for tanh.",
     "Do not add f16/bf16 tanh without separate accepted evidence.",
+    "Do not promote the old Vector test-only VECTOR_MODEL_WORKSPACE_UNRESOLVED result to the new exact pair until it is rerun.",
     "Semantically valid programs may still reject under existing lower Device-JS/ABI/workspace pressure without changing Tensor mathematics."
   ],
-  "native_gap_rule": "If #61 demonstrates a genuinely generic missing CUDA mechanism, route it to CUDA-JS. Never add private CUDA-JS imports, native Tensor code, model-specific Tensor semantics or a second runtime path.",
+  "native_gap_rule": "If refreshed real-model evidence demonstrates a genuinely generic missing CUDA mechanism, route it to CUDA-JS; if it demonstrates missing generic Tensor mathematics/item/workspace semantics, route it to CUDA-JS-Tensor. Never add private CUDA-JS imports, native Tensor code, model-specific Tensor semantics or a second runtime path.",
   "deferred": [
     "result-owned material arena unless representative measurement reactivates it",
     "FFT/sparse/solver math until a concrete consumer selects a bounded profile",
