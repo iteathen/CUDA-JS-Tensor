@@ -1,2 +1,2 @@
-export { TENSOR_PROGRAM_CONTRACT, TENSOR_PROGRAM_LIMITS, TensorProgram, TensorValueRef } from './src/program.mjs';
+export { TENSOR_PROGRAM_CONTRACT, TENSOR_PROGRAM_LIMITS, TENSOR_PROGRAM_SPEC0010_CONTRACT, TENSOR_PROGRAM_SPEC0010_LIMITS, TensorProgram, TensorValueRef } from './src/program.mjs';
 export { TENSOR_PLAN_CONTRACT, TensorPlan } from './src/plan.mjs';
