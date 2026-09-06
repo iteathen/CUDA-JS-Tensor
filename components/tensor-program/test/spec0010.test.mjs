@@ -18,6 +18,7 @@ test('legacy programs retain the base contract and exact pre-extension limit pro
   assert.equal(legacy.contract, TENSOR_PROGRAM_CONTRACT);
   assert.deepEqual(legacy.canonical.limits, { maxInputs: 256, maxNodes: 4096, maxOutputs: 256 });
   assert.equal(Object.hasOwn(legacy.canonical.limits, 'maxStaticGatherIndices'), false);
+  assert.equal(legacy.compatibilityIdentity, 'tensor-program-v1:a114d0722e8245b86c6284da0225766d9ba65fa072eaa629b278e684efd2aaaf');
   assert.equal(TensorProgram.create(JSON.parse(JSON.stringify(legacy.canonical))).compatibilityIdentity, legacy.compatibilityIdentity);
 });
 
