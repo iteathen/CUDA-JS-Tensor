@@ -22,7 +22,7 @@ test('Tensor physical compatibility facts come from the supported CUDA-JS compat
     CUDA_JS_TENSOR_COMPATIBILITY.compilerOutputFormats,
     CUDA_JS_COMPATIBILITY.capabilities.compilerOutputFormats,
   );
-  assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.package.version, '0.1.0-alpha.17');
+  assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.package.version, '0.1.0-alpha.18');
 
   assert.equal(Object.hasOwn(TENSOR_SIMT_LIMITS, 'maxKernels'), false);
   assert.equal(Object.hasOwn(TENSOR_SIMT_LIMITS, 'maxBindings'), false);

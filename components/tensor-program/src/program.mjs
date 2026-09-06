@@ -2,9 +2,12 @@ import { createTensorSpec, TensorSpec } from '../../tensor-value/index.mjs';
 import { isDeepStrictEqual } from 'node:util';
 import { boundedName, deepFreeze, exactRecord, fail, identity, plainObject } from './contract.mjs';
 import { inferOperation } from './semantics.mjs';
+import { inferSpec0010Operation, isSpec0010Operation, SPEC0010_LIMITS, SPEC0010_PROGRAM_CONTRACT } from './spec0010.mjs';
 
 export const TENSOR_PROGRAM_CONTRACT = 'SPEC-0004-tensor-program-v1';
 export const TENSOR_PROGRAM_LIMITS = Object.freeze({ maxInputs: 256, maxNodes: 4_096, maxOutputs: 256 });
+export const TENSOR_PROGRAM_SPEC0010_CONTRACT = SPEC0010_PROGRAM_CONTRACT;
+export const TENSOR_PROGRAM_SPEC0010_LIMITS = SPEC0010_LIMITS;
 
 const PROGRAM_FIELDS = new Set(['inputs', 'nodes', 'outputs']);
 const INPUT_FIELDS = new Set(['name', 'spec']);
@@ -79,7 +82,10 @@ class ProgramBuilder {
     const normalizedOptions = op === 'fill' && options?.spec !== undefined && !(options.spec instanceof TensorSpec)
       ? { ...options, spec: normalizeSpec(options.spec, 'fill.spec') }
       : options;
-    const inferred = inferOperation(op, inputData.map((entry) => entry.spec), normalizedOptions);
+    const inputSpecs = inputData.map((entry) => entry.spec);
+    const inferred = isSpec0010Operation(op, normalizedOptions)
+      ? inferSpec0010Operation(op, inputSpecs, normalizedOptions)
+      : inferOperation(op, inputSpecs, normalizedOptions);
     const ref = new TensorValueRef(REF_TOKEN, this.#owner, nodeId, inferred.outputSpec);
     this.#nodes.push(Object.freeze({
       id: nodeId,
@@ -105,6 +111,8 @@ class ProgramBuilder {
   binary(operator, left, right) { return this.node('binary', [left, right], { operator }); }
   reduce(operator, input, options = {}) { return this.node('reduce', [input], { ...options, operator }); }
   matmul(left, right, options = {}) { return this.node('matmul', [left, right], options); }
+  gather(input, axis, indices) { return this.node('gather', [input], { axis, indices }); }
+  concat(inputs, axis) { return this.node('concat', inputs, { axis }); }
 
   output(name, value) {
     this.#assertOpen();
@@ -138,10 +146,17 @@ class ProgramBuilder {
   }
 }
 
+function usesSpec0010(nodes) {
+  return nodes.some((entry) => isSpec0010Operation(entry.op, entry.options));
+}
+
 function canonicalProgram(inputs, nodes, outputs) {
+  const extension = usesSpec0010(nodes);
+  const contract = extension ? SPEC0010_PROGRAM_CONTRACT : TENSOR_PROGRAM_CONTRACT;
+  const limits = extension ? SPEC0010_LIMITS : TENSOR_PROGRAM_LIMITS;
   return deepFreeze({
-    contract: TENSOR_PROGRAM_CONTRACT,
-    limits: { ...TENSOR_PROGRAM_LIMITS },
+    contract,
+    limits: { ...limits },
     inputs: inputs.map((entry) => ({ name: entry.name, value: entry.valueId, spec: entry.spec.canonical })),
     nodes: nodes.map((entry) => ({
       id: entry.id,
@@ -222,6 +237,8 @@ function sourceOptions(node) {
   if (node.op === 'permute') return { axes: options.axes };
   if (node.op === 'slice') return { slices: options.slices };
   if (node.op === 'unary' || node.op === 'binary') return { operator: options.operator };
+  if (node.op === 'gather') return { axis: options.axis, indices: options.indices };
+  if (node.op === 'concat') return { axis: options.axis };
   if (node.op === 'reduce') return {
     operator: options.operator,
     axes: options.axes,
@@ -253,7 +270,11 @@ export class TensorProgram {
     Object.freeze(this);
   }
 
-  static create(record) { return record?.contract === TENSOR_PROGRAM_CONTRACT ? fromNormalizedCanonical(record) : fromCanonicalRecord(record); }
+  static create(record) {
+    return record?.contract === TENSOR_PROGRAM_CONTRACT || record?.contract === SPEC0010_PROGRAM_CONTRACT
+      ? fromNormalizedCanonical(record)
+      : fromCanonicalRecord(record);
+  }
 
   static define(callback) {
     if (typeof callback !== 'function') fail('TENSOR_PROGRAM_BUILDER_INVALID', 'validation', 'TensorProgram.define requires a synchronous callback.');
@@ -266,7 +287,7 @@ export class TensorProgram {
   }
 
   get kind() { return 'tensor-program'; }
-  get contract() { return TENSOR_PROGRAM_CONTRACT; }
+  get contract() { return PROGRAM_DATA.get(this).canonical.contract; }
   get compatibilityIdentity() { return PROGRAM_DATA.get(this).compatibilityIdentity; }
   get inputs() { return PROGRAM_DATA.get(this).inputs; }
   get nodes() { return PROGRAM_DATA.get(this).nodes; }

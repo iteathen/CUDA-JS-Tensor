@@ -10,6 +10,10 @@ const PREPARED_DAG_LIMITS = CUDA_JS_TENSOR_COMPATIBILITY.preparedOperationDagLim
 
 function u64(value) { return `gpu.u64(${BigInt(value)}n)`; }
 
+function zero(dtype) {
+  return dtype === 'u64' ? 'gpu.u64(0n)' : `gpu.${dtype}(0)`;
+}
+
 function scalar(record) {
   const { dtype, value } = record;
   if (value === 'Infinity') return `gpu.${dtype}.positiveInfinity()`;
@@ -33,7 +37,7 @@ function combine(operator, dtype, left, right) {
 
 function unary(operator, dtype, value) {
   if (operator === 'abs') return `gpu.math.abs(${value})`;
-  if (operator === 'exp' || operator === 'log' || operator === 'sqrt') return `gpu.math.${operator}(${value})`;
+  if (operator === 'exp' || operator === 'log' || operator === 'sqrt' || operator === 'erf') return `gpu.math.${operator}(${value})`;
   if (operator === 'neg') return dtype === 'i32' ? `gpu.cast.i32(gpu.u32(0) - gpu.cast.u32(${value}))` : `(-${value})`;
   fail('TENSOR_SIMT_OPERATOR_UNSUPPORTED', 'unsupported', 'SIMT lowering does not own the requested unary operator.', { operator });
 }
@@ -356,6 +360,35 @@ export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSO
 
     if (node.op === 'fill') {
       expression = scalar(node.options.value);
+    } else if (node.op === 'gather') {
+      const input = inputs[0];
+      const sourceCoordinates = [...outputCoordinates.names];
+      body.push('  let gatheredAxis = gpu.u64(0n);');
+      for (let position = 0; position < node.options.indices.length; position += 1) {
+        body.push(`  if (${outputCoordinates.names[node.options.axis]} === ${u64(position)}) { gatheredAxis = ${u64(node.options.indices[position])}; }`);
+      }
+      sourceCoordinates[node.options.axis] = 'gatheredAxis';
+      body.push(...offsetLines('inputOffset0', input.spec, input.originByteOffset, sourceCoordinates).map((line) => `  ${line}`));
+      expression = 'p0[inputOffset0]';
+    } else if (node.op === 'concat') {
+      const axisCoordinate = outputCoordinates.names[node.options.axis];
+      body.push(`  let concatValue = ${zero(node.outputSpec.dtype)};`);
+      let start = 0;
+      for (let inputIndex = 0; inputIndex < inputs.length; inputIndex += 1) {
+        const input = inputs[inputIndex];
+        const width = input.spec.logicalShape[node.options.axis];
+        const end = checkedAdd(start, width, 'concat.logicalAxis');
+        if (width > 0) {
+          body.push(`  if (${axisCoordinate} >= ${u64(start)} && ${axisCoordinate} < ${u64(end)}) {`);
+          const sourceCoordinates = [...outputCoordinates.names];
+          sourceCoordinates[node.options.axis] = start === 0 ? axisCoordinate : `(${axisCoordinate} - ${u64(start)})`;
+          body.push(...offsetLines(`concatOffset${inputIndex}`, input.spec, input.originByteOffset, sourceCoordinates).map((line) => `    ${line}`));
+          body.push(`    concatValue = p${inputIndex}[concatOffset${inputIndex}];`);
+          body.push('  }');
+        }
+        start = end;
+      }
+      expression = 'concatValue';
     } else if (node.op === 'matmul') {
       const left = inputs[0];
       const right = inputs[1];
