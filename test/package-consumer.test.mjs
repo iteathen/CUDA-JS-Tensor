@@ -27,10 +27,10 @@ test('packed package installs and an unrelated public consumer uses only canonic
     await writeFile(path.join(directory, 'consumer.mjs'), `
 import { compileDeviceProgram } from 'cuda-js';
 import { openCudaRuntimeForTesting } from 'cuda-js/testing';
-import { compileTensorDeviceProgram, CUDA_JS_TENSOR_COMPATIBILITY, resolveTensorPlan, TENSOR_BACKEND_POLICIES, TensorPlan, TensorProgram, TensorSession, TensorSpec } from 'cuda-js-tensor';
+import { compileTensorDeviceProgram, CUDA_JS_TENSOR_COMPATIBILITY, resolveTensorPlan, TENSOR_BACKEND_POLICIES, TENSOR_PROGRAM_SPEC0010_CONTRACT, TensorPlan, TensorProgram, TensorSession, TensorSpec } from 'cuda-js-tensor';
 let runtimeClosed = false;
 const runtime = {
-  async describe() { return { package: { name: 'cuda-js', version: '0.1.0-alpha.17', publicApiSchema: 1 }, state: 'open', profile: 'consumer-double', device: null }; },
+  async describe() { return { package: { name: 'cuda-js', version: '0.1.0-alpha.18', publicApiSchema: 1 }, state: 'open', profile: 'consumer-double', device: null }; },
   async allocateDevice({ byteLength }) {
     return {
       async view(options) { return { ...options, async status() { return { state: 'open' }; }, async close() { return { state: 'closed' }; } }; },
@@ -46,6 +46,16 @@ if (tensor.byteLength !== 24 || tensor.spec.compatibilityIdentity !== spec.compa
 const program = TensorProgram.define((graph) => graph.copy(graph.input('input', spec)));
 const plan = TensorPlan.create(program);
 if (plan.totalDistinctBytes !== 24 || plan.executable !== false || !plan.unresolved.includes('backend-selection')) throw new Error('static plan contract mismatch');
+const extension = TensorProgram.define((graph) => {
+  const source = graph.input('source', { dtype: 'f32', capacityShape: [2, 5], access: 'read' });
+  const gathered = graph.gather(source, 1, [4, 1, 4, 0]);
+  const gaussian = graph.unary('erf', gathered);
+  const tail = graph.input('tail', { dtype: 'f32', capacityShape: [2, 2], access: 'read' });
+  return graph.concat([gaussian, tail], 1);
+});
+if (extension.contract !== TENSOR_PROGRAM_SPEC0010_CONTRACT || extension.outputs[0].spec.capacityShape.join(',') !== '2,6') throw new Error('SPEC-0010 public program mismatch');
+const extensionPlan = TensorPlan.create(extension);
+if (extensionPlan.operations.map((entry) => entry.op).join(',') !== 'gather,unary,concat' || extensionPlan.totalDistinctBytes !== 112) throw new Error('SPEC-0010 static plan mismatch');
 const emptyProgram = TensorProgram.define((graph) => graph.fill({ dtype: 'f32', capacityShape: [0] }, 0));
 const resolved = await resolveTensorPlan(session, emptyProgram);
 const result = await resolved.run();
@@ -53,6 +63,9 @@ if (result.output.capacityShape[0] !== 0 || result.execution.realization !== 'em
 if (!(await result.close()).graceful || !(await resolved.close()).graceful) throw new Error('resolved cleanup contract mismatch');
 const compilerRuntime = await openCudaRuntimeForTesting({ compiler: true });
 const compilerSession = await TensorSession.open(compilerRuntime);
+const resolvedExtension = await resolveTensorPlan(compilerSession, extension);
+if (resolvedExtension.kernelCount !== 3 || resolvedExtension.plan.program.contract !== TENSOR_PROGRAM_SPEC0010_CONTRACT) throw new Error('SPEC-0010 ordinary resolved contract mismatch');
+if (!(await resolvedExtension.close()).graceful) throw new Error('SPEC-0010 resolved cleanup mismatch');
 const itemProgram = TensorProgram.define((graph) => graph.unary('neg', graph.input('items', { dtype: 'f32', capacityShape: [2, 3], access: 'read' })));
 const callable = await compileTensorDeviceProgram(compilerSession, itemProgram, { itemCapacity: 2, itemInputs: ['items'] });
 const pointers = callable.function.parameters.slice(1);
@@ -72,7 +85,7 @@ try {
   if (error.code !== 'ERR_PACKAGE_PATH_NOT_EXPORTED') throw error;
 }
 const terminal = await session.close();
-if (!terminal.graceful || !runtimeClosed || CUDA_JS_TENSOR_COMPATIBILITY.package.version !== '0.1.0-alpha.6' || CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version !== '0.1.0-alpha.17') throw new Error('terminal contract mismatch');
+if (!terminal.graceful || !runtimeClosed || CUDA_JS_TENSOR_COMPATIBILITY.package.version !== '0.1.0-alpha.6' || CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version !== '0.1.0-alpha.18') throw new Error('terminal contract mismatch');
 console.log('installed CUDA-JS-Tensor consumer passed');
 `);
     const output = run(process.execPath, [path.join(directory, 'consumer.mjs')], directory);
