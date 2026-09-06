@@ -357,6 +357,7 @@ export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSO
       ...outputCoordinates.lines.map((line) => `  ${line}`),
     ];
     let expression;
+
     if (node.op === 'fill') {
       expression = scalar(node.options.value);
     } else if (node.op === 'gather') {
