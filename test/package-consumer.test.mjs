@@ -77,7 +77,7 @@ const resolvedTanh = await resolveTensorPlan(compilerSession, tanhProgram);
 if (resolvedTanh.kernelCount !== 1 || resolvedTanh.plan.program.contract !== TENSOR_PROGRAM_SPEC0011_CONTRACT) throw new Error('SPEC-0011 ordinary resolved contract mismatch');
 if (!(await resolvedTanh.close()).graceful) throw new Error('SPEC-0011 resolved cleanup mismatch');
 const callable = await compileTensorDeviceProgram(compilerSession, tanhProgram, { itemCapacity: 2, itemInputs: ['items'] });
-if (callable.contract !== TENSOR_DEVICE_PROGRAM_CONTRACT || !/SPEC-0030-dense-numeric-v1\\+SPEC-0030-tanh-v1\\+SPEC-0028-device-library-v1$/u.test(callable.library.contract)) throw new Error('device-callable tanh library contract mismatch');
+if (callable.contract !== TENSOR_DEVICE_PROGRAM_CONTRACT || !/SPEC-0030-dense-numeric-v1\+SPEC-0030-tanh-v1\+SPEC-0028-device-library-v1$/u.test(callable.library.contract)) throw new Error('device-callable tanh library contract mismatch');
 const pointers = callable.function.parameters.slice(1);
 const consumerParameters = [...pointers, { name: 'status', type: 'ptr<u32>' }];
 const consumerSource = \`function consume(\${consumerParameters.map((entry) => entry.name).join(', ')}) { status[gpu.u32(0)] = runItem(gpu.u32(0), \${pointers.map((entry) => entry.name).join(', ')}); }\`;
@@ -95,7 +95,7 @@ try {
   if (error.code !== 'ERR_PACKAGE_PATH_NOT_EXPORTED') throw error;
 }
 const terminal = await session.close();
-if (!terminal.graceful || !runtimeClosed || CUDA_JS_TENSOR_COMPATIBILITY.package.version !== '0.1.0-alpha.6' || CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version !== '0.1.0-alpha.18' || CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.protectedMainRevision !== 'd1a8edef5bd06c402a5c14c8945269f206520174') throw new Error('terminal contract mismatch');
+if (!terminal.graceful || !runtimeClosed || CUDA_JS_TENSOR_COMPATIBILITY.package.version !== '0.1.0-alpha.6' || CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version !== '0.1.0-alpha.18' || CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.protectedMainRevision !== '45a9ef15537b52d6fd7c615b7e596676dfd00587') throw new Error('terminal contract mismatch');
 console.log('installed CUDA-JS-Tensor consumer passed');
 `);
     const output = run(process.execPath, [path.join(directory, 'consumer.mjs')], directory);
