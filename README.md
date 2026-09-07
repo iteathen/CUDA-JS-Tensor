@@ -34,6 +34,6 @@ Start with [tensor programs](components/tensor-program/README.md), then [session
 ## Further information
 
 - [Documentation](docs/README.md) and [project charter](docs/PROJECT_CHARTER.md).
-- [Contributing](CONTRIBUTING.md) and [developer instructions](AGENTS.md).
+- [Contributing](CONTRIBUTING.md) and [repository agent context](AGENT_LOCAL.md).
 - [Private security reporting](SECURITY.md).
 - [AGPL-3.0-or-later license](LICENSE) and [commercial licensing information](LICENSING.md).
