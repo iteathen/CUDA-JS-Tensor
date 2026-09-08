@@ -4,8 +4,8 @@ import path from 'node:path';
 
 const root = path.resolve(import.meta.dirname, '..');
 const required = [
-  'AGENTS.md', 'README.md', 'STATUS.md', 'LICENSE', 'LICENSING.md', 'CONTRIBUTING.md', 'SECURITY.md',
-  'agent_files/AGENTS.md', 'agent_files/AI_RULES.md', 'agent_files/DESIGN_ALIGNMENT_CARD.md',
+  'AGENTS.md', 'AGENT_LOCAL.md', 'README.md', 'STATUS.md', 'LICENSE', 'LICENSING.md', 'CONTRIBUTING.md', 'SECURITY.md',
+  'agent_files/README.md', 'agent_files/AI_RULES.md', 'agent_files/DESIGN_ALIGNMENT_CARD.md',
   'agent_files/SYSTEM_REGISTRY.md', 'agent_files/VALIDATION_POLICY.md', 'agent_files/general_foundation/PRINCIPLES.md',
   'docs/PROJECT_CHARTER.md', 'docs/architecture/TARGET_ARCHITECTURE.md',
   'docs/decisions/ADR-0001-separate-tensor-package-and-dependency-direction.md',
@@ -36,6 +36,18 @@ const required = [
 ];
 
 for (const file of required) assert(existsSync(path.join(root, file)), `Missing required artifact: ${file}`);
+
+const rootAgents = readFileSync(path.join(root, 'AGENTS.md'), 'utf8');
+assert(rootAgents.includes('iteathen/.github/blob/main/AGENTS.md'),
+  'Root AGENTS.md must remain a thin pointer to the account-global authority.');
+const localAgents = readFileSync(path.join(root, 'AGENT_LOCAL.md'), 'utf8');
+assert(localAgents.includes('account-global'),
+  'AGENT_LOCAL.md must route reusable engineering guidance to the account-global authority.');
+const agentIndex = readFileSync(path.join(root, 'agent_files/README.md'), 'utf8');
+assert(agentIndex.includes('AGENT_LOCAL.md'),
+  'agent_files/README.md must route through the repository-local context file.');
+assert(!agentIndex.includes('agent_files/AGENTS.md'),
+  'agent_files/README.md must not restore the retired local universal agent manual.');
 
 const packageJson = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8'));
 assert.equal(packageJson.name, 'cuda-js-tensor');
