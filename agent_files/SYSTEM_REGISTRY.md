@@ -1,5 +1,7 @@
 # System Registry
 
+This registry owns durable CUDA-JS-Tensor component/source routing. Reusable engineering/process doctrine is account-global and is routed through [`README.md`](README.md) and repository [`../AGENT_LOCAL.md`](../AGENT_LOCAL.md); this file must not become a second agent manual or a live package-lock substitute.
+
 | ID | Owner | Current authority |
 |---|---|---|
 | `tensor.session` | One CUDA-JS runtime/device, tensor resources, program/plan compatibility, terminal close | SPEC-0001 |
@@ -23,4 +25,4 @@
 
 CUDA-JS owns device discovery/selection, contexts, memory, typed device views, compilation/linking, prepared execution, device-callable libraries, CUDA library loading, streams/operations, and native cleanup. This repository consumes only public contracts.
 
-The exact current compatibility pair is `cuda-js-tensor@0.1.0-alpha.6` from protected `main@9ecc1d78bca989ec456c897dec215e82ce4cd311` with `cuda-js@0.1.0-alpha.16` from protected `main@4971302cfb48431c0843126a59d5884d84a81641`. CUDA-JS resolves the compile target per selected runtime, so separate Tensor sessions/programs can target separate GPUs without Tensor owning a multi-device coordinator. Exact Windows device-callable evidence qualifies only the recorded correctness/lifecycle cell and does not promote performance, multi-GPU speedup or broader platform support.
+Historical compatibility revisions recorded in component rows are provenance for the milestone they describe, not a claim about the package's live dependency. Current package/dependency identity is owned by `package.json`, its lock/artifact state, protected repository revision, and `next_step.yaml` when current execution state is relevant. At protected `main@65ae8ec686a8f6b4be20da2fed5fb949843958bc`, `cuda-js-tensor` remains version `0.1.0-alpha.6` while `package.json` selects CUDA-JS revision `45a9ef15537b52d6fd7c615b7e596676dfd00587`; current-state consumers must read those owner files rather than the historical alpha.16 milestone text above. CUDA-JS resolves the compile target per selected runtime, so separate Tensor sessions/programs can target separate GPUs without Tensor owning a multi-device coordinator. Exact Windows device-callable evidence qualifies only the recorded correctness/lifecycle cell and does not promote performance, multi-GPU speedup or broader platform support.
