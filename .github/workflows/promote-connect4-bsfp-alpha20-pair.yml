@@ -1,0 +1,72 @@
+name: promote-connect4-bsfp-alpha20-pair
+
+on:
+  push:
+    branches:
+      - research/connect4-bsfp-dominance-pair-refresh
+
+permissions:
+  contents: write
+
+jobs:
+  promote:
+    if: ${{ !contains(github.event.head_commit.message, 'promote durable alpha.20 pair') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: research/connect4-bsfp-dominance-pair-refresh
+          fetch-depth: 0
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 26.7.0
+          cache: npm
+      - name: Promote exact pair in maintained JS/JSON authority
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+          import path from 'node:path';
+
+          const oldRevision = '45a9ef15537b52d6fd7c615b7e596676dfd00587';
+          const revision = '98e2ebc942c14d63acf4dd82e912dd548c363a05';
+          const oldVersion = '0.1.0-alpha.18';
+          const version = '0.1.0-alpha.20';
+          const oldDependency = `https://codeload.github.com/iteathen/CUDA-JS/tar.gz/${oldRevision}`;
+          const dependency = `https://codeload.github.com/iteathen/CUDA-JS/tar.gz/${revision}`;
+          const edits = [];
+
+          function visit(directory) {
+            for (const name of readdirSync(directory)) {
+              if (name === '.git' || name === 'node_modules') continue;
+              const target = path.join(directory, name);
+              const stat = statSync(target);
+              if (stat.isDirectory()) visit(target);
+              else if (target.endsWith('.mjs') || target.endsWith('.json')) {
+                const before = readFileSync(target, 'utf8');
+                const after = before
+                  .split(oldRevision).join(revision)
+                  .split(oldVersion).join(version)
+                  .split(oldDependency).join(dependency);
+                if (after !== before) {
+                  writeFileSync(target, after);
+                  edits.push(target);
+                }
+              }
+            }
+          }
+          visit('.');
+          if (edits.length === 0) throw new Error('no exact-pair authority files changed');
+          console.log(JSON.stringify({ edits }));
+          NODE
+      - run: npm ci --ignore-scripts
+      - run: npm run verify
+      - name: Commit qualified pair refresh
+        shell: bash
+        run: |
+          git config user.name iteathen
+          git config user.email josh.oshiro@gmail.com
+          git add -- '*.mjs' '*.json'
+          git commit -m 'research: promote durable alpha.20 pair'
+          git push origin HEAD:research/connect4-bsfp-dominance-pair-refresh
