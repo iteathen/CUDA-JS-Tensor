@@ -10,11 +10,11 @@ test('foundation package is publication-guarded and depends only on the exact pu
   assert.equal(packageJson.name, 'cuda-js-tensor');
   assert.equal(packageJson.private, true);
   assert.deepEqual(Object.keys(packageJson.dependencies), ['cuda-js']);
-  assert.equal(packageJson.dependencies['cuda-js'], 'https://codeload.github.com/iteathen/CUDA-JS/tar.gz/45a9ef15537b52d6fd7c615b7e596676dfd00587');
+  assert.equal(packageJson.dependencies['cuda-js'], 'https://codeload.github.com/iteathen/CUDA-JS/tar.gz/98e2ebc942c14d63acf4dd82e912dd548c363a05');
   assert.equal(packageJson.exports['.'].import, './components/public-api/index.mjs');
   assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.package.version, packageJson.version);
-  assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version, '0.1.0-alpha.18');
-  assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.protectedMainRevision, '45a9ef15537b52d6fd7c615b7e596676dfd00587');
+  assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version, '0.1.0-alpha.20');
+  assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.protectedMainRevision, '98e2ebc942c14d63acf4dd82e912dd548c363a05');
   assert.equal(typeof TensorProgram.create, 'function');
   assert.equal(typeof TensorPlan.create, 'function');
 });
