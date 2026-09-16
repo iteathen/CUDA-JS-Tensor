@@ -1,0 +1,78 @@
+name: connect4-bsfp-cuda-js-alpha20
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: connect4-bsfp-cuda-js-alpha20-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qualify-pair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020
+        with:
+          node-version: 26.7.0
+
+      - name: Stage exact Connect4 CUDA-JS pair in runner workspace
+        shell: bash
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync, writeFileSync } from 'node:fs';
+
+          const oldRevision = '45a9ef15537b52d6fd7c615b7e596676dfd00587';
+          const revision = '98e2ebc942c14d63acf4dd82e912dd548c363a05';
+          const oldVersion = '0.1.0-alpha.18';
+          const version = '0.1.0-alpha.20';
+          const oldDependency = `https://codeload.github.com/iteathen/CUDA-JS/tar.gz/${oldRevision}`;
+          const dependency = `https://codeload.github.com/iteathen/CUDA-JS/tar.gz/${revision}`;
+
+          const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
+          packageJson.dependencies['cuda-js'] = dependency;
+          writeFileSync('package.json', `${JSON.stringify(packageJson, null, 2)}\n`);
+
+          const packageLock = JSON.parse(readFileSync('package-lock.json', 'utf8'));
+          packageLock.packages[''].dependencies['cuda-js'] = dependency;
+          packageLock.packages['node_modules/cuda-js'].version = version;
+          packageLock.packages['node_modules/cuda-js'].resolved = dependency;
+          writeFileSync('package-lock.json', `${JSON.stringify(packageLock, null, 2)}\n`);
+
+          function replaceExact(path, from, to, expectedCount = 1) {
+            const before = readFileSync(path, 'utf8');
+            const count = before.split(from).length - 1;
+            if (count !== expectedCount) throw new Error(`${path}: expected ${expectedCount} occurrence(s) of ${from}, found ${count}`);
+            writeFileSync(path, before.split(from).join(to));
+          }
+
+          replaceExact('components/tensor-value/src/tensor-session.mjs', oldVersion, version);
+          replaceExact('components/tensor-value/src/tensor-session.mjs', oldRevision, revision);
+          replaceExact('scripts/verify.mjs', oldDependency, dependency);
+          NODE
+
+      - name: Install staged exact pair
+        run: npm ci --ignore-scripts
+
+      - name: Verify staged pair identity
+        run: |
+          node --input-type=module <<'NODE'
+          import { CUDA_JS_COMPATIBILITY } from 'cuda-js';
+          import { CUDA_JS_TENSOR_COMPATIBILITY } from 'cuda-js-tensor';
+          const expectedRevision = '98e2ebc942c14d63acf4dd82e912dd548c363a05';
+          if (CUDA_JS_COMPATIBILITY.package?.version !== '0.1.0-alpha.20') throw new Error('staged CUDA-JS package version mismatch');
+          if (CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version !== '0.1.0-alpha.20') throw new Error('Tensor staged compatibility version mismatch');
+          if (CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.protectedMainRevision !== expectedRevision) throw new Error('Tensor staged compatibility revision mismatch');
+          console.log(JSON.stringify({
+            cudaJsVersion: CUDA_JS_COMPATIBILITY.package.version,
+            tensorCudaJsVersion: CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version,
+            tensorCudaJsRevision: CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.protectedMainRevision,
+          }));
+          NODE
+
+      - name: Run complete Tensor verification on staged alpha.20 pair
+        run: npm run verify
