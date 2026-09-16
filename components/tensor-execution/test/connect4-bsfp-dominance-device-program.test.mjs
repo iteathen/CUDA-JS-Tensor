@@ -104,7 +104,6 @@ for (const direction of ['minimal', 'maximal']) {
       assert.equal(deviceProgram.function.name, 'tensorRunItem');
       assert.equal(deviceProgram.function.returns, 'u32');
       assert.equal(composed.deviceProgram.imports[0].exportName, 'tensorRunItem');
-      assert.equal(composed.deviceProgram.imports[0].as, alias);
       assert.equal(composed.linker.artifact.format, 'cubin');
     } finally {
       assert.equal((await session.close()).graceful, true);

@@ -24,7 +24,8 @@ jobs:
         shell: bash
         run: |
           node --input-type=module <<'NODE'
-          import { readFileSync, writeFileSync } from 'node:fs';
+          import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
+          import path from 'node:path';
 
           const oldRevision = '45a9ef15537b52d6fd7c615b7e596676dfd00587';
           const revision = '98e2ebc942c14d63acf4dd82e912dd548c363a05';
@@ -43,16 +44,50 @@ jobs:
           packageLock.packages['node_modules/cuda-js'].resolved = dependency;
           writeFileSync('package-lock.json', `${JSON.stringify(packageLock, null, 2)}\n`);
 
-          function replaceExact(path, from, to, expectedCount = 1) {
-            const before = readFileSync(path, 'utf8');
+          function replaceExact(file, from, to, expectedCount = 1) {
+            const before = readFileSync(file, 'utf8');
             const count = before.split(from).length - 1;
-            if (count !== expectedCount) throw new Error(`${path}: expected ${expectedCount} occurrence(s) of ${from}, found ${count}`);
-            writeFileSync(path, before.split(from).join(to));
+            if (count !== expectedCount) throw new Error(`${file}: expected ${expectedCount} occurrence(s) of ${from}, found ${count}`);
+            writeFileSync(file, before.split(from).join(to));
           }
 
           replaceExact('components/tensor-value/src/tensor-session.mjs', oldVersion, version);
           replaceExact('components/tensor-value/src/tensor-session.mjs', oldRevision, revision);
           replaceExact('scripts/verify.mjs', oldDependency, dependency);
+
+          // Shift only test-owned exact-pair fixtures. Production/docs remain untouched
+          // except for the explicitly staged compatibility owner above.
+          const fixtureFiles = [];
+          function visit(directory) {
+            for (const name of readdirSync(directory)) {
+              if (name === '.git' || name === 'node_modules') continue;
+              const target = path.join(directory, name);
+              const stat = statSync(target);
+              if (stat.isDirectory()) visit(target);
+              else if (name.endsWith('.test.mjs') || target.split(path.sep).includes('test')) fixtureFiles.push(target);
+            }
+          }
+          visit('.');
+
+          let fixtureEdits = 0;
+          let fixtureReplacements = 0;
+          for (const file of fixtureFiles) {
+            let text = readFileSync(file, 'utf8');
+            const before = text;
+            for (const [from, to] of [[oldVersion, version], [oldRevision, revision], [oldDependency, dependency]]) {
+              const count = text.split(from).length - 1;
+              if (count > 0) {
+                text = text.split(from).join(to);
+                fixtureReplacements += count;
+              }
+            }
+            if (text !== before) {
+              writeFileSync(file, text);
+              fixtureEdits += 1;
+            }
+          }
+          if (fixtureEdits === 0) throw new Error('alpha.20 qualification staged no pair-owned test fixtures');
+          console.log(JSON.stringify({ fixtureEdits, fixtureReplacements }));
           NODE
 
       - name: Install staged exact pair
