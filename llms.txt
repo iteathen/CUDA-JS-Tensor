@@ -1,0 +1,20 @@
+# CUDA-JS-Tensor
+
+> Public source index for LLMs and software agents. Read-only access requires no GitHub authentication.
+
+## Primary entry points
+
+- [README.md](https://raw.githubusercontent.com/iteathen/CUDA-JS-Tensor/main/README.md): project overview and documentation entry point.
+- [AGENTS.md](https://raw.githubusercontent.com/iteathen/CUDA-JS-Tensor/main/AGENTS.md): repository-specific agent instructions and authority rules.
+- [Agent access](https://raw.githubusercontent.com/iteathen/CUDA-JS-Tensor/main/.agent/ACCESS.md): anonymous access routes and precedence notes.
+- [LICENSE](https://raw.githubusercontent.com/iteathen/CUDA-JS-Tensor/main/LICENSE): license terms.
+
+## Anonymous source access
+
+- Repository: https://github.com/iteathen/CUDA-JS-Tensor
+- Git clone: `https://github.com/iteathen/CUDA-JS-Tensor.git`
+- Raw files: https://raw.githubusercontent.com/iteathen/CUDA-JS-Tensor/main/
+- ZIP snapshot: https://codeload.github.com/iteathen/CUDA-JS-Tensor/zip/refs/heads/main
+- tar.gz snapshot: https://codeload.github.com/iteathen/CUDA-JS-Tensor/tar.gz/refs/heads/main
+
+Prefer Git, raw HTTPS, or codeload over the GitHub REST API when possible. Follow repository-local authority and agent instructions.
