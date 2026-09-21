@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0",
+  "repository": "iteathen/CUDA-JS-Tensor",
+  "claims": [
+    {
+      "id": "TENSOR-INT-001",
+      "claim": "Maintained portable, package, and tensor tests pass for the tested revision.",
+      "evidence_class": "INTERNAL-QUALIFICATION",
+      "status": "maintained internal qualification",
+      "oracle": "Repository-controlled test and verification suites",
+      "revision": "main",
+      "falsifier": "The maintained verification or Node test suite fails.",
+      "evidence": [
+        "README.md",
+        ".github/workflows/verify.yml",
+        "components",
+        "test"
+      ],
+      "limitations": [
+        "Does not establish native CUDA support, production support, or performance."
+      ],
+      "external_reproduction": false
+    },
+    {
+      "id": "TENSOR-HW-001",
+      "claim": "Exact recorded native profiles demonstrate only the native behaviors recorded for those exact Tensor/CUDA-JS revisions and environments.",
+      "evidence_class": "HARDWARE-MEASURED",
+      "status": "profile-scoped native evidence",
+      "oracle": "Recorded physical native qualification runs",
+      "revision": "profile-specific",
+      "falsifier": "The recorded command cannot reproduce the claimed behavior on the stated revision/environment or provenance is incomplete.",
+      "evidence": [
+        "conformance/native/README.md",
+        "STATUS.md"
+      ],
+      "limitations": [
+        "Does not generalize to newer pairs, other platforms, Tensor Core, multi-GPU, or broad performance claims."
+      ],
+      "external_reproduction": false
+    },
+    {
+      "id": "TENSOR-GENERAL-001",
+      "claim": "CUDA-JS-Tensor has general Linux, Tensor Core, multi-GPU, or performance superiority.",
+      "evidence_class": "UNVALIDATED",
+      "status": "not claimed / open",
+      "oracle": null,
+      "revision": "main",
+      "falsifier": "Missing broad platform qualification or contradictory measured results reject the claim.",
+      "evidence": [
+        "README.md"
+      ],
+      "limitations": [
+        "README explicitly withholds these general claims."
+      ],
+      "external_reproduction": false
+    }
+  ]
+}
