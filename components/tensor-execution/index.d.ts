@@ -3,6 +3,8 @@ import type { TensorPlan, TensorProgram } from '../tensor-program/index.mjs';
 import type { DeviceJsImport, DeviceJsLibrary } from 'cuda-js';
 
 export interface ResolveTensorPlanOptions {
+  /** Explicit candidate host qualification profile; resident-sequence currently requires SIMT. */
+  execution?: 'single-dag' | 'resident-sequence';
   backend?: 'simt' | 'prefer-cublaslt' | 'cublaslt';
   blockSize?: 32 | 64 | 128 | 256 | 512 | 1024;
   maxWorkspaceBytes?: number;
@@ -29,7 +31,7 @@ export class ResolvedTensorPlan {
   static create(session: TensorSession, plan: TensorPlan, options?: ResolveTensorPlanOptions): Promise<ResolvedTensorPlan>;
   static create(session: TensorSession, program: TensorProgram, options?: ResolveTensorPlanOptions): Promise<ResolvedTensorPlan>;
   readonly kind: 'resolved-tensor-plan';
-  readonly contract: 'SPEC-0006-resolved-dense-plan-v1+SPEC-0007-exact-elementwise-fusion-v1';
+  readonly contract: 'SPEC-0006-resolved-dense-plan-v1+SPEC-0007-exact-elementwise-fusion-v1' | 'SPEC-0006-resolved-dense-plan-v1+SPEC-0007-exact-elementwise-fusion-v1+SPEC-0005-resident-sequence-v1';
   readonly state: string;
   readonly plan: TensorPlan;
   readonly backend: 'simt' | 'cublaslt' | 'mixed';

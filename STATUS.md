@@ -5,11 +5,11 @@
 ```text
 repository:                 public protected pre-release
 package name:               cuda-js-tensor (reserved by intent, unpublished)
-package version:            0.1.0-alpha.7 (publication-guarded)
+package version:            0.1.0-alpha.8 (publication-guarded candidate; independent review pending)
 current CUDA-JS dependency: cuda-js@0.1.0-alpha.21 at 2bff226b752d3c0af8b9185274d411e5990008d4
-native qualification:       current exact-pair Windows/Node 26.7.0 correctness/lifecycle receipt; historical evidence retained
+native qualification:       current candidate Windows single-DAG Node 26.7.0 and resident sequence Node 26.11.1 receipts
 performance claims:         none
-current generic Tensor gap: selected exact public-runtime interoperability failure closed and qualified
+current generic Tensor gap: whole-plan prepared bounds addressed by explicit resident-sequence candidate
 product numerical oracle:   UCI-Arena-Vector-owned and independent of Tensor readiness for other consumers
 ```
 
@@ -44,6 +44,8 @@ Issue #22 retains the protected generic real-model callable/resource record. No 
 An exact consumer-selected CUDA-JS alpha.21 runtime demonstrated `TENSOR_CUDA_JS_INCOMPATIBLE` against Tensor's alpha.18 package projection. The bounded alpha.7 refresh selects that exact public cohort and preserves strict version checks, Tensor mathematics, callable ABI, and workspace rules. This interoperability gap is independent of downstream product numerical evidence; it adds no product semantics or performance claim.
 
 The installed-package native conformance runner passed on exact Node 26.7.0 / Windows x64 / recorded cc-7.5 device with CUDA-JS alpha.21 and cuBLASLt 13.5.1. It covers dense SIMT and mixed execution, fused special values, fixed-tree reduction, public item callable outputs and out-of-range guards, and graceful session/runtime cleanup. [Current receipt](conformance/native/receipts/2026-10-08-alpha7-alpha21-node267-win32.json) qualifies only that invocation profile; it adds no product numerical or performance claim.
+
+Alpha.8 adds an explicitly selected candidate `execution: 'resident-sequence'` host qualification profile. A whole generic plan exceeding one prepared DAG is split into ordered resident chunks, each obeying CUDA-JS's unchanged 32-node/64-binding bounds. Original plan material layout and math remain unchanged; the default single-DAG profile and its identities remain intact. The [candidate addendum](docs/specs/SPEC-0005-resident-sequence-addendum.md) requires independent review before integration. [Native candidate evidence](conformance/native/receipts/2026-10-08-alpha8-resident-sequence.json) covers 80-kernel/81-binding cross-chunk views and binding-driven cuts at 105 global bindings, two replays, and zero-live/orphaned terminal resources on Node 26.11.1/Windows/compute_75. The unchanged single-DAG native fixture also passed on Node 26.7.0. Host sequence qualification is not a device-closed engine inference profile or product numerical evidence.
 
 `the_restaurant` remains deferred. Multi-device Tensor semantics, NN/training/autodiff, publication and performance recommendations remain independently gated.
 

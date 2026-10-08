@@ -7,7 +7,7 @@ import { deepFreeze, exactRecord, fail, failureSummary, identity, plainObject, R
 import { TENSOR_FUSION_POLICIES } from './fusion-profile.mjs';
 import { lowerSimtPlan } from './lowering.mjs';
 
-const RESOLVE_FIELDS = new Set(['backend', 'blockSize', 'maxWorkspaceBytes', 'fusion']);
+const RESOLVE_FIELDS = new Set(['backend', 'blockSize', 'maxWorkspaceBytes', 'fusion', 'execution']);
 const BLOCK_SIZES = new Set([32, 64, 128, 256, 512, 1024]);
 const RESOLVED_TOKEN = Symbol('ResolvedTensorPlan');
 const RESULT_TOKEN = Symbol('TensorExecutionResult');
@@ -27,7 +27,10 @@ function normalizeOptions(value) {
   }
   const fusion = options.fusion ?? 'none';
   if (!TENSOR_FUSION_POLICIES.includes(fusion)) fail('TENSOR_FUSION_POLICY_UNSUPPORTED', 'unsupported', 'fusion must select an accepted finite tensor fusion policy.', { fusion, accepted: TENSOR_FUSION_POLICIES });
-  return Object.freeze({ backend, blockSize, maxWorkspaceBytes, fusion });
+  const execution = options.execution ?? 'single-dag';
+  if (!['single-dag', 'resident-sequence'].includes(execution)) fail('TENSOR_EXECUTION_PROFILE_UNSUPPORTED', 'unsupported', 'execution must select single-dag or resident-sequence.');
+  if (execution === 'resident-sequence' && backend !== 'simt') fail('TENSOR_RESIDENT_SEQUENCE_BACKEND_UNSUPPORTED', 'unsupported', 'The candidate resident sequence profile supports only SIMT.');
+  return Object.freeze({ backend, blockSize, maxWorkspaceBytes, fusion, ...(execution === 'resident-sequence' ? { execution } : {}) });
 }
 
 function staticPlan(value) {
@@ -178,7 +181,7 @@ export class ResolvedTensorPlan {
   static create(session, planOrProgram, options) { return resolveTensorPlan(session, planOrProgram, options); }
 
   get kind() { return 'resolved-tensor-plan'; }
-  get contract() { return RESOLVED_TENSOR_PLAN_CONTRACT; }
+  get contract() { return resolvedData(this, 'ResolvedTensorPlan.contract').canonical.contract; }
   get state() { return resolvedData(this, 'ResolvedTensorPlan.state').state; }
   get plan() { return resolvedData(this, 'ResolvedTensorPlan.plan').plan; }
   get backend() { return resolvedData(this, 'ResolvedTensorPlan.backend').profile.backend; }
@@ -323,7 +326,7 @@ export async function resolveTensorPlanWithAdapter(session, planOrProgram, optio
     const workspaces = Object.freeze([...lowering.workspaces, ...acceleratorWorkspaces]);
     const workspaceBytes = backendAdapter.workspaceBytes ?? lowering.totalWorkspaceBytes;
     const canonical = deepFreeze({
-      contract: RESOLVED_TENSOR_PLAN_CONTRACT,
+      contract: normalized.execution === 'resident-sequence' ? `${RESOLVED_TENSOR_PLAN_CONTRACT}+SPEC-0005-resident-sequence-v1` : RESOLVED_TENSOR_PLAN_CONTRACT,
       planIdentity: plan.compatibilityIdentity,
       sessionCompatibilityIdentity: sessionInspection.compatibilityIdentity,
       backend: profile.backend,

@@ -99,6 +99,7 @@ export async function createCudaJsTensorBackend(runtime, lowering, request, opti
   if (ports === null || typeof ports !== 'object' || Object.keys(ports).some((key) => key !== 'compileDeviceProgram') || typeof ports.compileDeviceProgram !== 'function') {
     fail('TENSOR_BACKEND_PORTS_INVALID', 'validation', 'Tensor backend ports require exactly one compileDeviceProgram function.');
   }
+  if (options.execution === 'resident-sequence') return createResidentSequenceBackend(runtime, lowering, request, ports);
   const resources = { module: null, functions: [], dag: null, plans: [], adapter: null };
   const outcomes = request.matmuls.map((entry) => simtOutcome(entry));
   const outcomeIndex = new Map(outcomes.map((entry, index) => [entry.semanticNode, index]));
@@ -277,6 +278,68 @@ export async function createCudaJsTensorBackend(runtime, lowering, request, opti
   } catch (error) {
     const cleanup = await closeResources(resources);
     if (!cleanup.graceful) tensorCleanupFailure('TENSOR_RESOLVE_ROLLBACK_UNPROVED', 'Tensor backend resolution failed and CUDA-JS rollback was not proved.', error, cleanup.failures);
+    throw error;
+  }
+}
+
+// The original lowering/material graph is retained. Only its prepared realization
+// is split; public operation completion supplies each cross-chunk dependency.
+async function createResidentSequenceBackend(runtime, lowering, request, ports) {
+  const groups = [], descriptors = [];
+  const closeAll = async () => {
+    const failures = [];
+    for (const resources of [...groups].reverse()) {
+      const report = await closeResources(resources); failures.push(...report.failures);
+    }
+    return Object.freeze({ graceful: failures.length === 0, failures: Object.freeze(failures) });
+  };
+  try {
+    for (const chunk of lowering.preparedSequence) {
+      const resources = { module: null, functions: [], dag: null, plans: [], adapter: null };
+      groups.push(resources);
+      const ids = new Set(chunk.kernelIds), kernels = lowering.kernels.filter((kernel) => ids.has(kernel.id));
+      const compiled = await compileSimtKernels(runtime, { ...lowering, kernels }, new Set(), resources, ports.compileDeviceProgram);
+      const nodes = kernels.map((kernel) => {
+        const after = kernel.after.filter((id) => ids.has(id));
+        return Object.freeze({ id: kernel.id, ...(after.length ? { after } : {}), function: compiled.functionByName.get(kernel.functionName), grid: kernel.grid, block: kernel.block, arguments: kernel.parameterRecords.map((entry) => ({ binding: entry.binding })), accesses: kernel.accesses });
+      });
+      resources.dag = await runtime.prepareOperationDag(nodes);
+      descriptors.push(Object.freeze({ compiler: compiled.compiler, deviceProgram: compiled.deviceProgram, module: compiled.module, prepared: Object.freeze({ contract: resources.dag.contract, sha256: resources.dag.sha256, nodeCount: resources.dag.nodeCount, edgeCount: resources.dag.edgeCount }), bindingNames: chunk.bindingNames, kernelIds: chunk.kernelIds }));
+    }
+    const profile = realizeBackendProfile(request, lowering, request.matmuls.map((entry) => simtOutcome(entry)), null);
+    const descriptor = Object.freeze({ realization: 'resident-sequence', executionProfile: 'qualification-host-resident-sequence-v1', engineActiveInferenceProfileClaimed: false, wholePlanIdentity: lowering.canonical.planIdentity, loweringIdentity: lowering.compatibilityIdentity, profile: profile.canonical, preparedSequence: Object.freeze(descriptors), chunkCount: groups.length, workspaceBytes: lowering.totalWorkspaceBytes, dependencyBoundary: 'await-completed-public-operation-and-prove-close-before-next-submit' });
+    let closed = false;
+    return Object.freeze({
+      identity: identity('tensor-cuda-js-resident-sequence-v1', descriptor), descriptor, profile, bindingRecords: lowering.bindings, workspaces: Object.freeze([]), workspaceBytes: lowering.totalWorkspaceBytes,
+      async execute(bindings) {
+        if (closed) fail('TENSOR_RESOLVED_PLAN_CLOSED', 'closed-plan', 'The resident Tensor backend is closed.');
+        const observations = [];
+        for (let index = 0; index < groups.length; index++) {
+          const localBindings = Object.freeze(Object.fromEntries(descriptors[index].bindingNames.map((name) => [name, bindings[name]])));
+          let operation, primary;
+          try {
+            operation = await groups[index].dag.submit({ bindings: localBindings });
+            const terminal = await operation.wait();
+            if (terminal.status !== 'completed') fail('TENSOR_EXECUTION_FAILED', 'execution', 'Resident chunk did not complete.', { chunkIndex: index, status: terminal.status });
+            observations.push(Object.freeze({ chunkIndex: index, preparedSha256: descriptors[index].prepared.sha256, operationSequence: terminal.operationSequence, status: terminal.status }));
+          } catch (error) { primary = error; throw error; }
+          finally {
+            if (operation) {
+              try { await operation.close(); }
+              catch (cleanupError) { fail('TENSOR_EXECUTION_OPERATION_CLEANUP_UNPROVED', 'cleanup-unproved', 'Resident chunk operation cleanup was not proved.', { chunkIndex: index, ...(primary ? { primary: failureSummary(primary) } : {}), cleanup: failureSummary(cleanupError) }, { cause: primary ?? cleanupError }); }
+            }
+          }
+        }
+        return Object.freeze({ status: 'completed', realization: groups.length ? 'resident-sequence' : 'empty', chunkCount: groups.length, chunks: Object.freeze(observations), hostPlanQualificationOnly: true, engineActiveInferenceProfileClaimed: false });
+      },
+      async close() {
+        if (closed) return Object.freeze({ graceful: true, failures: Object.freeze([]) });
+        const report = await closeAll(); if (report.graceful) closed = true; return report;
+      },
+    });
+  } catch (error) {
+    const cleanup = await closeAll();
+    if (!cleanup.graceful) tensorCleanupFailure('TENSOR_RESOLVE_ROLLBACK_UNPROVED', 'Resident sequence resolution failed and rollback was not proved.', error, cleanup.failures);
     throw error;
   }
 }

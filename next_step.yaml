@@ -1,16 +1,16 @@
 {
-  "schema_version": 16,
+  "schema_version": 17,
   "updated": "2026-10-08",
-  "status": "exact_public_cuda_js_cohort_refresh_qualified",
+  "status": "resident_sequence_candidate_qualified_pending_independent_review",
   "objective": "Preserve the protected generic TensorProgram/TensorPlan/callable/resource record, keep the downstream checkpoint oracle entirely product-owned, and stop using that product evidence as readiness authority for unrelated consumers such as CUDA-MCGS.",
   "current_focus": {
     "id": "TENSOR-REAL-MODEL-022",
     "repository": "iteathen/CUDA-JS-Tensor",
     "issue": 22,
     "name": "protected generic real-model callable/resource record",
-    "state": "The concrete exact public-runtime interoperability failure is closed by Tensor alpha.7/CUDA-JS alpha.21. All 109 portable/package tests and installed-package native conformance passed on exact Node 26.7.0/Windows/recorded cc-7.5 device, with graceful session/runtime cleanup.",
-    "next_action": "Consumers may qualify composition against this exact public cohort. Preserve strict identities, historical receipts, and unchanged generic Tensor math/callable/workspace contracts; product numerical evidence remains downstream.",
-    "exit": "Selected public cohort is available as a publication-guarded package candidate; further generic changes require another concrete consumer-backed gap."
+    "state": "Exact runtime interoperability is closed. A concrete whole-plan prepared-binding limit is addressed by explicit alpha.8 resident-sequence candidate, preserving all per-chunk lower limits and whole-plan material/math semantics. All 118 portable/package tests and both installed native profiles passed with cleanup recorded.",
+    "next_action": "Independently review the candidate execution addendum and implementation before integration. Consumers may qualify original numerical programs through explicitly selected host sequence; active device-closed inference remains a separate profile.",
+    "exit": "Candidate reviewed and generic evidence accepted; product numerical comparison and active engine integration remain consumer-owned."
   },
   "current_package_dependency": {
     "package": "cuda-js@0.1.0-alpha.21",

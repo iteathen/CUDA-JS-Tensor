@@ -1,0 +1,681 @@
+{
+  "schema": "tensor-resident-sequence-native-candidate-v1",
+  "status": "pass_pending_independent_review",
+  "sourceBaseRevision": "9fb3845c35e4fba29972722426159767ef1171a9",
+  "tensorPackage": "cuda-js-tensor@0.1.0-alpha.8",
+  "cudaJsRevision": "2bff226b752d3c0af8b9185274d411e5990008d4",
+  "portableTestCount": 118,
+  "residentSequence": {
+    "consumer": "installed-resident-sequence-native",
+    "node": "v26.11.1",
+    "tensorCompatibility": {
+      "schemaVersion": 1,
+      "contract": "SPEC-0001-tensor-session-value-v1",
+      "package": {
+        "name": "cuda-js-tensor",
+        "version": "0.1.0-alpha.8"
+      },
+      "cudaJs": {
+        "name": "cuda-js",
+        "version": "0.1.0-alpha.21",
+        "publicApiSchema": 1,
+        "protectedMainRevision": "2bff226b752d3c0af8b9185274d411e5990008d4"
+      }
+    },
+    "cases": [
+      {
+        "name": "view-chain",
+        "contract": "SPEC-0006-resolved-dense-plan-v1+SPEC-0007-exact-elementwise-fusion-v1+SPEC-0005-resident-sequence-v1",
+        "planIdentity": "tensor-plan-v1:10a548169080fa7ad1d462ea2a2cbe22dd263ac8f791b8fc0bdef0cb98761126",
+        "resolvedIdentity": "resolved-tensor-plan-v1:b9b7097e6da8e3b6067a59775c14c498789c0b62bae9c9175ac526ed01195d77",
+        "materialBytes": 1280,
+        "bindingCount": 81,
+        "kernelCount": 80,
+        "chunks": [
+          {
+            "compiler": {
+              "sha256": "3da28681a3e766db73812ee63129d2ec17bb4e2e4c4af9c654e1bde60bb161f1",
+              "format": "ptx",
+              "architecture": "compute_75",
+              "headerProfile": "cuda-numeric"
+            },
+            "deviceProgram": {
+              "contract": "SPEC-0013-v1+SPEC-0022-atomic-observation-v1+SPEC-0022-device-publication-v1+SPEC-0014-publication-mailbox-v1+SPEC-0030-dense-numeric-v1",
+              "sha256": "0555b96a4222a329c144617f6e5437982b0a7c2fc54e4e60578532f354fe8a4e"
+            },
+            "module": {
+              "sha256": "3da28681a3e766db73812ee63129d2ec17bb4e2e4c4af9c654e1bde60bb161f1",
+              "format": "ptx"
+            },
+            "prepared": {
+              "contract": "SPEC-0020-prepared-kernel-dag-v1",
+              "sha256": "364c281c661e44d5795d72cd5ee7e808cc689429ee3f6b221e141a172badb9f9",
+              "nodeCount": 32,
+              "edgeCount": 31
+            },
+            "bindingNames": [
+              "b0",
+              "b1",
+              "b2",
+              "b3",
+              "b4",
+              "b5",
+              "b6",
+              "b7",
+              "b8",
+              "b9",
+              "b10",
+              "b11",
+              "b12",
+              "b13",
+              "b14",
+              "b15",
+              "b16",
+              "b17",
+              "b18",
+              "b19",
+              "b20",
+              "b21",
+              "b22",
+              "b23",
+              "b24",
+              "b25",
+              "b26",
+              "b27",
+              "b28",
+              "b29",
+              "b30",
+              "b31",
+              "b32"
+            ],
+            "kernelIds": [
+              "kernel0",
+              "kernel1",
+              "kernel2",
+              "kernel3",
+              "kernel4",
+              "kernel5",
+              "kernel6",
+              "kernel7",
+              "kernel8",
+              "kernel9",
+              "kernel10",
+              "kernel11",
+              "kernel12",
+              "kernel13",
+              "kernel14",
+              "kernel15",
+              "kernel16",
+              "kernel17",
+              "kernel18",
+              "kernel19",
+              "kernel20",
+              "kernel21",
+              "kernel22",
+              "kernel23",
+              "kernel24",
+              "kernel25",
+              "kernel26",
+              "kernel27",
+              "kernel28",
+              "kernel29",
+              "kernel30",
+              "kernel31"
+            ]
+          },
+          {
+            "compiler": {
+              "sha256": "3da28681a3e766db73812ee63129d2ec17bb4e2e4c4af9c654e1bde60bb161f1",
+              "format": "ptx",
+              "architecture": "compute_75",
+              "headerProfile": "cuda-numeric"
+            },
+            "deviceProgram": {
+              "contract": "SPEC-0013-v1+SPEC-0022-atomic-observation-v1+SPEC-0022-device-publication-v1+SPEC-0014-publication-mailbox-v1+SPEC-0030-dense-numeric-v1",
+              "sha256": "70b47c2a61a85d4156a1f9e105e20fbee44fdca9597d8e9ff40d0a8deb5aa724"
+            },
+            "module": {
+              "sha256": "3da28681a3e766db73812ee63129d2ec17bb4e2e4c4af9c654e1bde60bb161f1",
+              "format": "ptx"
+            },
+            "prepared": {
+              "contract": "SPEC-0020-prepared-kernel-dag-v1",
+              "sha256": "1063de4ccedef27a3a097253be467ee16e0d7f77eb6459532e50402267a2e31e",
+              "nodeCount": 32,
+              "edgeCount": 31
+            },
+            "bindingNames": [
+              "b32",
+              "b33",
+              "b34",
+              "b35",
+              "b36",
+              "b37",
+              "b38",
+              "b39",
+              "b40",
+              "b41",
+              "b42",
+              "b43",
+              "b44",
+              "b45",
+              "b46",
+              "b47",
+              "b48",
+              "b49",
+              "b50",
+              "b51",
+              "b52",
+              "b53",
+              "b54",
+              "b55",
+              "b56",
+              "b57",
+              "b58",
+              "b59",
+              "b60",
+              "b61",
+              "b62",
+              "b63",
+              "b64"
+            ],
+            "kernelIds": [
+              "kernel32",
+              "kernel33",
+              "kernel34",
+              "kernel35",
+              "kernel36",
+              "kernel37",
+              "kernel38",
+              "kernel39",
+              "kernel40",
+              "kernel41",
+              "kernel42",
+              "kernel43",
+              "kernel44",
+              "kernel45",
+              "kernel46",
+              "kernel47",
+              "kernel48",
+              "kernel49",
+              "kernel50",
+              "kernel51",
+              "kernel52",
+              "kernel53",
+              "kernel54",
+              "kernel55",
+              "kernel56",
+              "kernel57",
+              "kernel58",
+              "kernel59",
+              "kernel60",
+              "kernel61",
+              "kernel62",
+              "kernel63"
+            ]
+          },
+          {
+            "compiler": {
+              "sha256": "37008a08c45ee08b968cabf7dd0c5c53cd07cc73d38658548054a3d69defae98",
+              "format": "ptx",
+              "architecture": "compute_75",
+              "headerProfile": "cuda-numeric"
+            },
+            "deviceProgram": {
+              "contract": "SPEC-0013-v1+SPEC-0022-atomic-observation-v1+SPEC-0022-device-publication-v1+SPEC-0014-publication-mailbox-v1+SPEC-0030-dense-numeric-v1",
+              "sha256": "a68c97437ecb5f0c4edb5e915e7621cd0a7332c63b9beae91a0b7ce7b01f6737"
+            },
+            "module": {
+              "sha256": "37008a08c45ee08b968cabf7dd0c5c53cd07cc73d38658548054a3d69defae98",
+              "format": "ptx"
+            },
+            "prepared": {
+              "contract": "SPEC-0020-prepared-kernel-dag-v1",
+              "sha256": "3ac04322d1aeebe097c32ab3a3444c6facd3939988d5775b5199ce7142109977",
+              "nodeCount": 16,
+              "edgeCount": 15
+            },
+            "bindingNames": [
+              "b64",
+              "b65",
+              "b66",
+              "b67",
+              "b68",
+              "b69",
+              "b70",
+              "b71",
+              "b72",
+              "b73",
+              "b74",
+              "b75",
+              "b76",
+              "b77",
+              "b78",
+              "b79",
+              "b80"
+            ],
+            "kernelIds": [
+              "kernel64",
+              "kernel65",
+              "kernel66",
+              "kernel67",
+              "kernel68",
+              "kernel69",
+              "kernel70",
+              "kernel71",
+              "kernel72",
+              "kernel73",
+              "kernel74",
+              "kernel75",
+              "kernel76",
+              "kernel77",
+              "kernel78",
+              "kernel79"
+            ]
+          }
+        ],
+        "expected": [
+          1,
+          2,
+          -3,
+          4
+        ],
+        "replays": 2
+      },
+      {
+        "name": "binding-cut",
+        "contract": "SPEC-0006-resolved-dense-plan-v1+SPEC-0007-exact-elementwise-fusion-v1+SPEC-0005-resident-sequence-v1",
+        "planIdentity": "tensor-plan-v1:28465eb53db8e02c749749102747aa8b39a0fd0a91c523cb6c744b3e4cea11ea",
+        "resolvedIdentity": "resolved-tensor-plan-v1:974607e6788d56d6a09b6d6d60836bac71189b8e922e207145c95952ad1532a9",
+        "materialBytes": 560,
+        "bindingCount": 105,
+        "kernelCount": 35,
+        "chunks": [
+          {
+            "compiler": {
+              "sha256": "ae09084b01c0d5c927074c49a0ea48d95ca37573a1d961a015e5c9539e229df6",
+              "format": "ptx",
+              "architecture": "compute_75",
+              "headerProfile": "cuda-numeric"
+            },
+            "deviceProgram": {
+              "contract": "SPEC-0013-v1+SPEC-0022-atomic-observation-v1+SPEC-0022-device-publication-v1+SPEC-0014-publication-mailbox-v1+SPEC-0030-dense-numeric-v1",
+              "sha256": "0957540650dd7daae50c5759c1ca404c8703579e2f292577f1c318cf24ea1a49"
+            },
+            "module": {
+              "sha256": "ae09084b01c0d5c927074c49a0ea48d95ca37573a1d961a015e5c9539e229df6",
+              "format": "ptx"
+            },
+            "prepared": {
+              "contract": "SPEC-0020-prepared-kernel-dag-v1",
+              "sha256": "0a0bb8fa89fc2631951f6ebf8f3e045c8f5a304b07493ff267b59e7ae1a12b49",
+              "nodeCount": 21,
+              "edgeCount": 20
+            },
+            "bindingNames": [
+              "b0",
+              "b1",
+              "b70",
+              "b2",
+              "b3",
+              "b71",
+              "b4",
+              "b5",
+              "b72",
+              "b6",
+              "b7",
+              "b73",
+              "b8",
+              "b9",
+              "b74",
+              "b10",
+              "b11",
+              "b75",
+              "b12",
+              "b13",
+              "b76",
+              "b14",
+              "b15",
+              "b77",
+              "b16",
+              "b17",
+              "b78",
+              "b18",
+              "b19",
+              "b79",
+              "b20",
+              "b21",
+              "b80",
+              "b22",
+              "b23",
+              "b81",
+              "b24",
+              "b25",
+              "b82",
+              "b26",
+              "b27",
+              "b83",
+              "b28",
+              "b29",
+              "b84",
+              "b30",
+              "b31",
+              "b85",
+              "b32",
+              "b33",
+              "b86",
+              "b34",
+              "b35",
+              "b87",
+              "b36",
+              "b37",
+              "b88",
+              "b38",
+              "b39",
+              "b89",
+              "b40",
+              "b41",
+              "b90"
+            ],
+            "kernelIds": [
+              "kernel0",
+              "kernel1",
+              "kernel2",
+              "kernel3",
+              "kernel4",
+              "kernel5",
+              "kernel6",
+              "kernel7",
+              "kernel8",
+              "kernel9",
+              "kernel10",
+              "kernel11",
+              "kernel12",
+              "kernel13",
+              "kernel14",
+              "kernel15",
+              "kernel16",
+              "kernel17",
+              "kernel18",
+              "kernel19",
+              "kernel20"
+            ]
+          },
+          {
+            "compiler": {
+              "sha256": "3e53fec4557b37932f131479245a22926b121fe82b87b1c6497edcb136434d22",
+              "format": "ptx",
+              "architecture": "compute_75",
+              "headerProfile": "cuda-numeric"
+            },
+            "deviceProgram": {
+              "contract": "SPEC-0013-v1+SPEC-0022-atomic-observation-v1+SPEC-0022-device-publication-v1+SPEC-0014-publication-mailbox-v1+SPEC-0030-dense-numeric-v1",
+              "sha256": "7f7a7c02005efb871d962e458cf07e8dc78270eeb21efb2ff8cd4946323ff426"
+            },
+            "module": {
+              "sha256": "3e53fec4557b37932f131479245a22926b121fe82b87b1c6497edcb136434d22",
+              "format": "ptx"
+            },
+            "prepared": {
+              "contract": "SPEC-0020-prepared-kernel-dag-v1",
+              "sha256": "6243184b6f51a5f632632ab7ee45f18840822d4855f282d0735650be9bf5e5b2",
+              "nodeCount": 14,
+              "edgeCount": 13
+            },
+            "bindingNames": [
+              "b42",
+              "b43",
+              "b91",
+              "b44",
+              "b45",
+              "b92",
+              "b46",
+              "b47",
+              "b93",
+              "b48",
+              "b49",
+              "b94",
+              "b50",
+              "b51",
+              "b95",
+              "b52",
+              "b53",
+              "b96",
+              "b54",
+              "b55",
+              "b97",
+              "b56",
+              "b57",
+              "b98",
+              "b58",
+              "b59",
+              "b99",
+              "b60",
+              "b61",
+              "b100",
+              "b62",
+              "b63",
+              "b101",
+              "b64",
+              "b65",
+              "b102",
+              "b66",
+              "b67",
+              "b103",
+              "b68",
+              "b69",
+              "b104"
+            ],
+            "kernelIds": [
+              "kernel21",
+              "kernel22",
+              "kernel23",
+              "kernel24",
+              "kernel25",
+              "kernel26",
+              "kernel27",
+              "kernel28",
+              "kernel29",
+              "kernel30",
+              "kernel31",
+              "kernel32",
+              "kernel33",
+              "kernel34"
+            ]
+          }
+        ],
+        "expected": [
+          2,
+          4,
+          -6,
+          8
+        ],
+        "replays": 2
+      }
+    ],
+    "sessionTerminal": {
+      "schemaVersion": 1,
+      "kind": "tensor-session",
+      "state": "closed",
+      "graceful": true,
+      "runtimeOwnership": "borrowed",
+      "runtimeClosed": false,
+      "runtimeGraceful": null,
+      "failures": [],
+      "unprovedResources": [],
+      "accounting": {
+        "liveTensors": 0,
+        "reservedBytes": 0,
+        "resolvedPlans": 0,
+        "pendingResolutions": 0
+      }
+    },
+    "runtimeTerminal": {
+      "schemaVersion": 1,
+      "graceful": true,
+      "restartRequired": false,
+      "state": "closed",
+      "compiler": {
+        "graceful": true,
+        "restartRequired": false,
+        "cleanupClaim": "proved-native-resources-and-libraries",
+        "workerExited": true,
+        "workerExitCode": 0,
+        "resources": {
+          "programsCreated": 5,
+          "programsDestroyed": 5,
+          "linksCreated": 0,
+          "linksDestroyed": 0
+        }
+      },
+      "driver": {
+        "graceful": true,
+        "restartRequired": false,
+        "cleanupClaim": "proved-exact-windows-profile",
+        "workerExited": true,
+        "workerExitCode": 0,
+        "health": "closed",
+        "resourceCounts": {
+          "live": 0,
+          "closing": 0,
+          "closed": 254,
+          "orphaned": 0
+        }
+      }
+    },
+    "hostPlanQualificationOnly": true,
+    "engineActiveInferenceProfileClaimed": false
+  },
+  "unchangedSingleDag": {
+    "consumer": "installed-native-resolved-dense",
+    "node": "v26.7.0",
+    "platform": "win32",
+    "device": {
+      "major": 7,
+      "minor": 5,
+      "class": "cc-7.5"
+    },
+    "summary": {
+      "composite": {
+        "kernels": 10,
+        "bindings": 11,
+        "workspaceBytes": 96,
+        "replays": 2,
+        "compiler": {
+          "architecture": "compute_75",
+          "headerProfile": "cuda-numeric"
+        }
+      },
+      "accelerated": {
+        "backend": "mixed",
+        "kernels": 2,
+        "cublasLtNodes": 1,
+        "workspaceBytes": 0,
+        "replays": 2,
+        "provider": {
+          "profile": "cublaslt-f32-row-major-matmul-v1",
+          "identity": {
+            "name": "cuBLASLt",
+            "version": "13.5.1",
+            "qualification": "exact-windows-profile",
+            "workspaceAlignmentBytes": 256
+          }
+        }
+      },
+      "transposedAccelerated": {
+        "backend": "cublaslt",
+        "cublasLtNodes": 1,
+        "output": [
+          58,
+          64,
+          139,
+          154
+        ]
+      },
+      "cast": [
+        0,
+        2147483647,
+        -2147483648,
+        3,
+        -3
+      ],
+      "fusion": {
+        "fusedKernels": 1,
+        "unfusedKernels": 3,
+        "fusedNodes": 3,
+        "output": [
+          -2,
+          -3,
+          -4,
+          -5
+        ],
+        "typedOutput": [
+          2,
+          3
+        ],
+        "specialValues": {
+          "negativeZero": true,
+          "nan": true,
+          "tail": [
+            null,
+            -4
+          ]
+        }
+      },
+      "f16": [
+        15872,
+        17664,
+        0,
+        31743
+      ],
+      "bf16": [
+        49024,
+        16384,
+        48896,
+        0
+      ],
+      "fixedTree": {
+        "output": [
+          0
+        ],
+        "workspaceBytes": 24
+      },
+      "deviceCallable": {
+        "format": "ptx",
+        "architecture": "compute_75",
+        "parameters": 7,
+        "workspaceBytes": 112,
+        "values": [
+          32,
+          48,
+          59,
+          84,
+          86,
+          120,
+          113,
+          156
+        ],
+        "scores": [
+          80,
+          143,
+          206,
+          269
+        ],
+        "statuses": [
+          0,
+          0,
+          0,
+          0,
+          1,
+          1,
+          1,
+          1
+        ]
+      }
+    },
+    "sessionGraceful": true,
+    "runtimeGraceful": true
+  },
+  "nativeConsumerDisposition": "retained_external_for_product_integration; sessions/modules/functions/operations closed",
+  "claimLimit": "Generic host qualification only; no product numerical parity or active device-closed engine profile claim."
+}

@@ -6,7 +6,7 @@ import { createTensorSpec, TensorSpec } from './tensor-spec.mjs';
 export const CUDA_JS_TENSOR_COMPATIBILITY = deepFreeze({
   schemaVersion: 1,
   contract: 'SPEC-0001-tensor-session-value-v1',
-  package: { name: 'cuda-js-tensor', version: '0.1.0-alpha.7' },
+  package: { name: 'cuda-js-tensor', version: '0.1.0-alpha.8' },
   cudaJs: {
     name: 'cuda-js',
     version: '0.1.0-alpha.21',
