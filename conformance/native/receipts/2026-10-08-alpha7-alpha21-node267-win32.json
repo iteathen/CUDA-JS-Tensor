@@ -1,0 +1,40 @@
+{
+  "schema": "tensor-exact-public-cohort-native-conformance-v1",
+  "status": "pass",
+  "command": "npm run smoke:native:tensor-execution",
+  "sourceBaseRevision": "061dce586d1a0a2df83d8350850956421bff6b65",
+  "tensorPackage": "cuda-js-tensor@0.1.0-alpha.7",
+  "cudaJsPackage": "cuda-js@0.1.0-alpha.21",
+  "cudaJsRevision": "2bff226b752d3c0af8b9185274d411e5990008d4",
+  "candidatePackedArtifact": {
+    "file": "cuda-js-tensor-0.1.0-alpha.7.tgz",
+    "sha256": "7b9cdc84f2b6cb330d304a6052f56875d5372d63cfe9260f4b9a4e246360465d",
+    "integrity": "sha512-6/m5yeKJoiOuIOi9ey/J47w/MIRe9B5xqbiA7FNluv5h+CquZdcHif0GslI+DFgt4FhlT8hWLNPltCOIQbTVGg=="
+  },
+  "consumerFixtureSha256": "1bf4793de28d92828bd4c75e0297649c6e4c2f8b1c98952dd62cc33cfc79e1cb",
+  "runnerSha256": "593837e9d9aef8897badbb6e2b99cac5a8687500118599b4d7524ae434b7dd64",
+  "packageLockSha256": "d5fdad63d53c1b83141008d8a2b17edddfde4e4516d0f1ddb6d938706a61024e",
+  "node": "v26.7.0",
+  "platform": "win32",
+  "architecture": "x64",
+  "device": { "major": 7, "minor": 5, "class": "cc-7.5" },
+  "portableTestCount": 109,
+  "observation": {
+    "consumer": "installed-native-resolved-dense",
+    "summary": {
+      "composite": { "kernels": 10, "bindings": 11, "workspaceBytes": 96, "replays": 2, "compiler": { "architecture": "compute_75", "headerProfile": "cuda-numeric" } },
+      "accelerated": { "backend": "mixed", "kernels": 2, "cublasLtNodes": 1, "workspaceBytes": 0, "replays": 2, "provider": { "profile": "cublaslt-f32-row-major-matmul-v1", "identity": { "name": "cuBLASLt", "version": "13.5.1", "qualification": "exact-windows-profile", "workspaceAlignmentBytes": 256 } } },
+      "transposedAccelerated": { "backend": "cublaslt", "cublasLtNodes": 1, "output": [58, 64, 139, 154] },
+      "cast": [0, 2147483647, -2147483648, 3, -3],
+      "fusion": { "fusedKernels": 1, "unfusedKernels": 3, "fusedNodes": 3, "output": [-2, -3, -4, -5], "typedOutput": [2, 3], "specialValues": { "negativeZero": true, "nan": true, "tail": [null, -4] } },
+      "f16": [15872, 17664, 0, 31743],
+      "bf16": [49024, 16384, 48896, 0],
+      "fixedTree": { "output": [0], "workspaceBytes": 24 },
+      "deviceCallable": { "format": "ptx", "architecture": "compute_75", "parameters": 7, "workspaceBytes": 112, "values": [32, 48, 59, 84, 86, 120, 113, 156], "scores": [80, 143, 206, 269], "statuses": [0, 0, 0, 0, 1, 1, 1, 1] }
+    },
+    "sessionGraceful": true,
+    "runtimeGraceful": true
+  },
+  "cleanup": { "temporaryInstalledConsumer": "removed_by_runner_finally", "ownedBackgroundProcesses": 0 },
+  "claimLimit": "Generic correctness/lifecycle on this exact invocation profile only; no product numerical parity, performance, production, or another provider/Node/GPU claim."
+}

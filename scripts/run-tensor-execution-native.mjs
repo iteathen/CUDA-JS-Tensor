@@ -26,7 +26,7 @@ try {
   await copyFile(path.join(root, 'conformance', 'native', 'fixtures', 'resolved-simt-consumer.mjs'), path.join(directory, 'consumer.mjs'));
   run([npmCli, 'install', '--ignore-scripts', '--package-lock=false', path.join(directory, tarball)], directory);
   const installed = JSON.parse(await readFile(path.join(directory, 'node_modules', 'cuda-js-tensor', 'package.json'), 'utf8'));
-  assert.equal(installed.version, '0.1.0-alpha.6');
+  assert.equal(installed.version, '0.1.0-alpha.7');
   const output = run(['--experimental-ffi', 'consumer.mjs'], directory);
   const observation = JSON.parse(output.split(/\r?\n/).at(-1));
   assert.equal(observation.consumer, 'installed-native-resolved-dense');

@@ -51,10 +51,10 @@ assert(!agentIndex.includes('agent_files/AGENTS.md'),
 
 const packageJson = JSON.parse(readFileSync(path.join(root, 'package.json'), 'utf8'));
 assert.equal(packageJson.name, 'cuda-js-tensor');
-assert.equal(packageJson.version, '0.1.0-alpha.6');
+assert.equal(packageJson.version, '0.1.0-alpha.7');
 assert.equal(packageJson.private, true, 'Package must remain publication-guarded during foundation work.');
 assert.equal(packageJson.license, 'AGPL-3.0-or-later');
-assert.equal(packageJson.dependencies?.['cuda-js'], 'https://codeload.github.com/iteathen/CUDA-JS/tar.gz/45a9ef15537b52d6fd7c615b7e596676dfd00587');
+assert.equal(packageJson.dependencies?.['cuda-js'], 'https://codeload.github.com/iteathen/CUDA-JS/tar.gz/2bff226b752d3c0af8b9185274d411e5990008d4');
 assert.equal(packageJson.exports?.['.']?.import, './components/public-api/index.mjs');
 JSON.parse(readFileSync(path.join(root, 'next_step.yaml'), 'utf8'));
 

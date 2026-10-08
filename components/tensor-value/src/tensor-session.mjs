@@ -6,12 +6,12 @@ import { createTensorSpec, TensorSpec } from './tensor-spec.mjs';
 export const CUDA_JS_TENSOR_COMPATIBILITY = deepFreeze({
   schemaVersion: 1,
   contract: 'SPEC-0001-tensor-session-value-v1',
-  package: { name: 'cuda-js-tensor', version: '0.1.0-alpha.6' },
+  package: { name: 'cuda-js-tensor', version: '0.1.0-alpha.7' },
   cudaJs: {
     name: 'cuda-js',
-    version: '0.1.0-alpha.18',
+    version: '0.1.0-alpha.21',
     publicApiSchema: 1,
-    protectedMainRevision: '45a9ef15537b52d6fd7c615b7e596676dfd00587',
+    protectedMainRevision: '2bff226b752d3c0af8b9185274d411e5990008d4',
   },
 });
 
