@@ -105,7 +105,7 @@ function bindingRecord(name, role, dtype, byteLength, valueId = null) {
   return Object.freeze({ name, role, dtype, byteLength, valueId });
 }
 
-export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSOR_SIMT_LIMITS.maxWorkspaceBytes, fusion = 'none' } = {}) {
+export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSOR_SIMT_LIMITS.maxWorkspaceBytes, fusion = 'none', execution = 'single-dag' } = {}) {
   if (!(plan instanceof TensorPlan)) fail('TENSOR_RESOLVE_PLAN_INVALID', 'validation', 'SIMT lowering requires a TensorPlan.');
   const program = plan.program;
   const fusionProfile = createFusionProfile(plan, fusion);
@@ -123,7 +123,7 @@ export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSO
   function addBinding(role, dtype, byteLength, valueId = null) {
     const name = `b${bindings.length}`;
     bindings.push(bindingRecord(name, role, dtype, byteLength, valueId));
-    if (bindings.length > PREPARED_DAG_LIMITS.bindings) fail('TENSOR_SIMT_BINDING_LIMIT', 'pressure', 'Resolved SIMT execution exceeds the finite prepared-binding limit.', { maximum: PREPARED_DAG_LIMITS.bindings });
+    if (execution !== 'resident-sequence' && bindings.length > PREPARED_DAG_LIMITS.bindings) fail('TENSOR_SIMT_BINDING_LIMIT', 'pressure', 'Resolved SIMT execution exceeds the finite prepared-binding limit.', { maximum: PREPARED_DAG_LIMITS.bindings });
     return name;
   }
 
@@ -154,7 +154,8 @@ export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSO
     if (!Number.isSafeInteger(workItems) || workItems < 1 || workItems > TENSOR_SIMT_LIMITS.maxLogicalWorkItems) {
       fail('TENSOR_SIMT_WORK_LIMIT', 'pressure', 'A generated SIMT kernel exceeds the finite logical-work limit.', { workItems, maximum: TENSOR_SIMT_LIMITS.maxLogicalWorkItems });
     }
-    if (kernels.length >= PREPARED_DAG_LIMITS.nodes) fail('TENSOR_SIMT_KERNEL_LIMIT', 'pressure', 'Resolved SIMT execution exceeds the finite prepared-kernel limit.', { maximum: PREPARED_DAG_LIMITS.nodes });
+    if (execution !== 'resident-sequence' && kernels.length >= PREPARED_DAG_LIMITS.nodes) fail('TENSOR_SIMT_KERNEL_LIMIT', 'pressure', 'Resolved SIMT execution exceeds the finite prepared-kernel limit.', { maximum: PREPARED_DAG_LIMITS.nodes });
+    if (kernels.length >= 4096 * 34) fail('TENSOR_SEQUENCE_KERNEL_LIMIT', 'pressure', 'The finite resident sequence kernel bound is exceeded.');
     const functionName = `tensorKernel${kernels.length}`;
     const id = `kernel${kernels.length}`;
     const parameters = parameterRecords.map((parameter, index) => ({ name: `p${index}`, type: `ptr<${parameter.dtype}>` }));
@@ -430,6 +431,23 @@ export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSO
   }
 
   const source = kernels.map((kernel) => kernel.source).join('\n\n');
+  let preparedSequence;
+  if (execution === 'resident-sequence') {
+    const chunks = []; let pending = [], names = new Set();
+    const finish = () => {
+      if (!pending.length) return;
+      chunks.push(Object.freeze({ kernelIds: Object.freeze(pending.map((kernel) => kernel.id)), bindingNames: Object.freeze([...names]), edgeCount: pending.length - 1 }));
+      pending = []; names = new Set();
+    };
+    for (const kernel of kernels) {
+      const required = kernel.parameterRecords.map((entry) => entry.binding);
+      if (new Set(required).size > PREPARED_DAG_LIMITS.bindings) fail('TENSOR_SEQUENCE_ATOMIC_BINDING_LIMIT', 'pressure', 'One kernel exceeds the prepared chunk binding limit.');
+      const union = new Set([...names, ...required]);
+      if (pending.length && (pending.length >= PREPARED_DAG_LIMITS.nodes || pending.length >= PREPARED_DAG_LIMITS.edges + 1 || union.size > PREPARED_DAG_LIMITS.bindings)) finish();
+      pending.push(kernel); for (const name of required) names.add(name);
+    }
+    finish(); preparedSequence = Object.freeze(chunks);
+  }
   const outputRecords = program.outputs.map((output) => {
     const reference = references.get(output.valueId);
     return Object.freeze({ name: output.name, valueId: output.valueId, baseValueId: reference.baseValueId, spec: output.spec });
@@ -447,6 +465,7 @@ export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSO
     workspaces: workspaces.map((entry) => ({ ...entry })),
     kernels: kernels.map((kernel) => ({ id: kernel.id, semanticNode: kernel.semanticNode, semanticNodes: [...kernel.semanticNodes], fusionRegion: kernel.fusionRegion, functionName: kernel.functionName, workItems: kernel.workItems, grid: kernel.grid, block: kernel.block, after: [...kernel.after], parameters: kernel.parameterRecords.map((entry) => ({ ...entry })), accesses: kernel.accesses.map((entry) => ({ ...entry })) })),
     totalWorkspaceBytes,
+    ...(preparedSequence ? { executionProfile: 'qualification-host-resident-sequence-v1', preparedSequence } : {}),
     outputs: outputRecords.map((entry) => ({ name: entry.name, valueId: entry.valueId, baseValueId: entry.baseValueId, specIdentity: entry.spec.compatibilityIdentity })),
   });
   return Object.freeze({
@@ -461,6 +480,7 @@ export function lowerSimtPlan(plan, { blockSize = 256, maxWorkspaceBytes = TENSO
     outputs: Object.freeze(outputRecords),
     fusionProfile,
     totalWorkspaceBytes,
+    ...(preparedSequence ? { preparedSequence } : {}),
     canonical,
     compatibilityIdentity: identity('tensor-simt-lowering-v2', canonical),
   });

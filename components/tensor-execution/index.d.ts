@@ -3,6 +3,8 @@ import type { TensorPlan, TensorProgram } from '../tensor-program/index.mjs';
 import type { DeviceJsImport, DeviceJsLibrary } from 'cuda-js';
 
 export interface ResolveTensorPlanOptions {
+  /** Explicit candidate host qualification profile; resident-sequence currently requires SIMT. */
+  execution?: 'single-dag' | 'resident-sequence';
   backend?: 'simt' | 'prefer-cublaslt' | 'cublaslt';
   blockSize?: 32 | 64 | 128 | 256 | 512 | 1024;
   maxWorkspaceBytes?: number;
@@ -29,7 +31,7 @@ export class ResolvedTensorPlan {
   static create(session: TensorSession, plan: TensorPlan, options?: ResolveTensorPlanOptions): Promise<ResolvedTensorPlan>;
   static create(session: TensorSession, program: TensorProgram, options?: ResolveTensorPlanOptions): Promise<ResolvedTensorPlan>;
   readonly kind: 'resolved-tensor-plan';
-  readonly contract: 'SPEC-0006-resolved-dense-plan-v1+SPEC-0007-exact-elementwise-fusion-v1';
+  readonly contract: 'SPEC-0006-resolved-dense-plan-v1+SPEC-0007-exact-elementwise-fusion-v1' | 'SPEC-0006-resolved-dense-plan-v1+SPEC-0007-exact-elementwise-fusion-v1+SPEC-0005-resident-sequence-v1';
   readonly state: string;
   readonly plan: TensorPlan;
   readonly backend: 'simt' | 'cublaslt' | 'mixed';
@@ -61,6 +63,7 @@ export const TENSOR_BACKEND_POLICIES: readonly ['simt', 'prefer-cublaslt', 'cubl
 export const TENSOR_FUSION_POLICIES: readonly ['none', 'exact-elementwise'];
 
 export interface CompileTensorDeviceProgramOptions {
+  participation?: 'scalar' | 'block32';
   itemCapacity: number;
   itemInputs: readonly string[];
   output?: 'ptx' | 'lto-ir';
@@ -126,7 +129,9 @@ export type TensorDeviceProgramParameter = TensorDeviceItemIndexParameter | Tens
 export class TensorDeviceProgram {
   private constructor();
   readonly kind: 'tensor-device-program';
-  readonly contract: 'SPEC-0009-item-parallel-device-tensor-program-v1' | 'SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-gather-concat-v1';
+  readonly contract: 'SPEC-0009-item-parallel-device-tensor-program-v1' | 'SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-gather-concat-v1' | 'SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-block32-v1' | 'SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-gather-concat-v1+SPEC-0009-block32-v1';
+  readonly participation: Readonly<{ kind: 'scalar' | 'block32'; scope: 'thread' | 'block'; requiredThreads: number; block: Readonly<{ x: number; y: number; z: number }> | null; uniformItemIndex: boolean; uniformCall: boolean; invocationCountPerParticipant: 1 }>;
+  requireParticipation(request: Readonly<{ block: Readonly<{ x: number; y: number; z: number }>; uniformItemIndex?: boolean; uniformCall?: boolean }>): TensorDeviceProgram['participation'];
   readonly plan: TensorPlan;
   readonly itemCapacity: number;
   readonly itemInputs: readonly string[];

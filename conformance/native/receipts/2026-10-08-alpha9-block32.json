@@ -1,0 +1,320 @@
+{
+  "schema": "tensor-block32-native-candidate-v1",
+  "status": "pass_pending_independent_review",
+  "sourceBaseRevision": "df0e17b749f956d80135d39961afd76ccc3ca89e",
+  "artifact": "final/cuda-js-tensor-0.1.0-alpha.9.tgz",
+  "artifactIntegrity": "sha512-2J2KuLo8gh6hBrB5kGWdSrO2zNqIuv6rukY/2ldDH3StyJlPlpqmnzNPAzjTx02YwtGhmLtj9HBwx4m9Ojy44A==",
+  "portableTestCount": 121,
+  "observation": {
+    "consumer": "installed-block32-native",
+    "node": "v26.11.1",
+    "tensorCompatibility": {
+      "schemaVersion": 1,
+      "contract": "SPEC-0001-tensor-session-value-v1",
+      "package": {
+        "name": "cuda-js-tensor",
+        "version": "0.1.0-alpha.9"
+      },
+      "cudaJs": {
+        "name": "cuda-js",
+        "version": "0.1.0-alpha.21",
+        "publicApiSchema": 1,
+        "protectedMainRevision": "2bff226b752d3c0af8b9185274d411e5990008d4"
+      }
+    },
+    "observations": [
+      {
+        "case": "mixed",
+        "programIdentity": "tensor-program-v1:74cd4b16422972a68306f2d6c6fcd7378d82c75ec8b99f1ed3c99d2dd015b005",
+        "callableIdentity": "tensor-device-program-v1:6c0a9f632e2eb03fcb1c42db04d25475ca5aad1ec100c215da500a09e7d34720",
+        "contract": "SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-gather-concat-v1+SPEC-0009-block32-v1",
+        "participation": {
+          "kind": "block32",
+          "scope": "block",
+          "requiredThreads": 32,
+          "block": {
+            "x": 32,
+            "y": 1,
+            "z": 1
+          },
+          "uniformItemIndex": true,
+          "uniformCall": true,
+          "invocationCountPerParticipant": 1
+        },
+        "compiler": {
+          "format": "ptx",
+          "architecture": "compute_75",
+          "sha256": "628eb2643f7663872130def8ff91a5436fc267d43bc9b8eb7d167f7852b0889b",
+          "headerProfile": "cuda-numeric"
+        },
+        "linkedProgram": "d0696b3cc6835f0d6b5ef4e32f7180c91ccb74fa66b4c93112bb869f6e190980",
+        "linkedArtifact": "ff20249c0777f1ba534639251b77579389d315c4b7f76eb6f518369e66481625",
+        "workspaceBytes": 224,
+        "occupancy": 2,
+        "statuses": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "guardedNoWrite": true,
+        "scalarMacCount": 0,
+        "elapsedMilliseconds": 2.823599999999942,
+        "latencyMeaning": "single native submission through completed public wait, excluding compile and transfers"
+      },
+      {
+        "case": "mixed",
+        "programIdentity": "tensor-program-v1:74cd4b16422972a68306f2d6c6fcd7378d82c75ec8b99f1ed3c99d2dd015b005",
+        "callableIdentity": "tensor-device-program-v1:6c0a9f632e2eb03fcb1c42db04d25475ca5aad1ec100c215da500a09e7d34720",
+        "contract": "SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-gather-concat-v1+SPEC-0009-block32-v1",
+        "participation": {
+          "kind": "block32",
+          "scope": "block",
+          "requiredThreads": 32,
+          "block": {
+            "x": 32,
+            "y": 1,
+            "z": 1
+          },
+          "uniformItemIndex": true,
+          "uniformCall": true,
+          "invocationCountPerParticipant": 1
+        },
+        "compiler": {
+          "format": "ptx",
+          "architecture": "compute_75",
+          "sha256": "628eb2643f7663872130def8ff91a5436fc267d43bc9b8eb7d167f7852b0889b",
+          "headerProfile": "cuda-numeric"
+        },
+        "linkedProgram": "d0696b3cc6835f0d6b5ef4e32f7180c91ccb74fa66b4c93112bb869f6e190980",
+        "linkedArtifact": "ff20249c0777f1ba534639251b77579389d315c4b7f76eb6f518369e66481625",
+        "workspaceBytes": 224,
+        "occupancy": 1,
+        "statuses": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "guardedNoWrite": true,
+        "scalarMacCount": 0,
+        "elapsedMilliseconds": 0.6737000000000535,
+        "latencyMeaning": "single native submission through completed public wait, excluding compile and transfers"
+      },
+      {
+        "case": "bounded-matmul-ladder",
+        "stages": 1,
+        "programIdentity": "tensor-program-v1:9160acf184fe5df06036a50ed17f1ab8bceb1ee88d215f48c0e21842525073e6",
+        "callableIdentity": "tensor-device-program-v1:55647eb430f592d39977cff8403a1226709d923102a329abe0195dc5c2cfae57",
+        "contract": "SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-block32-v1",
+        "participation": {
+          "kind": "block32",
+          "scope": "block",
+          "requiredThreads": 32,
+          "block": {
+            "x": 32,
+            "y": 1,
+            "z": 1
+          },
+          "uniformItemIndex": true,
+          "uniformCall": true,
+          "invocationCountPerParticipant": 1
+        },
+        "compiler": {
+          "format": "ptx",
+          "architecture": "compute_75",
+          "sha256": "93d15b55eb2811d08e33776a53b08305b00734f1d4ef943dae124316d365fa61",
+          "headerProfile": "cuda-numeric"
+        },
+        "linkedProgram": "61bc49161c6ae598e64ccefaa81ca5f9237550bf6125ea1a637367bfb928ab12",
+        "linkedArtifact": "1f620f918928f0585f5e0a7338f8a0a716529471a290be1946f43503f6912850",
+        "workspaceBytes": 131072,
+        "occupancy": 2,
+        "statuses": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "guardedNoWrite": true,
+        "scalarMacCount": 8388608,
+        "elapsedMilliseconds": 12.697000000000003,
+        "latencyMeaning": "single native submission through completed public wait, excluding compile and transfers"
+      },
+      {
+        "case": "bounded-matmul-ladder",
+        "stages": 8,
+        "programIdentity": "tensor-program-v1:b4c96e822ed9e60ee201a9375c1e5f03e43ddb6383ce2402748f13f93af1b6b4",
+        "callableIdentity": "tensor-device-program-v1:700a10b13d7315a1a76a97f6551e9450e5fe2935b60bcea6a589c6f16d330552",
+        "contract": "SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-block32-v1",
+        "participation": {
+          "kind": "block32",
+          "scope": "block",
+          "requiredThreads": 32,
+          "block": {
+            "x": 32,
+            "y": 1,
+            "z": 1
+          },
+          "uniformItemIndex": true,
+          "uniformCall": true,
+          "invocationCountPerParticipant": 1
+        },
+        "compiler": {
+          "format": "ptx",
+          "architecture": "compute_75",
+          "sha256": "34ca8746bbfbe59105558220dfd2cc31024fd2e59be71c59b82ebb3f2cfaa96d",
+          "headerProfile": "cuda-numeric"
+        },
+        "linkedProgram": "492c4f47f36ebdc0930cf17f97858b5780933591be2ef115846012860fdb7b68",
+        "linkedArtifact": "4354f7152e2eb33bbe9a3f04484f09fd6871712023f83ca4dae5ef88b35fa213",
+        "workspaceBytes": 1048576,
+        "occupancy": 2,
+        "statuses": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "guardedNoWrite": true,
+        "scalarMacCount": 67108864,
+        "elapsedMilliseconds": 96.32500000000005,
+        "latencyMeaning": "single native submission through completed public wait, excluding compile and transfers"
+      },
+      {
+        "case": "bounded-matmul-ladder",
+        "stages": 16,
+        "programIdentity": "tensor-program-v1:2a416d355f2f70a1e8536917bd30a97677031ca76a34d4bc17f61f9d3e4752bc",
+        "callableIdentity": "tensor-device-program-v1:c7a84efb59ca45b85618ee15392e76c1b2f770d0841d04e51ad7edf5f2b94a62",
+        "contract": "SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-block32-v1",
+        "participation": {
+          "kind": "block32",
+          "scope": "block",
+          "requiredThreads": 32,
+          "block": {
+            "x": 32,
+            "y": 1,
+            "z": 1
+          },
+          "uniformItemIndex": true,
+          "uniformCall": true,
+          "invocationCountPerParticipant": 1
+        },
+        "compiler": {
+          "format": "ptx",
+          "architecture": "compute_75",
+          "sha256": "2bdd5c50fea21f274d4049bfbcd8adfb115e2695821a3ae9673eee33c75beb15",
+          "headerProfile": "cuda-numeric"
+        },
+        "linkedProgram": "263be3882d98fcda09556124e45d646138920bbc8260c642d5eb269db204d1b1",
+        "linkedArtifact": "7c9d6c69abdb16433ccf4b188a0b63f65ce228cf5f63be5cccd9467493f37d5c",
+        "workspaceBytes": 2097152,
+        "occupancy": 2,
+        "statuses": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "guardedNoWrite": true,
+        "scalarMacCount": 134217728,
+        "elapsedMilliseconds": 158.2355,
+        "latencyMeaning": "single native submission through completed public wait, excluding compile and transfers"
+      },
+      {
+        "case": "bounded-matmul-ladder",
+        "stages": 32,
+        "programIdentity": "tensor-program-v1:3f9a6fdc8ef94b67d556dc1332b01b1e0c9d15a613963781b722e2d337382d79",
+        "callableIdentity": "tensor-device-program-v1:35bf9f16c73669c6f085448c3f296230792c945c3bfd693463d1e84a3bf080df",
+        "contract": "SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-block32-v1",
+        "participation": {
+          "kind": "block32",
+          "scope": "block",
+          "requiredThreads": 32,
+          "block": {
+            "x": 32,
+            "y": 1,
+            "z": 1
+          },
+          "uniformItemIndex": true,
+          "uniformCall": true,
+          "invocationCountPerParticipant": 1
+        },
+        "compiler": {
+          "format": "ptx",
+          "architecture": "compute_75",
+          "sha256": "a5a2ae5e0c97d2877494f6db5c618621543436463caa370981970da8f0cc5fce",
+          "headerProfile": "cuda-numeric"
+        },
+        "linkedProgram": "372937df81eda836df4b7e32e92d1f44f7de405d36a203a52ac23057ed0735ed",
+        "linkedArtifact": "010c65eb8e5346c6d336d7c7f850c3f089fe38c8bc174b0428bd8cede373847e",
+        "workspaceBytes": 4194304,
+        "occupancy": 2,
+        "statuses": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "guardedNoWrite": true,
+        "scalarMacCount": 268435456,
+        "elapsedMilliseconds": 269.65980000000013,
+        "latencyMeaning": "single native submission through completed public wait, excluding compile and transfers"
+      }
+    ],
+    "sessionTerminal": {
+      "schemaVersion": 1,
+      "kind": "tensor-session",
+      "state": "closed",
+      "graceful": true,
+      "runtimeOwnership": "borrowed",
+      "runtimeClosed": false,
+      "runtimeGraceful": null,
+      "failures": [],
+      "unprovedResources": [],
+      "accounting": {
+        "liveTensors": 0,
+        "reservedBytes": 0,
+        "resolvedPlans": 0,
+        "pendingResolutions": 0
+      }
+    },
+    "runtimeTerminal": {
+      "schemaVersion": 1,
+      "graceful": true,
+      "restartRequired": false,
+      "state": "closed",
+      "compiler": {
+        "graceful": true,
+        "restartRequired": false,
+        "cleanupClaim": "proved-native-resources-and-libraries",
+        "workerExited": true,
+        "workerExitCode": 0,
+        "resources": {
+          "programsCreated": 12,
+          "programsDestroyed": 12,
+          "linksCreated": 6,
+          "linksDestroyed": 6
+        }
+      },
+      "driver": {
+        "graceful": true,
+        "restartRequired": false,
+        "cleanupClaim": "proved-exact-windows-profile",
+        "workerExited": true,
+        "workerExitCode": 0,
+        "health": "closed",
+        "resourceCounts": {
+          "live": 0,
+          "closing": 0,
+          "closed": 19,
+          "orphaned": 0
+        }
+      }
+    },
+    "performanceClaim": "measured exact workloads only; no inferred model latency or throughput"
+  },
+  "recoverableLowerDiagnostics": "Public CUDA-JS linker printed duplicate numeric helper diagnostics during its first linking attempt; public compilation recovered, native execution and cleanup succeeded.",
+  "nativeConsumerDisposition": "retained_external_for_product_integration; all runtime resources closed",
+  "claimLimit": "Exact measured workloads and generic correctness/lifecycle only. Full-model numerical and latency qualification remains downstream."
+}

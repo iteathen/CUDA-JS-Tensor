@@ -5,7 +5,7 @@ import { openCudaRuntimeForTesting } from 'cuda-js/testing';
 import { compileTensorDeviceProgram, TensorProgram, TensorSession } from 'cuda-js-tensor';
 
 test('selected exact public CUDA-JS cohort opens a Tensor session and compiles the unchanged item ABI', async () => {
-  assert.equal(CUDA_JS_COMPATIBILITY.package.version, '0.1.0-alpha.21');
+  assert.equal(CUDA_JS_COMPATIBILITY.package.version, '0.1.0-alpha.22');
   const runtime = await openCudaRuntimeForTesting({ compiler: true });
   let session;
   try {

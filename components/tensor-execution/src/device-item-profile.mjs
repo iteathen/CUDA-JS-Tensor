@@ -321,6 +321,8 @@ function lowerDeviceItemPlan(plan, profile) {
     '}',
     'let item = gpu.cast.u64(itemIndex);',
   ];
+  const cooperative = profile.participation?.kind === 'block32';
+  if (cooperative) body.push('let participant = gpu.cast.u64(gpu.thread.x());');
 
   for (let nodeIndex = 0; nodeIndex < program.nodes.length; nodeIndex += 1) {
     const node = program.nodes[nodeIndex];
@@ -332,7 +334,7 @@ function lowerDeviceItemPlan(plan, profile) {
     if (outputCount === 0) continue;
     const outputCoordinates = coordinates('index', localShape, `n${nodeIndex}c`);
     const fullOutputCoordinates = ['item', ...outputCoordinates.names];
-    body.push(`for (let index = gpu.u64(0n); index < ${u64(outputCount)}; index += gpu.u64(1n)) {`);
+    body.push(`for (let index = ${cooperative ? 'participant' : 'gpu.u64(0n)'}; index < ${u64(outputCount)}; index += gpu.u64(${cooperative ? '32n' : '1n'})) {`);
     body.push(...outputCoordinates.lines.map((line) => `  ${line}`));
 
     let expression;
@@ -466,6 +468,7 @@ function lowerDeviceItemPlan(plan, profile) {
     const outputLines = writeLine(`n${nodeIndex}OutputOffset`, output, fullOutputCoordinates, expression);
     body.push(...outputLines.map((line) => `  ${line}`));
     body.push('}');
+    if (cooperative) body.push('gpu.barrier.block();');
   }
 
   for (let outputIndex = 0; outputIndex < profile.outputs.length; outputIndex += 1) {
@@ -476,13 +479,14 @@ function lowerDeviceItemPlan(plan, profile) {
     if (count === 0) continue;
     const outputCoordinates = coordinates('outputIndex', localShape, `o${outputIndex}c`);
     const fullCoordinates = ['item', ...outputCoordinates.names];
-    body.push(`for (let outputIndex = gpu.u64(0n); outputIndex < ${u64(count)}; outputIndex += gpu.u64(1n)) {`);
+    body.push(`for (let outputIndex = ${cooperative ? 'participant' : 'gpu.u64(0n)'}; outputIndex < ${u64(count)}; outputIndex += gpu.u64(${cooperative ? '32n' : '1n'})) {`);
     body.push(...outputCoordinates.lines.map((line) => `  ${line}`));
     const readLines = [];
     const value = readExpression(readLines, `o${outputIndex}SourceOffset`, reference, fullCoordinates);
     body.push(...readLines.map((line) => `  ${line}`));
     body.push(`  ${output.parameterName}[item * ${u64(count)} + outputIndex] = ${value};`);
     body.push('}');
+    if (cooperative) body.push('gpu.barrier.block();');
   }
   body.push('return gpu.u32(0);');
 
@@ -506,11 +510,15 @@ export function createDeviceItemProfile(plan, options) {
   const output = options.output ?? 'ptx';
   if (!OUTPUT_SET.has(output)) fail('TENSOR_DEVICE_OUTPUT_INVALID', 'validation', 'output must be ptx or lto-ir.', { output });
   requireTensorDeviceLibraryOutput(output);
+  const participationName = options.participation ?? 'scalar';
+  if (!['scalar', 'block32'].includes(participationName)) fail('TENSOR_DEVICE_PARTICIPATION_UNSUPPORTED', 'unsupported', 'participation must select scalar or block32.');
+  const participation = participationName === 'block32' ? deepFreeze({ kind: 'block32', scope: 'block', requiredThreads: 32, block: { x: 32, y: 1, z: 1 }, uniformItemIndex: true, uniformCall: true, invocationCountPerParticipant: 1 }) : null;
   const maxWorkspaceBytes = options.maxWorkspaceBytes ?? TENSOR_DEVICE_PROGRAM_LIMITS.defaultMaxWorkspaceBytes;
   if (!Number.isSafeInteger(maxWorkspaceBytes) || maxWorkspaceBytes < 0 || maxWorkspaceBytes > TENSOR_DEVICE_PROGRAM_LIMITS.maxWorkspaceBytes) fail('TENSOR_DEVICE_WORKSPACE_LIMIT_INVALID', 'validation', 'maxWorkspaceBytes must be a nonnegative safe integer within the device-callable profile limit.', { maximum: TENSOR_DEVICE_PROGRAM_LIMITS.maxWorkspaceBytes });
 
   const itemByValue = classifyItemValues(plan, itemCapacity, normalizedItemInputs);
-  const contract = usesGatherConcatChild(plan.program) ? TENSOR_DEVICE_GATHER_CONCAT_CONTRACT : TENSOR_DEVICE_PROGRAM_CONTRACT;
+  const baseContract = usesGatherConcatChild(plan.program) ? TENSOR_DEVICE_GATHER_CONCAT_CONTRACT : TENSOR_DEVICE_PROGRAM_CONTRACT;
+  const contract = participation ? `${baseContract}+SPEC-0009-block32-v1` : baseContract;
   const allocation = allocateWorkspace(plan, itemCapacity);
   if (allocation.totalBytes > maxWorkspaceBytes) fail('TENSOR_DEVICE_WORKSPACE_LIMIT', 'pressure', 'The device-callable program exceeds the selected finite workspace limit.', { required: allocation.totalBytes, maximum: maxWorkspaceBytes });
 
@@ -546,6 +554,7 @@ export function createDeviceItemProfile(plan, options) {
 
   const canonical = deepFreeze({
     contract,
+    ...(participation ? { participation } : {}),
     planIdentity: plan.compatibilityIdentity,
     itemCapacity,
     itemInputs: [...normalizedItemInputs],
@@ -563,6 +572,7 @@ export function createDeviceItemProfile(plan, options) {
   const profile = {
     plan,
     contract,
+    ...(participation ? { participation } : {}),
     itemCapacity,
     itemInputs: Object.freeze([...normalizedItemInputs]),
     output,
