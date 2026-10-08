@@ -1,0 +1,1209 @@
+{
+  "schema": "tensor-cuda22-exact-cohort-native-candidate-v1",
+  "status": "pass_pending_delta_review",
+  "sourceBaseRevision": "c4936f313d5e144c3119098ecdfec6c0d8f35d60",
+  "protectedCudaJsRevision": "dc2924657bb900cdce3fba4c9def62934419db03",
+  "artifact": {
+    "name": "cuda-js-tensor-0.1.0-alpha.10.tgz",
+    "sha256": "219cb96e7f2723058bb17ef7ebc7bc6758a56c8b2dda5cb58cb9062575f1beaa"
+  },
+  "portable": {
+    "node26_7": {
+      "pass": 121,
+      "fail": 0,
+      "skip": 0
+    },
+    "node26_11": {
+      "pass": 121,
+      "fail": 0,
+      "skip": 0
+    }
+  },
+  "block32": {
+    "sha256": "811b06085d4d47526d2433aa0a8ce68cb3faabf5c3e99a14c02f9a8d62f2fac0",
+    "observation": {
+      "consumer": "installed-block32-native",
+      "node": "v26.11.1",
+      "tensorCompatibility": {
+        "schemaVersion": 1,
+        "contract": "SPEC-0001-tensor-session-value-v1",
+        "package": {
+          "name": "cuda-js-tensor",
+          "version": "0.1.0-alpha.10"
+        },
+        "cudaJs": {
+          "name": "cuda-js",
+          "version": "0.1.0-alpha.22",
+          "publicApiSchema": 1,
+          "protectedMainRevision": "dc2924657bb900cdce3fba4c9def62934419db03"
+        }
+      },
+      "observations": [
+        {
+          "case": "mixed",
+          "programIdentity": "tensor-program-v1:74cd4b16422972a68306f2d6c6fcd7378d82c75ec8b99f1ed3c99d2dd015b005",
+          "callableIdentity": "tensor-device-program-v1:5b16dedc4e3900904b884013a1db5f14f36ca1d2566da34ed7ab3a30ede69096",
+          "contract": "SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-gather-concat-v1+SPEC-0009-block32-v1",
+          "participation": {
+            "kind": "block32",
+            "scope": "block",
+            "requiredThreads": 32,
+            "block": {
+              "x": 32,
+              "y": 1,
+              "z": 1
+            },
+            "uniformItemIndex": true,
+            "uniformCall": true,
+            "invocationCountPerParticipant": 1
+          },
+          "compiler": {
+            "format": "ptx",
+            "architecture": "compute_75",
+            "sha256": "628eb2643f7663872130def8ff91a5436fc267d43bc9b8eb7d167f7852b0889b",
+            "headerProfile": "cuda-numeric"
+          },
+          "linkedProgram": "d0696b3cc6835f0d6b5ef4e32f7180c91ccb74fa66b4c93112bb869f6e190980",
+          "linkedArtifact": "ff20249c0777f1ba534639251b77579389d315c4b7f76eb6f518369e66481625",
+          "workspaceBytes": 224,
+          "occupancy": 2,
+          "statuses": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "guardedNoWrite": true,
+          "scalarMacCount": 0,
+          "elapsedMilliseconds": 3.212500000000091,
+          "latencyMeaning": "single native submission through completed public wait, excluding compile and transfers"
+        },
+        {
+          "case": "mixed",
+          "programIdentity": "tensor-program-v1:74cd4b16422972a68306f2d6c6fcd7378d82c75ec8b99f1ed3c99d2dd015b005",
+          "callableIdentity": "tensor-device-program-v1:5b16dedc4e3900904b884013a1db5f14f36ca1d2566da34ed7ab3a30ede69096",
+          "contract": "SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-gather-concat-v1+SPEC-0009-block32-v1",
+          "participation": {
+            "kind": "block32",
+            "scope": "block",
+            "requiredThreads": 32,
+            "block": {
+              "x": 32,
+              "y": 1,
+              "z": 1
+            },
+            "uniformItemIndex": true,
+            "uniformCall": true,
+            "invocationCountPerParticipant": 1
+          },
+          "compiler": {
+            "format": "ptx",
+            "architecture": "compute_75",
+            "sha256": "628eb2643f7663872130def8ff91a5436fc267d43bc9b8eb7d167f7852b0889b",
+            "headerProfile": "cuda-numeric"
+          },
+          "linkedProgram": "d0696b3cc6835f0d6b5ef4e32f7180c91ccb74fa66b4c93112bb869f6e190980",
+          "linkedArtifact": "ff20249c0777f1ba534639251b77579389d315c4b7f76eb6f518369e66481625",
+          "workspaceBytes": 224,
+          "occupancy": 1,
+          "statuses": [
+            0,
+            1,
+            1,
+            1
+          ],
+          "guardedNoWrite": true,
+          "scalarMacCount": 0,
+          "elapsedMilliseconds": 0.8025000000000091,
+          "latencyMeaning": "single native submission through completed public wait, excluding compile and transfers"
+        },
+        {
+          "case": "bounded-matmul-ladder",
+          "stages": 1,
+          "programIdentity": "tensor-program-v1:9160acf184fe5df06036a50ed17f1ab8bceb1ee88d215f48c0e21842525073e6",
+          "callableIdentity": "tensor-device-program-v1:6194a4c4dd14575facd1ba487a6bcd4a0d48c82c9a45f47911481b3256cf5953",
+          "contract": "SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-block32-v1",
+          "participation": {
+            "kind": "block32",
+            "scope": "block",
+            "requiredThreads": 32,
+            "block": {
+              "x": 32,
+              "y": 1,
+              "z": 1
+            },
+            "uniformItemIndex": true,
+            "uniformCall": true,
+            "invocationCountPerParticipant": 1
+          },
+          "compiler": {
+            "format": "ptx",
+            "architecture": "compute_75",
+            "sha256": "93d15b55eb2811d08e33776a53b08305b00734f1d4ef943dae124316d365fa61",
+            "headerProfile": "cuda-numeric"
+          },
+          "linkedProgram": "61bc49161c6ae598e64ccefaa81ca5f9237550bf6125ea1a637367bfb928ab12",
+          "linkedArtifact": "1f620f918928f0585f5e0a7338f8a0a716529471a290be1946f43503f6912850",
+          "workspaceBytes": 131072,
+          "occupancy": 2,
+          "statuses": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "guardedNoWrite": true,
+          "scalarMacCount": 8388608,
+          "elapsedMilliseconds": 10.80600000000004,
+          "latencyMeaning": "single native submission through completed public wait, excluding compile and transfers"
+        },
+        {
+          "case": "bounded-matmul-ladder",
+          "stages": 8,
+          "programIdentity": "tensor-program-v1:b4c96e822ed9e60ee201a9375c1e5f03e43ddb6383ce2402748f13f93af1b6b4",
+          "callableIdentity": "tensor-device-program-v1:a943b7070dcc417fbb9590b5e1f4314d0cdd2c15cd1b61964a013fefc21b70cc",
+          "contract": "SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-block32-v1",
+          "participation": {
+            "kind": "block32",
+            "scope": "block",
+            "requiredThreads": 32,
+            "block": {
+              "x": 32,
+              "y": 1,
+              "z": 1
+            },
+            "uniformItemIndex": true,
+            "uniformCall": true,
+            "invocationCountPerParticipant": 1
+          },
+          "compiler": {
+            "format": "ptx",
+            "architecture": "compute_75",
+            "sha256": "34ca8746bbfbe59105558220dfd2cc31024fd2e59be71c59b82ebb3f2cfaa96d",
+            "headerProfile": "cuda-numeric"
+          },
+          "linkedProgram": "492c4f47f36ebdc0930cf17f97858b5780933591be2ef115846012860fdb7b68",
+          "linkedArtifact": "4354f7152e2eb33bbe9a3f04484f09fd6871712023f83ca4dae5ef88b35fa213",
+          "workspaceBytes": 1048576,
+          "occupancy": 2,
+          "statuses": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "guardedNoWrite": true,
+          "scalarMacCount": 67108864,
+          "elapsedMilliseconds": 79.57560000000012,
+          "latencyMeaning": "single native submission through completed public wait, excluding compile and transfers"
+        },
+        {
+          "case": "bounded-matmul-ladder",
+          "stages": 16,
+          "programIdentity": "tensor-program-v1:2a416d355f2f70a1e8536917bd30a97677031ca76a34d4bc17f61f9d3e4752bc",
+          "callableIdentity": "tensor-device-program-v1:27a80e58d240a49dacaf8e5f75132c64e0c6728ae81984a226da5de5f9e7981c",
+          "contract": "SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-block32-v1",
+          "participation": {
+            "kind": "block32",
+            "scope": "block",
+            "requiredThreads": 32,
+            "block": {
+              "x": 32,
+              "y": 1,
+              "z": 1
+            },
+            "uniformItemIndex": true,
+            "uniformCall": true,
+            "invocationCountPerParticipant": 1
+          },
+          "compiler": {
+            "format": "ptx",
+            "architecture": "compute_75",
+            "sha256": "2bdd5c50fea21f274d4049bfbcd8adfb115e2695821a3ae9673eee33c75beb15",
+            "headerProfile": "cuda-numeric"
+          },
+          "linkedProgram": "263be3882d98fcda09556124e45d646138920bbc8260c642d5eb269db204d1b1",
+          "linkedArtifact": "7c9d6c69abdb16433ccf4b188a0b63f65ce228cf5f63be5cccd9467493f37d5c",
+          "workspaceBytes": 2097152,
+          "occupancy": 2,
+          "statuses": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "guardedNoWrite": true,
+          "scalarMacCount": 134217728,
+          "elapsedMilliseconds": 159.6169,
+          "latencyMeaning": "single native submission through completed public wait, excluding compile and transfers"
+        },
+        {
+          "case": "bounded-matmul-ladder",
+          "stages": 32,
+          "programIdentity": "tensor-program-v1:3f9a6fdc8ef94b67d556dc1332b01b1e0c9d15a613963781b722e2d337382d79",
+          "callableIdentity": "tensor-device-program-v1:00507a5ce8f516850007c5f1f19a4d321da9e89c50f28695d98e04679f046c69",
+          "contract": "SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-block32-v1",
+          "participation": {
+            "kind": "block32",
+            "scope": "block",
+            "requiredThreads": 32,
+            "block": {
+              "x": 32,
+              "y": 1,
+              "z": 1
+            },
+            "uniformItemIndex": true,
+            "uniformCall": true,
+            "invocationCountPerParticipant": 1
+          },
+          "compiler": {
+            "format": "ptx",
+            "architecture": "compute_75",
+            "sha256": "a5a2ae5e0c97d2877494f6db5c618621543436463caa370981970da8f0cc5fce",
+            "headerProfile": "cuda-numeric"
+          },
+          "linkedProgram": "372937df81eda836df4b7e32e92d1f44f7de405d36a203a52ac23057ed0735ed",
+          "linkedArtifact": "010c65eb8e5346c6d336d7c7f850c3f089fe38c8bc174b0428bd8cede373847e",
+          "workspaceBytes": 4194304,
+          "occupancy": 2,
+          "statuses": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "guardedNoWrite": true,
+          "scalarMacCount": 268435456,
+          "elapsedMilliseconds": 285.4398000000001,
+          "latencyMeaning": "single native submission through completed public wait, excluding compile and transfers"
+        }
+      ],
+      "sessionTerminal": {
+        "schemaVersion": 1,
+        "kind": "tensor-session",
+        "state": "closed",
+        "graceful": true,
+        "runtimeOwnership": "borrowed",
+        "runtimeClosed": false,
+        "runtimeGraceful": null,
+        "failures": [],
+        "unprovedResources": [],
+        "accounting": {
+          "liveTensors": 0,
+          "reservedBytes": 0,
+          "resolvedPlans": 0,
+          "pendingResolutions": 0
+        }
+      },
+      "runtimeTerminal": {
+        "schemaVersion": 1,
+        "graceful": true,
+        "restartRequired": false,
+        "state": "closed",
+        "compiler": {
+          "graceful": true,
+          "restartRequired": false,
+          "cleanupClaim": "proved-native-resources-and-libraries",
+          "workerExited": true,
+          "workerExitCode": 0,
+          "resources": {
+            "programsCreated": 12,
+            "programsDestroyed": 12,
+            "linksCreated": 6,
+            "linksDestroyed": 6
+          }
+        },
+        "driver": {
+          "graceful": true,
+          "restartRequired": false,
+          "cleanupClaim": "proved-exact-windows-profile",
+          "workerExited": true,
+          "workerExitCode": 0,
+          "health": "closed",
+          "resourceCounts": {
+            "live": 0,
+            "closing": 0,
+            "closed": 19,
+            "orphaned": 0
+          }
+        }
+      },
+      "performanceClaim": "measured exact workloads only; no inferred model latency or throughput"
+    }
+  },
+  "modelSizedCalibration": {
+    "sha256": "a0551d4571bc659279dc7bcd796455ec1f98842e90a035890cd9a22282f82849",
+    "observation": {
+      "consumer": "installed-block32-native",
+      "node": "v26.11.1",
+      "tensorCompatibility": {
+        "schemaVersion": 1,
+        "contract": "SPEC-0001-tensor-session-value-v1",
+        "package": {
+          "name": "cuda-js-tensor",
+          "version": "0.1.0-alpha.10"
+        },
+        "cudaJs": {
+          "name": "cuda-js",
+          "version": "0.1.0-alpha.22",
+          "publicApiSchema": 1,
+          "protectedMainRevision": "dc2924657bb900cdce3fba4c9def62934419db03"
+        }
+      },
+      "observations": [
+        {
+          "case": "mixed",
+          "programIdentity": "tensor-program-v1:74cd4b16422972a68306f2d6c6fcd7378d82c75ec8b99f1ed3c99d2dd015b005",
+          "callableIdentity": "tensor-device-program-v1:5b16dedc4e3900904b884013a1db5f14f36ca1d2566da34ed7ab3a30ede69096",
+          "contract": "SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-gather-concat-v1+SPEC-0009-block32-v1",
+          "participation": {
+            "kind": "block32",
+            "scope": "block",
+            "requiredThreads": 32,
+            "block": {
+              "x": 32,
+              "y": 1,
+              "z": 1
+            },
+            "uniformItemIndex": true,
+            "uniformCall": true,
+            "invocationCountPerParticipant": 1
+          },
+          "compiler": {
+            "format": "ptx",
+            "architecture": "compute_75",
+            "sha256": "628eb2643f7663872130def8ff91a5436fc267d43bc9b8eb7d167f7852b0889b",
+            "headerProfile": "cuda-numeric"
+          },
+          "linkedProgram": "d0696b3cc6835f0d6b5ef4e32f7180c91ccb74fa66b4c93112bb869f6e190980",
+          "linkedArtifact": "ff20249c0777f1ba534639251b77579389d315c4b7f76eb6f518369e66481625",
+          "workspaceBytes": 224,
+          "occupancy": 2,
+          "statuses": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "guardedNoWrite": true,
+          "scalarMacCount": 0,
+          "elapsedMilliseconds": 2.6870999999999867,
+          "latencyMeaning": "single native submission through completed public wait, excluding compile and transfers"
+        },
+        {
+          "case": "mixed",
+          "programIdentity": "tensor-program-v1:74cd4b16422972a68306f2d6c6fcd7378d82c75ec8b99f1ed3c99d2dd015b005",
+          "callableIdentity": "tensor-device-program-v1:5b16dedc4e3900904b884013a1db5f14f36ca1d2566da34ed7ab3a30ede69096",
+          "contract": "SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-gather-concat-v1+SPEC-0009-block32-v1",
+          "participation": {
+            "kind": "block32",
+            "scope": "block",
+            "requiredThreads": 32,
+            "block": {
+              "x": 32,
+              "y": 1,
+              "z": 1
+            },
+            "uniformItemIndex": true,
+            "uniformCall": true,
+            "invocationCountPerParticipant": 1
+          },
+          "compiler": {
+            "format": "ptx",
+            "architecture": "compute_75",
+            "sha256": "628eb2643f7663872130def8ff91a5436fc267d43bc9b8eb7d167f7852b0889b",
+            "headerProfile": "cuda-numeric"
+          },
+          "linkedProgram": "d0696b3cc6835f0d6b5ef4e32f7180c91ccb74fa66b4c93112bb869f6e190980",
+          "linkedArtifact": "ff20249c0777f1ba534639251b77579389d315c4b7f76eb6f518369e66481625",
+          "workspaceBytes": 224,
+          "occupancy": 1,
+          "statuses": [
+            0,
+            1,
+            1,
+            1
+          ],
+          "guardedNoWrite": true,
+          "scalarMacCount": 0,
+          "elapsedMilliseconds": 0.7536999999999807,
+          "latencyMeaning": "single native submission through completed public wait, excluding compile and transfers"
+        },
+        {
+          "case": "bounded-matmul-ladder",
+          "stages": 64,
+          "programIdentity": "tensor-program-v1:cdc8a1befead6088b00954f4a7e102885f26e01f100815f01113b6f360ea3f53",
+          "callableIdentity": "tensor-device-program-v1:0c7dae67588ec2252b017823e3913a87b3756d57588d1b1b0a6f6de516f0d751",
+          "contract": "SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-block32-v1",
+          "participation": {
+            "kind": "block32",
+            "scope": "block",
+            "requiredThreads": 32,
+            "block": {
+              "x": 32,
+              "y": 1,
+              "z": 1
+            },
+            "uniformItemIndex": true,
+            "uniformCall": true,
+            "invocationCountPerParticipant": 1
+          },
+          "compiler": {
+            "format": "ptx",
+            "architecture": "compute_75",
+            "sha256": "3c3c3dec2533a78766938fdc2039d95fed5893353e69b06020c8fd57e32a8ccb",
+            "headerProfile": "cuda-numeric"
+          },
+          "linkedProgram": "4269c9d752e84229e5ae87df0946eeed9ed7e2fdbd26f1e8aa2f48453769b78f",
+          "linkedArtifact": "b2deaab728cfd5e1396d935c3d974295945395ff4884433b4536ba41f8510db6",
+          "workspaceBytes": 8388608,
+          "occupancy": 2,
+          "statuses": [
+            0,
+            0,
+            1,
+            1
+          ],
+          "guardedNoWrite": true,
+          "scalarMacCount": 536870912,
+          "elapsedMilliseconds": 509.89980000000014,
+          "latencyMeaning": "single native submission through completed public wait, excluding compile and transfers"
+        }
+      ],
+      "sessionTerminal": {
+        "schemaVersion": 1,
+        "kind": "tensor-session",
+        "state": "closed",
+        "graceful": true,
+        "runtimeOwnership": "borrowed",
+        "runtimeClosed": false,
+        "runtimeGraceful": null,
+        "failures": [],
+        "unprovedResources": [],
+        "accounting": {
+          "liveTensors": 0,
+          "reservedBytes": 0,
+          "resolvedPlans": 0,
+          "pendingResolutions": 0
+        }
+      },
+      "runtimeTerminal": {
+        "schemaVersion": 1,
+        "graceful": true,
+        "restartRequired": false,
+        "state": "closed",
+        "compiler": {
+          "graceful": true,
+          "restartRequired": false,
+          "cleanupClaim": "proved-native-resources-and-libraries",
+          "workerExited": true,
+          "workerExitCode": 0,
+          "resources": {
+            "programsCreated": 6,
+            "programsDestroyed": 6,
+            "linksCreated": 3,
+            "linksDestroyed": 3
+          }
+        },
+        "driver": {
+          "graceful": true,
+          "restartRequired": false,
+          "cleanupClaim": "proved-exact-windows-profile",
+          "workerExited": true,
+          "workerExitCode": 0,
+          "health": "closed",
+          "resourceCounts": {
+            "live": 0,
+            "closing": 0,
+            "closed": 19,
+            "orphaned": 0
+          }
+        }
+      },
+      "performanceClaim": "measured exact workloads only; no inferred model latency or throughput"
+    }
+  },
+  "residentSequence": {
+    "sha256": "795e3a4f92ac1403eeccb1cb93ef842f564204f90270624fa346b449a04e2f72",
+    "observation": {
+      "consumer": "installed-resident-sequence-native",
+      "node": "v26.11.1",
+      "tensorCompatibility": {
+        "schemaVersion": 1,
+        "contract": "SPEC-0001-tensor-session-value-v1",
+        "package": {
+          "name": "cuda-js-tensor",
+          "version": "0.1.0-alpha.10"
+        },
+        "cudaJs": {
+          "name": "cuda-js",
+          "version": "0.1.0-alpha.22",
+          "publicApiSchema": 1,
+          "protectedMainRevision": "dc2924657bb900cdce3fba4c9def62934419db03"
+        }
+      },
+      "cases": [
+        {
+          "name": "view-chain",
+          "contract": "SPEC-0006-resolved-dense-plan-v1+SPEC-0007-exact-elementwise-fusion-v1+SPEC-0005-resident-sequence-v1",
+          "planIdentity": "tensor-plan-v1:10a548169080fa7ad1d462ea2a2cbe22dd263ac8f791b8fc0bdef0cb98761126",
+          "resolvedIdentity": "resolved-tensor-plan-v1:4efeb28e145c8ab03cf60431120730d45ab99062b253c226deae2fe62fd841d4",
+          "materialBytes": 1280,
+          "bindingCount": 81,
+          "kernelCount": 80,
+          "chunks": [
+            {
+              "compiler": {
+                "sha256": "3da28681a3e766db73812ee63129d2ec17bb4e2e4c4af9c654e1bde60bb161f1",
+                "format": "ptx",
+                "architecture": "compute_75",
+                "headerProfile": "cuda-numeric"
+              },
+              "deviceProgram": {
+                "contract": "SPEC-0013-v1+SPEC-0022-atomic-observation-v1+SPEC-0022-device-publication-v1+SPEC-0014-publication-mailbox-v1+SPEC-0030-dense-numeric-v1",
+                "sha256": "0555b96a4222a329c144617f6e5437982b0a7c2fc54e4e60578532f354fe8a4e"
+              },
+              "module": {
+                "sha256": "3da28681a3e766db73812ee63129d2ec17bb4e2e4c4af9c654e1bde60bb161f1",
+                "format": "ptx"
+              },
+              "prepared": {
+                "contract": "SPEC-0020-prepared-kernel-dag-v1",
+                "sha256": "364c281c661e44d5795d72cd5ee7e808cc689429ee3f6b221e141a172badb9f9",
+                "nodeCount": 32,
+                "edgeCount": 31
+              },
+              "bindingNames": [
+                "b0",
+                "b1",
+                "b2",
+                "b3",
+                "b4",
+                "b5",
+                "b6",
+                "b7",
+                "b8",
+                "b9",
+                "b10",
+                "b11",
+                "b12",
+                "b13",
+                "b14",
+                "b15",
+                "b16",
+                "b17",
+                "b18",
+                "b19",
+                "b20",
+                "b21",
+                "b22",
+                "b23",
+                "b24",
+                "b25",
+                "b26",
+                "b27",
+                "b28",
+                "b29",
+                "b30",
+                "b31",
+                "b32"
+              ],
+              "kernelIds": [
+                "kernel0",
+                "kernel1",
+                "kernel2",
+                "kernel3",
+                "kernel4",
+                "kernel5",
+                "kernel6",
+                "kernel7",
+                "kernel8",
+                "kernel9",
+                "kernel10",
+                "kernel11",
+                "kernel12",
+                "kernel13",
+                "kernel14",
+                "kernel15",
+                "kernel16",
+                "kernel17",
+                "kernel18",
+                "kernel19",
+                "kernel20",
+                "kernel21",
+                "kernel22",
+                "kernel23",
+                "kernel24",
+                "kernel25",
+                "kernel26",
+                "kernel27",
+                "kernel28",
+                "kernel29",
+                "kernel30",
+                "kernel31"
+              ]
+            },
+            {
+              "compiler": {
+                "sha256": "3da28681a3e766db73812ee63129d2ec17bb4e2e4c4af9c654e1bde60bb161f1",
+                "format": "ptx",
+                "architecture": "compute_75",
+                "headerProfile": "cuda-numeric"
+              },
+              "deviceProgram": {
+                "contract": "SPEC-0013-v1+SPEC-0022-atomic-observation-v1+SPEC-0022-device-publication-v1+SPEC-0014-publication-mailbox-v1+SPEC-0030-dense-numeric-v1",
+                "sha256": "70b47c2a61a85d4156a1f9e105e20fbee44fdca9597d8e9ff40d0a8deb5aa724"
+              },
+              "module": {
+                "sha256": "3da28681a3e766db73812ee63129d2ec17bb4e2e4c4af9c654e1bde60bb161f1",
+                "format": "ptx"
+              },
+              "prepared": {
+                "contract": "SPEC-0020-prepared-kernel-dag-v1",
+                "sha256": "1063de4ccedef27a3a097253be467ee16e0d7f77eb6459532e50402267a2e31e",
+                "nodeCount": 32,
+                "edgeCount": 31
+              },
+              "bindingNames": [
+                "b32",
+                "b33",
+                "b34",
+                "b35",
+                "b36",
+                "b37",
+                "b38",
+                "b39",
+                "b40",
+                "b41",
+                "b42",
+                "b43",
+                "b44",
+                "b45",
+                "b46",
+                "b47",
+                "b48",
+                "b49",
+                "b50",
+                "b51",
+                "b52",
+                "b53",
+                "b54",
+                "b55",
+                "b56",
+                "b57",
+                "b58",
+                "b59",
+                "b60",
+                "b61",
+                "b62",
+                "b63",
+                "b64"
+              ],
+              "kernelIds": [
+                "kernel32",
+                "kernel33",
+                "kernel34",
+                "kernel35",
+                "kernel36",
+                "kernel37",
+                "kernel38",
+                "kernel39",
+                "kernel40",
+                "kernel41",
+                "kernel42",
+                "kernel43",
+                "kernel44",
+                "kernel45",
+                "kernel46",
+                "kernel47",
+                "kernel48",
+                "kernel49",
+                "kernel50",
+                "kernel51",
+                "kernel52",
+                "kernel53",
+                "kernel54",
+                "kernel55",
+                "kernel56",
+                "kernel57",
+                "kernel58",
+                "kernel59",
+                "kernel60",
+                "kernel61",
+                "kernel62",
+                "kernel63"
+              ]
+            },
+            {
+              "compiler": {
+                "sha256": "37008a08c45ee08b968cabf7dd0c5c53cd07cc73d38658548054a3d69defae98",
+                "format": "ptx",
+                "architecture": "compute_75",
+                "headerProfile": "cuda-numeric"
+              },
+              "deviceProgram": {
+                "contract": "SPEC-0013-v1+SPEC-0022-atomic-observation-v1+SPEC-0022-device-publication-v1+SPEC-0014-publication-mailbox-v1+SPEC-0030-dense-numeric-v1",
+                "sha256": "a68c97437ecb5f0c4edb5e915e7621cd0a7332c63b9beae91a0b7ce7b01f6737"
+              },
+              "module": {
+                "sha256": "37008a08c45ee08b968cabf7dd0c5c53cd07cc73d38658548054a3d69defae98",
+                "format": "ptx"
+              },
+              "prepared": {
+                "contract": "SPEC-0020-prepared-kernel-dag-v1",
+                "sha256": "3ac04322d1aeebe097c32ab3a3444c6facd3939988d5775b5199ce7142109977",
+                "nodeCount": 16,
+                "edgeCount": 15
+              },
+              "bindingNames": [
+                "b64",
+                "b65",
+                "b66",
+                "b67",
+                "b68",
+                "b69",
+                "b70",
+                "b71",
+                "b72",
+                "b73",
+                "b74",
+                "b75",
+                "b76",
+                "b77",
+                "b78",
+                "b79",
+                "b80"
+              ],
+              "kernelIds": [
+                "kernel64",
+                "kernel65",
+                "kernel66",
+                "kernel67",
+                "kernel68",
+                "kernel69",
+                "kernel70",
+                "kernel71",
+                "kernel72",
+                "kernel73",
+                "kernel74",
+                "kernel75",
+                "kernel76",
+                "kernel77",
+                "kernel78",
+                "kernel79"
+              ]
+            }
+          ],
+          "expected": [
+            1,
+            2,
+            -3,
+            4
+          ],
+          "replays": 2
+        },
+        {
+          "name": "binding-cut",
+          "contract": "SPEC-0006-resolved-dense-plan-v1+SPEC-0007-exact-elementwise-fusion-v1+SPEC-0005-resident-sequence-v1",
+          "planIdentity": "tensor-plan-v1:28465eb53db8e02c749749102747aa8b39a0fd0a91c523cb6c744b3e4cea11ea",
+          "resolvedIdentity": "resolved-tensor-plan-v1:b5239be45197a155458de89ac323382db80e6501b98705b6b5390fe3bbcf9c0f",
+          "materialBytes": 560,
+          "bindingCount": 105,
+          "kernelCount": 35,
+          "chunks": [
+            {
+              "compiler": {
+                "sha256": "ae09084b01c0d5c927074c49a0ea48d95ca37573a1d961a015e5c9539e229df6",
+                "format": "ptx",
+                "architecture": "compute_75",
+                "headerProfile": "cuda-numeric"
+              },
+              "deviceProgram": {
+                "contract": "SPEC-0013-v1+SPEC-0022-atomic-observation-v1+SPEC-0022-device-publication-v1+SPEC-0014-publication-mailbox-v1+SPEC-0030-dense-numeric-v1",
+                "sha256": "0957540650dd7daae50c5759c1ca404c8703579e2f292577f1c318cf24ea1a49"
+              },
+              "module": {
+                "sha256": "ae09084b01c0d5c927074c49a0ea48d95ca37573a1d961a015e5c9539e229df6",
+                "format": "ptx"
+              },
+              "prepared": {
+                "contract": "SPEC-0020-prepared-kernel-dag-v1",
+                "sha256": "0a0bb8fa89fc2631951f6ebf8f3e045c8f5a304b07493ff267b59e7ae1a12b49",
+                "nodeCount": 21,
+                "edgeCount": 20
+              },
+              "bindingNames": [
+                "b0",
+                "b1",
+                "b70",
+                "b2",
+                "b3",
+                "b71",
+                "b4",
+                "b5",
+                "b72",
+                "b6",
+                "b7",
+                "b73",
+                "b8",
+                "b9",
+                "b74",
+                "b10",
+                "b11",
+                "b75",
+                "b12",
+                "b13",
+                "b76",
+                "b14",
+                "b15",
+                "b77",
+                "b16",
+                "b17",
+                "b78",
+                "b18",
+                "b19",
+                "b79",
+                "b20",
+                "b21",
+                "b80",
+                "b22",
+                "b23",
+                "b81",
+                "b24",
+                "b25",
+                "b82",
+                "b26",
+                "b27",
+                "b83",
+                "b28",
+                "b29",
+                "b84",
+                "b30",
+                "b31",
+                "b85",
+                "b32",
+                "b33",
+                "b86",
+                "b34",
+                "b35",
+                "b87",
+                "b36",
+                "b37",
+                "b88",
+                "b38",
+                "b39",
+                "b89",
+                "b40",
+                "b41",
+                "b90"
+              ],
+              "kernelIds": [
+                "kernel0",
+                "kernel1",
+                "kernel2",
+                "kernel3",
+                "kernel4",
+                "kernel5",
+                "kernel6",
+                "kernel7",
+                "kernel8",
+                "kernel9",
+                "kernel10",
+                "kernel11",
+                "kernel12",
+                "kernel13",
+                "kernel14",
+                "kernel15",
+                "kernel16",
+                "kernel17",
+                "kernel18",
+                "kernel19",
+                "kernel20"
+              ]
+            },
+            {
+              "compiler": {
+                "sha256": "3e53fec4557b37932f131479245a22926b121fe82b87b1c6497edcb136434d22",
+                "format": "ptx",
+                "architecture": "compute_75",
+                "headerProfile": "cuda-numeric"
+              },
+              "deviceProgram": {
+                "contract": "SPEC-0013-v1+SPEC-0022-atomic-observation-v1+SPEC-0022-device-publication-v1+SPEC-0014-publication-mailbox-v1+SPEC-0030-dense-numeric-v1",
+                "sha256": "7f7a7c02005efb871d962e458cf07e8dc78270eeb21efb2ff8cd4946323ff426"
+              },
+              "module": {
+                "sha256": "3e53fec4557b37932f131479245a22926b121fe82b87b1c6497edcb136434d22",
+                "format": "ptx"
+              },
+              "prepared": {
+                "contract": "SPEC-0020-prepared-kernel-dag-v1",
+                "sha256": "6243184b6f51a5f632632ab7ee45f18840822d4855f282d0735650be9bf5e5b2",
+                "nodeCount": 14,
+                "edgeCount": 13
+              },
+              "bindingNames": [
+                "b42",
+                "b43",
+                "b91",
+                "b44",
+                "b45",
+                "b92",
+                "b46",
+                "b47",
+                "b93",
+                "b48",
+                "b49",
+                "b94",
+                "b50",
+                "b51",
+                "b95",
+                "b52",
+                "b53",
+                "b96",
+                "b54",
+                "b55",
+                "b97",
+                "b56",
+                "b57",
+                "b98",
+                "b58",
+                "b59",
+                "b99",
+                "b60",
+                "b61",
+                "b100",
+                "b62",
+                "b63",
+                "b101",
+                "b64",
+                "b65",
+                "b102",
+                "b66",
+                "b67",
+                "b103",
+                "b68",
+                "b69",
+                "b104"
+              ],
+              "kernelIds": [
+                "kernel21",
+                "kernel22",
+                "kernel23",
+                "kernel24",
+                "kernel25",
+                "kernel26",
+                "kernel27",
+                "kernel28",
+                "kernel29",
+                "kernel30",
+                "kernel31",
+                "kernel32",
+                "kernel33",
+                "kernel34"
+              ]
+            }
+          ],
+          "expected": [
+            2,
+            4,
+            -6,
+            8
+          ],
+          "replays": 2
+        }
+      ],
+      "sessionTerminal": {
+        "schemaVersion": 1,
+        "kind": "tensor-session",
+        "state": "closed",
+        "graceful": true,
+        "runtimeOwnership": "borrowed",
+        "runtimeClosed": false,
+        "runtimeGraceful": null,
+        "failures": [],
+        "unprovedResources": [],
+        "accounting": {
+          "liveTensors": 0,
+          "reservedBytes": 0,
+          "resolvedPlans": 0,
+          "pendingResolutions": 0
+        }
+      },
+      "runtimeTerminal": {
+        "schemaVersion": 1,
+        "graceful": true,
+        "restartRequired": false,
+        "state": "closed",
+        "compiler": {
+          "graceful": true,
+          "restartRequired": false,
+          "cleanupClaim": "proved-native-resources-and-libraries",
+          "workerExited": true,
+          "workerExitCode": 0,
+          "resources": {
+            "programsCreated": 5,
+            "programsDestroyed": 5,
+            "linksCreated": 0,
+            "linksDestroyed": 0
+          }
+        },
+        "driver": {
+          "graceful": true,
+          "restartRequired": false,
+          "cleanupClaim": "proved-exact-windows-profile",
+          "workerExited": true,
+          "workerExitCode": 0,
+          "health": "closed",
+          "resourceCounts": {
+            "live": 0,
+            "closing": 0,
+            "closed": 254,
+            "orphaned": 0
+          }
+        }
+      },
+      "hostPlanQualificationOnly": true,
+      "engineActiveInferenceProfileClaimed": false
+    }
+  },
+  "denseNative": {
+    "sha256": "98b263744dba7b1f71c548a5ea8b8c994c19d8710587f47f19492dd5dcad3898",
+    "observation": {
+      "consumer": "installed-native-resolved-dense",
+      "node": "v26.7.0",
+      "platform": "win32",
+      "device": {
+        "major": 7,
+        "minor": 5,
+        "class": "cc-7.5"
+      },
+      "summary": {
+        "composite": {
+          "kernels": 10,
+          "bindings": 11,
+          "workspaceBytes": 96,
+          "replays": 2,
+          "compiler": {
+            "architecture": "compute_75",
+            "headerProfile": "cuda-numeric"
+          }
+        },
+        "accelerated": {
+          "backend": "mixed",
+          "kernels": 2,
+          "cublasLtNodes": 1,
+          "workspaceBytes": 0,
+          "replays": 2,
+          "provider": {
+            "profile": "cublaslt-f32-row-major-matmul-v1",
+            "identity": {
+              "name": "cuBLASLt",
+              "version": "13.5.1",
+              "qualification": "exact-windows-profile",
+              "workspaceAlignmentBytes": 256
+            }
+          }
+        },
+        "transposedAccelerated": {
+          "backend": "cublaslt",
+          "cublasLtNodes": 1,
+          "output": [
+            58,
+            64,
+            139,
+            154
+          ]
+        },
+        "cast": [
+          0,
+          2147483647,
+          -2147483648,
+          3,
+          -3
+        ],
+        "fusion": {
+          "fusedKernels": 1,
+          "unfusedKernels": 3,
+          "fusedNodes": 3,
+          "output": [
+            -2,
+            -3,
+            -4,
+            -5
+          ],
+          "typedOutput": [
+            2,
+            3
+          ],
+          "specialValues": {
+            "negativeZero": true,
+            "nan": true,
+            "tail": [
+              null,
+              -4
+            ]
+          }
+        },
+        "f16": [
+          15872,
+          17664,
+          0,
+          31743
+        ],
+        "bf16": [
+          49024,
+          16384,
+          48896,
+          0
+        ],
+        "fixedTree": {
+          "output": [
+            0
+          ],
+          "workspaceBytes": 24
+        },
+        "deviceCallable": {
+          "format": "ptx",
+          "architecture": "compute_75",
+          "parameters": 7,
+          "workspaceBytes": 112,
+          "values": [
+            32,
+            48,
+            59,
+            84,
+            86,
+            120,
+            113,
+            156
+          ],
+          "scores": [
+            80,
+            143,
+            206,
+            269
+          ],
+          "statuses": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            1,
+            1,
+            1
+          ]
+        }
+      },
+      "sessionGraceful": true,
+      "runtimeGraceful": true
+    }
+  },
+  "claimLimits": [
+    "exact executed public package/provider/device profiles only",
+    "no chess/model/search/engine/suite qualification claim",
+    "historical alpha8/alpha9 receipts remain unchanged"
+  ],
+  "disposition": "Raw observations retained under external task evidence directory; compact owning receipt checked in."
+}

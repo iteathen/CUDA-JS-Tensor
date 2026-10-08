@@ -3,8 +3,8 @@ import { CUDA_JS_COMPATIBILITY, openCudaRuntime } from 'cuda-js';
 import { CUDA_JS_TENSOR_COMPATIBILITY, resolveTensorPlan, TensorProgram, TensorSession } from 'cuda-js-tensor';
 
 assert.equal(process.version, 'v26.11.1');
-assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.package.version, '0.1.0-alpha.9');
-assert.equal(CUDA_JS_COMPATIBILITY.package.version, '0.1.0-alpha.21');
+assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.package.version, '0.1.0-alpha.10');
+assert.equal(CUDA_JS_COMPATIBILITY.package.version, '0.1.0-alpha.22');
 const data = Buffer.alloc(16); [1, 2, -3, 4].forEach((value, index) => data.writeFloatLE(value, index * 4));
 const runtime = await openCudaRuntime({ compiler: true, driver: { memory: { maxDeviceBytes: 32 * 1024 * 1024, maxAllocationBytes: 8 * 1024 * 1024, maxTransferBytes: 8 * 1024 * 1024 }, execution: { maxModuleBytes: 4 * 1024 * 1024, maxArguments: 32, maxCompletionMilliseconds: 30000 } } });
 const session = await TensorSession.open(runtime); const cases = []; let sessionTerminal, runtimeTerminal;

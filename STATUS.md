@@ -5,13 +5,15 @@
 ```text
 repository:                 public protected pre-release
 package name:               cuda-js-tensor (reserved by intent, unpublished)
-package version:            0.1.0-alpha.9 (publication-guarded candidate; independent review pending)
-current CUDA-JS dependency: cuda-js@0.1.0-alpha.21 at 2bff226b752d3c0af8b9185274d411e5990008d4
+package version:            0.1.0-alpha.10 (publication-guarded exact-cohort candidate)
+current CUDA-JS dependency: cuda-js@0.1.0-alpha.22 at dc2924657bb900cdce3fba4c9def62934419db03
 native qualification:       current candidate Windows single-DAG Node 26.7.0 and resident sequence Node 26.11.1 receipts
 performance claims:         none
 current generic Tensor gap: resident sequence and explicit block32 callable candidates qualified; review pending
 product numerical oracle:   UCI-Arena-Vector-owned and independent of Tensor readiness for other consumers
 ```
+
+Alpha.10 preserves the reviewed alpha.8/alpha.9 profiles and refreshes only the strict public dependency to protected CUDA-JS alpha.22. The stale alpha.9/alpha.22 pair reproduced fail-closed before native work. All 121 portable/package tests pass; exact current-pair installed block32, resident sequence and dense native qualification passed with clean teardown. [Current cohort receipt](conformance/native/receipts/2026-10-08-alpha10-cuda22.json) records the exact executions, including a536.87M MAC guarded calibration; its timing claim is only the executed workload. Historical alpha.21 receipts below retain their original identities.
 
 ## Stable ownership
 

@@ -1,20 +1,20 @@
 {
-  "schema_version": 18,
+  "schema_version": 19,
   "updated": "2026-10-08",
-  "status": "resident_sequence_and_block32_candidates_qualified_pending_independent_review",
+  "status": "reviewed_profiles_cuda22_cohort_qualified_pending_delta_review",
   "objective": "Preserve the protected generic TensorProgram/TensorPlan/callable/resource record, keep the downstream checkpoint oracle entirely product-owned, and stop using that product evidence as readiness authority for unrelated consumers such as CUDA-MCGS.",
   "current_focus": {
     "id": "TENSOR-REAL-MODEL-022",
     "repository": "iteathen/CUDA-JS-Tensor",
     "issue": 22,
     "name": "protected generic real-model callable/resource record",
-    "state": "Exact runtime interoperability is closed. Resident sequence and block32 callable candidates preserve original math, scalar defaults and all lower limits. All 121 portable/package tests pass; exact native mixed/no-write block32 and bounded workload measurements passed with cleanup recorded.",
-    "next_action": "Independently review both candidate addenda and implementations before integration. Consumers own full-program numerical/latency qualification and uniform cooperative caller admission; host sequence remains qualification-only.",
+    "state": "Resident sequence and block32 independently reviewed on exact alpha.21 pair. Alpha.10 selects protected alpha.22 strictly with no formula/ABI/workspace changes;121tests bothNodes and exact installed block32/resident/dense native cases pass with graceful cleanup. Historical evidence preserved.",
+    "next_action": "Review dependency-only alpha.10 delta and integrate exact checked source/package. Product full-model and engine evidence remain Vector-owned.",
     "exit": "Candidate reviewed and generic evidence accepted; product numerical comparison and active engine integration remain consumer-owned."
   },
   "current_package_dependency": {
-    "package": "cuda-js@0.1.0-alpha.21",
-    "revision": "2bff226b752d3c0af8b9185274d411e5990008d4",
+    "package": "cuda-js@0.1.0-alpha.22",
+    "revision": "dc2924657bb900cdce3fba4c9def62934419db03",
     "meaning": "Exact protected CUDA-JS revision selected by the current Tensor package; this is compatibility/provenance for Tensor, not readiness authority for sibling consumers."
   },
   "protected_generic_record": {
