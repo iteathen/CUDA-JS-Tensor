@@ -5,11 +5,11 @@
 ```text
 repository:                 public protected pre-release
 package name:               cuda-js-tensor (reserved by intent, unpublished)
-package version:            0.1.0-alpha.8 (publication-guarded candidate; independent review pending)
+package version:            0.1.0-alpha.9 (publication-guarded candidate; independent review pending)
 current CUDA-JS dependency: cuda-js@0.1.0-alpha.21 at 2bff226b752d3c0af8b9185274d411e5990008d4
 native qualification:       current candidate Windows single-DAG Node 26.7.0 and resident sequence Node 26.11.1 receipts
 performance claims:         none
-current generic Tensor gap: whole-plan prepared bounds addressed by explicit resident-sequence candidate
+current generic Tensor gap: resident sequence and explicit block32 callable candidates qualified; review pending
 product numerical oracle:   UCI-Arena-Vector-owned and independent of Tensor readiness for other consumers
 ```
 
@@ -46,6 +46,8 @@ An exact consumer-selected CUDA-JS alpha.21 runtime demonstrated `TENSOR_CUDA_JS
 The installed-package native conformance runner passed on exact Node 26.7.0 / Windows x64 / recorded cc-7.5 device with CUDA-JS alpha.21 and cuBLASLt 13.5.1. It covers dense SIMT and mixed execution, fused special values, fixed-tree reduction, public item callable outputs and out-of-range guards, and graceful session/runtime cleanup. [Current receipt](conformance/native/receipts/2026-10-08-alpha7-alpha21-node267-win32.json) qualifies only that invocation profile; it adds no product numerical or performance claim.
 
 Alpha.8 adds an explicitly selected candidate `execution: 'resident-sequence'` host qualification profile. A whole generic plan exceeding one prepared DAG is split into ordered resident chunks, each obeying CUDA-JS's unchanged 32-node/64-binding bounds. Original plan material layout and math remain unchanged; the default single-DAG profile and its identities remain intact. The [candidate addendum](docs/specs/SPEC-0005-resident-sequence-addendum.md) requires independent review before integration. [Native candidate evidence](conformance/native/receipts/2026-10-08-alpha8-resident-sequence.json) covers 80-kernel/81-binding cross-chunk views and binding-driven cuts at 105 global bindings, two replays, and zero-live/orphaned terminal resources on Node 26.11.1/Windows/compute_75. The unchanged single-DAG native fixture also passed on Node 26.7.0. Host sequence qualification is not a device-closed engine inference profile or product numerical evidence.
+
+Alpha.9 adds candidate `participation: 'block32'` to the item callable, using existing public thread/block/barrier helpers. Exactly one uniform 32x1x1 block produces one item; scalar formulas, reduction order, ABI and workspace are unchanged. Public participation metadata and `requireParticipation()` support caller admission before ignition. [Candidate contract](docs/specs/SPEC-0009-block32-addendum.md) and [native receipt](conformance/native/receipts/2026-10-08-alpha9-block32.json) record mixed mathematical operations, guarded full/partial occupancy and 8.39M through 268.4M MAC workload measurements on exact Node 26.11.1/Windows/compute_75. All 121 generic tests pass. These measurements do not establish another program's numerical parity or latency; independent review and downstream pipeline qualification remain required.
 
 `the_restaurant` remains deferred. Multi-device Tensor semantics, NN/training/autodiff, publication and performance recommendations remain independently gated.
 

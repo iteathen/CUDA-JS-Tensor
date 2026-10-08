@@ -63,6 +63,7 @@ export const TENSOR_BACKEND_POLICIES: readonly ['simt', 'prefer-cublaslt', 'cubl
 export const TENSOR_FUSION_POLICIES: readonly ['none', 'exact-elementwise'];
 
 export interface CompileTensorDeviceProgramOptions {
+  participation?: 'scalar' | 'block32';
   itemCapacity: number;
   itemInputs: readonly string[];
   output?: 'ptx' | 'lto-ir';
@@ -128,7 +129,9 @@ export type TensorDeviceProgramParameter = TensorDeviceItemIndexParameter | Tens
 export class TensorDeviceProgram {
   private constructor();
   readonly kind: 'tensor-device-program';
-  readonly contract: 'SPEC-0009-item-parallel-device-tensor-program-v1' | 'SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-gather-concat-v1';
+  readonly contract: 'SPEC-0009-item-parallel-device-tensor-program-v1' | 'SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-gather-concat-v1' | 'SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-block32-v1' | 'SPEC-0009-item-parallel-device-tensor-program-v1+SPEC-0009-gather-concat-v1+SPEC-0009-block32-v1';
+  readonly participation: Readonly<{ kind: 'scalar' | 'block32'; scope: 'thread' | 'block'; requiredThreads: number; block: Readonly<{ x: number; y: number; z: number }> | null; uniformItemIndex: boolean; uniformCall: boolean; invocationCountPerParticipant: 1 }>;
+  requireParticipation(request: Readonly<{ block: Readonly<{ x: number; y: number; z: number }>; uniformItemIndex?: boolean; uniformCall?: boolean }>): TensorDeviceProgram['participation'];
   readonly plan: TensorPlan;
   readonly itemCapacity: number;
   readonly itemInputs: readonly string[];

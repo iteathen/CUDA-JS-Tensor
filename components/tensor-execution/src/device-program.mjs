@@ -6,7 +6,8 @@ import { inspectTensorSessionForExecution, reserveTensorSessionExecution } from 
 import { deepFreeze, exactRecord, fail, identity } from './contract.mjs';
 import { createDeviceItemProfile } from './device-item-profile.mjs';
 
-const OPTION_FIELDS = new Set(['itemCapacity', 'itemInputs', 'output', 'maxWorkspaceBytes']);
+const OPTION_FIELDS = new Set(['itemCapacity', 'itemInputs', 'output', 'maxWorkspaceBytes', 'participation']);
+const SCALAR_PARTICIPATION = Object.freeze({ kind: 'scalar', scope: 'thread', requiredThreads: 1, block: null, uniformItemIndex: false, uniformCall: false, invocationCountPerParticipant: 1 });
 const IDENTIFIER = /^[A-Za-z_$][A-Za-z0-9_$]*$/;
 const TOKEN = Symbol('TensorDeviceProgram');
 const DATA = new WeakMap();
@@ -57,6 +58,7 @@ export class TensorDeviceProgram {
   get outputs() { return data(this, 'TensorDeviceProgram.outputs').profile.outputs; }
   get workspace() { return data(this, 'TensorDeviceProgram.workspace').profile.workspace; }
   get totalWorkspaceBytes() { return data(this, 'TensorDeviceProgram.totalWorkspaceBytes').profile.totalWorkspaceBytes; }
+  get participation() { return data(this, 'TensorDeviceProgram.participation').profile.participation ?? SCALAR_PARTICIPATION; }
   get function() { return data(this, 'TensorDeviceProgram.function').publicFunction; }
   get library() { return copyLibrary(data(this, 'TensorDeviceProgram.library').library); }
   get compatibilityIdentity() { return data(this, 'TensorDeviceProgram.compatibilityIdentity').compatibilityIdentity; }
@@ -66,6 +68,14 @@ export class TensorDeviceProgram {
     const value = data(this, 'TensorDeviceProgram.importAs');
     if (typeof alias !== 'string' || !IDENTIFIER.test(alias) || alias === 'gpu') fail('TENSOR_DEVICE_IMPORT_ALIAS_INVALID', 'validation', 'Device-JS import alias must be a valid non-gpu identifier.', { alias: typeof alias === 'string' ? alias : null });
     return Object.freeze({ library: copyLibrary(value.library), name: value.exportedFunction.name, as: alias });
+  }
+
+  requireParticipation(request) {
+    exactRecord(request, new Set(['block', 'uniformItemIndex', 'uniformCall']), 'TENSOR_DEVICE_PARTICIPATION_INVALID', 'Participation admission contains unknown fields.');
+    const required = this.participation;
+    if (required.kind === 'block32') exactRecord(request.block, new Set(['x', 'y', 'z']), 'TENSOR_DEVICE_PARTICIPATION_INVALID', 'Block32 dimensions require an ordinary exact block record.');
+    if (required.kind === 'block32' && (request.block?.x !== 32 || request.block?.y !== 1 || request.block?.z !== 1 || Object.keys(request.block).some((key) => !['x', 'y', 'z'].includes(key)) || request.uniformItemIndex !== true || request.uniformCall !== true)) fail('TENSOR_DEVICE_PARTICIPATION_MISMATCH', 'validation', 'Block32 requires exactly one full 32x1x1 block with uniform item index and call.');
+    return required;
   }
 
   describe() { return data(this, 'TensorDeviceProgram.describe').canonical; }

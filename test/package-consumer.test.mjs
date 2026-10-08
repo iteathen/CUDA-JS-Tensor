@@ -95,14 +95,14 @@ try {
   if (error.code !== 'ERR_PACKAGE_PATH_NOT_EXPORTED') throw error;
 }
 const terminal = await session.close();
-if (!terminal.graceful || !runtimeClosed || CUDA_JS_TENSOR_COMPATIBILITY.package.version !== '0.1.0-alpha.8' || CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version !== '0.1.0-alpha.21' || CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.protectedMainRevision !== '2bff226b752d3c0af8b9185274d411e5990008d4') throw new Error('terminal contract mismatch');
+if (!terminal.graceful || !runtimeClosed || CUDA_JS_TENSOR_COMPATIBILITY.package.version !== '0.1.0-alpha.9' || CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version !== '0.1.0-alpha.21' || CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.protectedMainRevision !== '2bff226b752d3c0af8b9185274d411e5990008d4') throw new Error('terminal contract mismatch');
 console.log('installed CUDA-JS-Tensor consumer passed');
 `);
     const output = run(process.execPath, [path.join(directory, 'consumer.mjs')], directory);
     assert.match(output, /installed CUDA-JS-Tensor consumer passed/);
 
     const installedPackage = JSON.parse(await readFile(path.join(directory, 'node_modules', 'cuda-js-tensor', 'package.json'), 'utf8'));
-    assert.equal(installedPackage.version, '0.1.0-alpha.8');
+    assert.equal(installedPackage.version, '0.1.0-alpha.9');
     assert.deepEqual(Object.keys(installedPackage.exports), ['.']);
     const installedComponentEntries = await readdir(path.join(directory, 'node_modules', 'cuda-js-tensor', 'components', 'tensor-value'));
     assert.equal(installedComponentEntries.includes('test'), false);

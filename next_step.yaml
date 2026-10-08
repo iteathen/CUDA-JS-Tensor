@@ -1,15 +1,15 @@
 {
-  "schema_version": 17,
+  "schema_version": 18,
   "updated": "2026-10-08",
-  "status": "resident_sequence_candidate_qualified_pending_independent_review",
+  "status": "resident_sequence_and_block32_candidates_qualified_pending_independent_review",
   "objective": "Preserve the protected generic TensorProgram/TensorPlan/callable/resource record, keep the downstream checkpoint oracle entirely product-owned, and stop using that product evidence as readiness authority for unrelated consumers such as CUDA-MCGS.",
   "current_focus": {
     "id": "TENSOR-REAL-MODEL-022",
     "repository": "iteathen/CUDA-JS-Tensor",
     "issue": 22,
     "name": "protected generic real-model callable/resource record",
-    "state": "Exact runtime interoperability is closed. A concrete whole-plan prepared-binding limit is addressed by explicit alpha.8 resident-sequence candidate, preserving all per-chunk lower limits and whole-plan material/math semantics. All 118 portable/package tests and both installed native profiles passed with cleanup recorded.",
-    "next_action": "Independently review the candidate execution addendum and implementation before integration. Consumers may qualify original numerical programs through explicitly selected host sequence; active device-closed inference remains a separate profile.",
+    "state": "Exact runtime interoperability is closed. Resident sequence and block32 callable candidates preserve original math, scalar defaults and all lower limits. All 121 portable/package tests pass; exact native mixed/no-write block32 and bounded workload measurements passed with cleanup recorded.",
+    "next_action": "Independently review both candidate addenda and implementations before integration. Consumers own full-program numerical/latency qualification and uniform cooperative caller admission; host sequence remains qualification-only.",
     "exit": "Candidate reviewed and generic evidence accepted; product numerical comparison and active engine integration remain consumer-owned."
   },
   "current_package_dependency": {

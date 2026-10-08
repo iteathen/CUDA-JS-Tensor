@@ -74,7 +74,7 @@ async function execute(session, program, inputBytes, { replays = 1, resolveOptio
 }
 
 assert.equal(process.version, 'v26.7.0');
-assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.package.version, '0.1.0-alpha.8');
+assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.package.version, '0.1.0-alpha.9');
 assert.equal(CUDA_JS_TENSOR_COMPATIBILITY.cudaJs.version, '0.1.0-alpha.21');
 
 const runtime = await openCudaRuntime({
