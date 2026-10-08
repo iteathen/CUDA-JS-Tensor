@@ -1,15 +1,15 @@
 # CUDA-JS-Tensor Status
 
-**Updated:** 2026-09-06
+**Updated:** 2026-10-08
 
 ```text
 repository:                 public protected pre-release
 package name:               cuda-js-tensor (reserved by intent, unpublished)
-package version:            0.1.0-alpha.6 (publication-guarded)
-current CUDA-JS dependency: cuda-js@0.1.0-alpha.18 at 45a9ef15537b52d6fd7c615b7e596676dfd00587
-native qualification:       historical exact-pair evidence only; current pair not silently requalified
+package version:            0.1.0-alpha.7 (publication-guarded)
+current CUDA-JS dependency: cuda-js@0.1.0-alpha.21 at 2bff226b752d3c0af8b9185274d411e5990008d4
+native qualification:       current exact-pair Windows/Node 26.7.0 correctness/lifecycle receipt; historical evidence retained
 performance claims:         none
-current generic Tensor gap: none demonstrated by the protected real-model callable/resource record
+current generic Tensor gap: selected exact public-runtime interoperability failure closed and qualified
 product numerical oracle:   UCI-Arena-Vector-owned and independent of Tensor readiness for other consumers
 ```
 
@@ -40,6 +40,10 @@ This ownership correction changes no Tensor mathematics, callable ABI, workspace
 ## Current work discipline
 
 Issue #22 retains the protected generic real-model callable/resource record. No proactive Tensor mutation is justified while the downstream product oracle is pending. New Tensor work requires a concrete consumer-backed generic gap or separately accepted bounded Tensor capability.
+
+An exact consumer-selected CUDA-JS alpha.21 runtime demonstrated `TENSOR_CUDA_JS_INCOMPATIBLE` against Tensor's alpha.18 package projection. The bounded alpha.7 refresh selects that exact public cohort and preserves strict version checks, Tensor mathematics, callable ABI, and workspace rules. This interoperability gap is independent of downstream product numerical evidence; it adds no product semantics or performance claim.
+
+The installed-package native conformance runner passed on exact Node 26.7.0 / Windows x64 / recorded cc-7.5 device with CUDA-JS alpha.21 and cuBLASLt 13.5.1. It covers dense SIMT and mixed execution, fused special values, fixed-tree reduction, public item callable outputs and out-of-range guards, and graceful session/runtime cleanup. [Current receipt](conformance/native/receipts/2026-10-08-alpha7-alpha21-node267-win32.json) qualifies only that invocation profile; it adds no product numerical or performance claim.
 
 `the_restaurant` remains deferred. Multi-device Tensor semantics, NN/training/autodiff, publication and performance recommendations remain independently gated.
 

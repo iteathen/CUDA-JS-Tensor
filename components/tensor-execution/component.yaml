@@ -8,7 +8,7 @@
     "path": "components/tensor-execution",
     "purpose": "Bind immutable tensor plans to complete deterministic host-planned execution or compile one statically item-independent plan as a copied typed Device-JS leaf library, with explicit finite resources and ownership.",
     "public_contracts": ["index.mjs", "index.d.ts"],
-    "allowed_dependencies": ["node-standard-library", "tensor.value", "tensor.program-plan", "public-cuda-js-0.1.0-alpha.16"],
+    "allowed_dependencies": ["node-standard-library", "tensor.value", "tensor.program-plan", "public-cuda-js-0.1.0-alpha.21"],
     "forbidden_dependencies": ["cuda-js-internals", "native-cuda", "embedded-cuda-source", "consumer-policy", "neural-policy", "mcgs-policy", "the_restaurant"],
     "validation": ["npm run test:tensor-execution", "npm run test:package", "npm run smoke:native:tensor-execution", "npm run verify"],
     "owner": "tensor.resolved-plan/tensor.backend.simt/tensor.backend.fusion/tensor.backend.cublaslt/tensor.backend.device-callable/tensor.execution-result",
